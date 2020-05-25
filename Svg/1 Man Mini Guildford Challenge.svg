@@ -1,0 +1,22 @@
+<svg   xmlns="http://www.w3.org/2000/svg"   width="500"   height="500">
+	
+
+	 <rect     x="38"     y="409"     width="57"     height="57" />	 
+	 <rect     x="33"     y="277"     width="67"     height="67" />
+	 <rect     x="28"     y="150"     width="77"     height="77"/> 
+	 <rect     x="18"     y="18"     width="97"    height="97" />	 
+	 <rect     x="155"     y="33"     width="67"    height="67"  />
+	 <line x1="182" y1="33" x2="182" y2="100" style="stroke: #FFFFFF; stroke-width: 10px;" />	 
+	 
+	 <rect     x="277"     y="33"   width="67"     height="67"/>
+	 <line x1="312" y1="30" x2="274" y2="70" style="stroke: #FFFFFF; stroke-width: 10px;" />
+	 
+	 <rect     x="399"     y="33"    width="67"     height="67" />
+	 <polygon points="432,132 389,216 476,216"/>
+	 <circle  r="43" cx="432" cy="310"/>
+	 <polygon points="432,390  382,432  402,486 462,486  484,432"/>
+	 
+	 
+	 <text x="150" y="425" font-size="400px" font-weight="bold">1</text>
+	 
+	 </svg>

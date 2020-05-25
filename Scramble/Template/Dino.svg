@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="210px"
+   height="160px"
+><metadata
+     id="metadata40"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs38" />
+
+
+<rect x="10" y="60" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="10" y1="60" x2="50" y2="100" stroke="black" style="stroke-width:2px;" />
+<line x1="10" y1="100" x2="50" y2="60" stroke="black" style="stroke-width:2px;" />
+
+<rect x="60" y="60" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="60" y1="60" x2="100" y2="100" stroke="black" style="stroke-width:2px;" />
+<line x1="60" y1="100" x2="100" y2="60" stroke="black" style="stroke-width:2px;" />
+
+<rect x="110" y="60" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="110" y1="60" x2="150" y2="100" stroke="black" style="stroke-width:2px;" />
+<line x1="110" y1="100" x2="150" y2="60" stroke="black" style="stroke-width:2px;" />
+
+<rect x="160" y="60" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="160" y1="60" x2="200" y2="100" stroke="black" style="stroke-width:2px;" />
+<line x1="160" y1="100" x2="200" y2="60" stroke="black" style="stroke-width:2px;" />
+
+<rect x="60" y="10" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="60" y1="10" x2="100" y2="50" stroke="black" style="stroke-width:2px;" />
+<line x1="60" y1="50" x2="100" y2="10" stroke="black" style="stroke-width:2px;" />
+
+<rect x="60" y="110" width="40" height="40"
+     style="fill:#FFFFFF; stroke:#000000; stroke-width:2px;" />
+<line x1="60" y1="110" x2="100" y2="150" stroke="black" style="stroke-width:2px;" />
+<line x1="60" y1="150" x2="100" y2="110" stroke="black" style="stroke-width:2px;" />
+
+</svg>

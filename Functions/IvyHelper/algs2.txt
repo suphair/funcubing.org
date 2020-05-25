@@ -1,0 +1,12 @@
+RL
+RF
+RU
+LR
+LF
+LU
+FR
+FL
+FU
+UR
+UL
+UF

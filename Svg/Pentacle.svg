@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve">
+
+		<rect x="5" y="5" width="490" height="490" fill="none" stroke="#000000" stroke-width="20px" />
+		<circle r="240" cx="250" cy="250" fill="none" stroke="#000000" stroke-width="20px" />	
+		<line x1="190" y1="0" x2="190" y2="500" stroke="#000000" stroke-width="20px"  />
+		
+		<line x1="0" y1="250" x2="450" y2="390" stroke="#000000" stroke-width="20px"  />
+		<line x1="0" y1="250" x2="450" y2="110" stroke="#000000" stroke-width="20px"  />
+		
+		<line x1="190" y1="0" x2="450" y2="390" stroke="#000000" stroke-width="20px"  />
+		<line x1="190" y1="500"  x2="450" y2="110" stroke="#000000" stroke-width="20px"  />
+</svg>
