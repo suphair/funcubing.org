@@ -41,7 +41,8 @@ if($competitor and $competitor->wca_id){
                     <br>
                     <nobr><span class='badge'><?= $user['count'] ?></span>&nbsp;<a href='<?= $user['url'];?>' target='_blank'><?= $user['wca_id'];?></a></nobr>
                     <br>
-                    <img width="20" src="<?= PageIndex()?>Image/Flags/<?= strtolower($user['country_iso2'])?>.png">
+                    <span class='flag-icon flag-icon-<?= strtolower($user['country_iso2']) ?>'></span>
+                    
                     <?= CountryName($user['country_iso2']); ?>
                     <?php if($user['delegate_status']){ ?>
                             <p class="message">Delegate</p>

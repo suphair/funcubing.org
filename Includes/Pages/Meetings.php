@@ -32,7 +32,7 @@
 <?php } ?>
 <hr>
 <?php
-$sql = "Select M.Website Meeting_Website, M.ID Meeting_ID,M.Show, M.Competitor Meeting_Competitor,M.Secret Meeting_Secret,M.Name Meeting_Name,M.Details Meeting_Details, C.Name Competitor_Name, M.Date Meeting_Date "
+$sql = "Select M.Website Meeting_Website, M.ID Meeting_ID,M.Show, M.Competitor Meeting_Competitor,M.Secret Meeting_Secret,M.Name Meeting_Name,M.Details Meeting_Details, C.Name Competitor_Name, M.Date Meeting_Date, C.Country Competitor_Country "
         . " from Meeting M "
         . " join Competitor C on C.WID=M.Competitor "
         . "where ";
@@ -51,31 +51,6 @@ if ($Competitor) {
 $sql .= " order by M.ID desc";
 ?>
 
-<?php
-if (CheckMeetingGrand() and isset($_GET['update'])) {
-    DataBaseClass::Query("update MeetingDiscipline MD
-join `MeetingDisciplineList` MDL on MDL.ID=MD.`MeetingDisciplineList`
-SET MD.Name=MDL.Name
-where MDL.ID>=100");
-
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=83");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=84");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=173");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=201 where ID=174");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=144");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=201 where ID=145");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=216");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=201 where ID=217");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=200");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=201 where ID=214");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=157");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=240");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=201 where ID=241");
-    DataBaseClass::Query("Update MeetingDiscipline set MeetingDisciplineList=200 where ID=284");
-}
-?>
-
-
 <table class='table_new'>
     <thead>
         <tr>
@@ -85,6 +60,7 @@ where MDL.ID>=100");
                     Organizer
                 </td>
             <?php } ?>
+            <td/>
             <td>
                 <i class="fas fa-cube"></i>
                 Competition
@@ -117,7 +93,9 @@ where MDL.ID>=100");
                         </span>
                     </td>   
                 <?php } ?>
-
+                <td>
+                    <span class='flag-icon flag-icon-<?= strtolower($meeting['Competitor_Country']) ?>'></span>
+                </td>
                 <td>
                     <a href="<?= PageIndex() ?>Meetings/<?= $meeting['Meeting_Secret'] ?>"><?= $meeting['Meeting_Name'] ?> </a>
                 </td>

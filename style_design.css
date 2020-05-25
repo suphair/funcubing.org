@@ -29,22 +29,8 @@ var(--blue) - Blue
 
 */
 
-
-@font-face {
-    font-family: Stolzl-Book;
-    src: url("Fonts/Stolzl-Book.otf") format("opentype");
-}
-@font-face {
-    font-family: Stolzl-Bold;
-    src: url("Fonts/Stolzl-Bold.otf") format("opentype");
-}
-@font-face {
-    font-family: Stolzl-Light;
-    src: url("Fonts/Stolzl-Light.otf") format("opentype");
-}
-
 body {
-    font-family: Stolzl-Book;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color:rgb(51,51,51);
     padding:10px 100px;
     margin: 0 auto; 
@@ -132,7 +118,6 @@ tr.select{
 
 .future{
     color: var(--red);
-    font-family: Stolzl-Book;
     text-align: center;
 }
 
@@ -190,7 +175,6 @@ td.attempt_header_num{
 
 td.attempt_result, .PB{
     color: var(--red);
-    font-family: Stolzl-Book;
 }
 
 div.result_many_rows, .result_many_rows_select,div.competitor_td{
@@ -209,7 +193,6 @@ td.result_many_rows{
 
 
 .podium td:first-child{
-    font-family: Stolzl-Book;
     color: var(--red);
 }
 
@@ -479,7 +462,6 @@ td.big_flag, td.flag{
 
 
 h1{    
-    font-family: Stolzl-Book;
     font-size:38px; 
     text-align: left;
     margin:0px;
@@ -487,7 +469,6 @@ h1{
 }
 
 h2{
-    font-family: Stolzl-Book;
     font-size:24px; 
     text-align: left;
     margin:0px;
@@ -495,7 +476,6 @@ h2{
 }
 
 h3{
-    font-family: Stolzl-Light;
     font-size:20px; 
     text-align: left;
     margin:0px;
@@ -564,7 +544,6 @@ input[type=submit], button {
     cursor:pointer;
     -webkit-border-radius: 5px;
     border-radius: 5px; 
-    font-family: Stolzl-Book;
     font-size:14px;
     margin:10px 0px 0px 0px;
 }
@@ -688,7 +667,6 @@ hr{
 
 .tr_title{
     background-color: var(--back_color);    
-    font-family: Stolzl-Light;
 }
 .tr_title td{
     border:0px;
@@ -796,12 +774,10 @@ label{
 }
 
 .section_description_1{
-    font-family: Stolzl-Book;
     color:var(--red);
     font-size:32px; 
 }
 .section_description_2{
-    font-family: Stolzl-Book;
     color:var(--green);
     font-size:32px;
 }
