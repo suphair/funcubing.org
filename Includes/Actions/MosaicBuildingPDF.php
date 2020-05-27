@@ -99,11 +99,10 @@ $pdf->AddPage();
 $dx=($pdf_w-$cell_w*ceil($Image->width/$W)*$W)/2;
 $dy=($pdf_h-$cell_h*ceil($Image->heigth/$H)*$H)/2;
 if($dy<$dx)$dy=$dx;
-
 for( $h = 0; $h < $heigth; $h ++ ){
     for( $w = 0; $w < $width; $w ++ ){
         $color_name=$Image->colors_img_256[$w][$h];
-        $Imagename="Cube_Image/$color_name"."_".Mosaic::$pdfImages.".png";
+        $Imagename="Image/CubeImage/$color_name"."_".Mosaic::$pdfImages.".png";        
         if(file_exists($Imagename)){
             $pdf->Image($Imagename,$w*$cell_w+$dx,$h*$cell_h+$dy,$cell_w,$cell_h);
         }else{
@@ -169,8 +168,6 @@ for($j=$Cube_height;$j>=1;$j--){
         $kk=min(($pdf_w-2*$ddx)/$W_max,($pdf_h-2*$ddy)/$H_max);
 
         
-        $pdf->SetFont('Arial','',12);
-        $pdf->Text(75, 15, 'FunCubing.org/MosaicBuilding');
         $pdf->SetFont('Arial','',24);
         $pdf->SetLineWidth(0.2);
 
@@ -188,7 +185,7 @@ for($j=$Cube_height;$j>=1;$j--){
                 $yy=$ddy+5+$kk/$P*($jj-1);
                 if(isset($Image->colors_img_256[$ii+$W*($i-1)-1][$jj+$H*($j-1)-1])){  
                     $color_name=$Image->colors_img_256[$ii+$W*($i-1)-1][$jj+$H*($j-1)-1];
-                    $Imagename="Cube_Image/$color_name"."_".Mosaic::$pdfImages.".png";
+                    $Imagename="Image/CubeImage/$color_name"."_".Mosaic::$pdfImages.".png";
                     if(file_exists($Imagename)){
                         $pdf->Image($Imagename,$xx,$yy,$kk/$P,$kk/$P);
                     }else{

@@ -48,7 +48,7 @@ if ($Competitor) {
 } else {
     $sql .= " Competitor=0";
 }
-$sql .= " order by M.ID desc";
+$sql .= " order by M.Date desc";
 ?>
 
 <table class='table_new'>

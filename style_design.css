@@ -11,31 +11,13 @@
     --black: rgb(51,51,51);
 }
 
-/*
-var(--light_gray) - Light Gray
-rgb(103,103,103) - Gray
-rgb(148,148,148) - Dark Gray
-rgb(77,77,77) - Light Black
-rgb(51,51,51) - Black
-
-rgb(230,0,0) - Light Red
-rgb(162,0,0) - Red
-var(--light_green) - Ligth Green
-var(--green) - Green
-var(--light_blue) - Light Blue
-var(--blue) - Blue
-
-
-
-*/
-
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color:rgb(51,51,51);
     padding:10px 100px;
     margin: 0 auto; 
     width:1200px;
-    font-size:16px;
+    font-size:14px;
 }
 
 hr.hr_round{
@@ -50,48 +32,25 @@ body div {
     padding: 10px;
 }
 
-.header {
-    text-align: left;
-    height: 100px;
-}
-.header>div{
-    text-align: left;
-    padding:0px;
-}
-
-.header img.logo{
-    height: 67px;
-    filter: alpha(Opacity=15); 
-    opacity: 0.15; 
-    padding: 0px 22px;
-
-}
-
-.header img.logo_small{
-    height: 30px; 
-}
-
-.header img.logo_select{
-    height: 67px;   
-    margin:10 px;
-    padding: 0px 22px;
-}
-
-.header img.logo:hover{
-    filter: alpha(Opacity=100); 
-    opacity: 1; 
-
-}
-
 .header a{
-    text-decoration: none;
-    font-size:14px; 
+    padding: 10px 20px 0 0;
+    font-size: 40px;
+    text-align: center;
+    font-variant: small-caps;
 }
 
-.header a:hover{
-    text-decoration: none;
-    font-size:14px;
+
+.logo img, img.logo{
+    width: 40px;   
+    margin:10px 5px;
+    padding: 0px 10px 0px 0px;
+    vertical-align:top;
 }
+
+.header a, .header a:hover{
+    text-decoration: none;
+}
+
 .content{
     text-align: left;
     clear:both;
@@ -439,6 +398,12 @@ td.big_flag, td.flag{
     text-decoration: underline;
 }
 
+.title{
+    padding: 10px 0 0 0;
+    font-size: 40px;
+    font-variant: small-caps;
+}
+
 .footer{
     border-top: 1px solid var(--light_gray);
 }
@@ -461,25 +426,15 @@ td.big_flag, td.flag{
 }
 
 
-h1{    
-    font-size:38px; 
-    text-align: left;
+h1{
+    padding:0px;
     margin:0px;
-    color: var(--blue);
+    font-variant: small-caps;
+    font-weight: normal;
 }
-
-h2{
-    font-size:24px; 
-    text-align: left;
+h2,h3{
+    padding:0px;
     margin:0px;
-    color: var(--blue);
-}
-
-h3{
-    font-size:20px; 
-    text-align: left;
-    margin:0px;
-    color: var(--blue);
 }
 
 h1 a, h2 a, h3 a{    
@@ -651,13 +606,6 @@ img.img_sort{
 
 }
 
-hr{
-    border: none; 
-    height: 1px; 
-    background-color: var(--back_color);
-}
-
-
 .Competitions tr td, .Disciplines tr td, .Records tr td, .Judges tr td, .Competitors tr td,
 .Results tr td{
     padding: 4px 5px;
@@ -775,11 +723,9 @@ label{
 
 .section_description_1{
     color:var(--red);
-    font-size:32px; 
 }
 .section_description_2{
     color:var(--green);
-    font-size:32px;
 }
 
 
@@ -789,13 +735,12 @@ label{
 }
 
 
-
-
-table.table_new tbody tr:nth-of-type(odd){
+table.table_new>tbody>tr:nth-of-type(odd)
+{
     background-color:#e9e9e9;
 }
 
-table.table_new tbody tr:nth-of-type(even){
+table.table_new>tbody>tr:nth-of-type(even){
     background-color:var(--white);
 }
 
@@ -807,7 +752,6 @@ table.table_new tbody tr.odd{
 table.table_new tbody tr.even{
     background-color:var(--white);
 }
-
 
 
 table.table_new{
@@ -980,4 +924,49 @@ button.delete{
 }
 button.delete:hover{
     background-color: var(--red);
+}
+
+
+table.table_info{
+    border:0px;
+    margin-top:0px;
+}
+
+table.table_info td{
+    border:0px;
+    padding:3px 10px;
+}
+
+table.table_info td:first-child{
+    text-align: right;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+table.table_info td:last-child{
+    text-align: left;
+}
+
+
+div.shadow{
+    border:1px solid rgb(17, 31, 135);
+    margin:15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px rgba(17, 31, 135, .3);
+}
+
+div.shadow_inline{
+    border:1px solid rgba(33, 33, 33, .3);
+    margin:5px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 3px rgba(33, 33, 33, .3);
+    display: inline-block;   
+}
+
+div.shadow_inline_current{
+    border:1px solid rgb(0,182,67);
+    margin:5px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 3px rgba(0, 182, 67, .3);
+    display: inline-block;   
 }

@@ -10,8 +10,5 @@ if(isset($_POST['pdf_images']) and in_array($_POST['pdf_images'],Mosaic::$pdfIma
     Mosaic::setPdfImage($_POST['pdf_images']);
 }
 
-$UUID = rand_str();
-$_SESSION['UUID']=$UUID;
-
 header('Location: '. PageIndex().'MosaicBuilding');
 exit;
