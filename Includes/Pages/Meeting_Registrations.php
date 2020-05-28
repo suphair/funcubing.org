@@ -14,6 +14,12 @@
     }
 
 </style>
+<br><br><br>
+<div class="shadow2">
+<h2>
+        <i class="fas fa-users-cog"></i>
+        Registrations
+              </h2>
 
 <table class="table_new">
     <thead>
@@ -170,8 +176,8 @@
         <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
     </form>
 <?php } ?>
-<hr>
-<div class="form">
+</div>
+<div class="shadow2">
     <table><tr class="no_border"><td>
                 <form method="POST" action="<?= PageIndex() . "Actions/MeetingCompetitorsAdd" ?>">
                     <textarea id="Competitors_" name="Competitors" style="width: 400px; height: 300px; font-size:20px;"></textarea>

@@ -1,3 +1,4 @@
+<div class="shadow" >
 <?php
 DataBaseClass::FromTable("Meeting", "Secret='" . RequestClass::getParam1() . "'");
 $meeting = DataBaseClass::QueryGenerate(false);
@@ -12,12 +13,17 @@ DataBaseClass::Query("Select count(*) count"
 $countDiscipline = DataBaseClass::getRow()['count'];
 ?>
 <h1>
+    <?php if(!$meeting['Meeting_Show']){ ?>
+        <i class="far fa-eye-slash"></i>
+    <?php } ?>
     <span class='flag-icon flag-icon-<?= strtolower($competitor_row['Competitor_Country']) ?>'></span>
-    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>"><?= $meeting['Meeting_Name'] ?></a></nobr>
+    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>"><?= $meeting['Meeting_Name'] ?></a>
+
 </h1>
+<h2>
+    <?= $meeting['Meeting_Details'] ?>
+</h2>
 
-
-<p>    
     <i class="far fa-calendar-alt"></i> 
     <?= date('d F Y', strtotime($meeting['Meeting_Date'])) ?>    
     <?php if ($meeting['Meeting_Website']) { ?>
@@ -36,28 +42,6 @@ $countDiscipline = DataBaseClass::getRow()['count'];
        href='https://www.worldcubeassociation.org/persons/<?= $competitor_row['Competitor_WCAID'] ?>'>
            <?= Short_Name($competitor_row['Competitor_Name']) ?>
     </a>   
-<h2>
-    <?= $meeting['Meeting_Details'] ?>
-</h2>
-</p>
-<?php if ($meeting['Meeting_ShareRegistration'] and isset($_GET['Registration'])) { ?>  
-    <h3 style="color:var(--red)">
-        <i class="fas fa-user-plus"></i>
-        Self-registration
-    </h3>
-<?php } ?>  
-<?php if (isset($_GET['Setting']) and $Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
-    <h3 style="color:var(--red)">
-        <i class="fas fa-cog"></i>
-        Setting
-    </h3>
-<?php } ?>
-<?php if (isset($_GET['Registrations']) and $Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
-    <h3 style="color:var(--red)">
-        <i class="fas fa-users-cog"></i>
-        Registrations
-    </h3>
-<?php } ?>
 
 <?php if ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
     <i class="fas fa-cog"></i>
@@ -75,7 +59,7 @@ $countDiscipline = DataBaseClass::getRow()['count'];
         Self-registration
     </a>
 <?php } ?>
-<hr>
+
 <?php
 if (isset($_GET['Competitor'])) {
     include 'Meeting_Competitor.php';
@@ -113,4 +97,4 @@ if (isset($_GET['Competitor'])) {
     }
 }
 ?>
-
+</div>

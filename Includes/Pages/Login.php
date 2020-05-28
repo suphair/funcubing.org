@@ -19,7 +19,7 @@ if ($Competitor) {
         $OrgMeetings = DataBaseClass::QueryGenerate();
         if (sizeof($MyMeetings) or sizeof($OrgMeetings) or CheckMeetingGrand()) {
             ?>    
-            &#9642; <a href="<?= PageIndex() ?>?Meetings&My">My unofficial competitions</a> 
+            &#9642; <a href="<?= PageIndex() ?>?Meetings&Mine">My unofficial competitions</a> 
         <?php } ?>  
     <?php }
     if ($Section == 'CompetitionGoals') {

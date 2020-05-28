@@ -1,4 +1,5 @@
 <?php
+
 $Competitor= GetCompetitorData();
 if($Competitor){
     CheckPostIsset('WCAID','Secret','Action');
@@ -18,7 +19,7 @@ if($Competitor){
         }
     }
     
-    if($_POST['Action']=='X'){
+    if($_POST['Action']=='Delete'){
         $WCAID= strtoupper(DataBaseClass::Escape($_POST['WCAID']));
         $Secret= DataBaseClass::Escape($_POST['Secret']);
         
@@ -28,6 +29,14 @@ if($Competitor){
             DataBaseClass::Query("Delete from `MeetingOrganizer` where Meeting='".$meeting['ID']."' and WCAID='$WCAID'");
         }
     }
+    
+    DataBaseClass::Query("UPDATE Meeting SET Organizer  =
+        (
+        SELECT GROUP_CONCAT(WCAID)
+        FROM `MeetingOrganizer`
+        WHERE MeetingOrganizer.Meeting = Meeting.ID
+        )");    
+    
 }    
 header('Location: '.$_SERVER['HTTP_REFERER']);
 exit();  

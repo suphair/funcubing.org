@@ -97,24 +97,6 @@ table.inner_border>tbody td:first-child{
     border-left:0px;
 }
 
-td.border-left-solid{
-    border-left:1px solid var(--base_color);
-}
-
-
-td.border-right-solid{
-    border-right:1px solid var(--base_color);
-}
-
-td.border-left-dotted{
-    border-left:1px dotted var(--base_color);
-}
-
-td.border-right-dotted{
-    border-right:1px dotted var(--base_color);
-}
-
-
 table.competition_disciplines{
     margin: 20px auto 0 auto;
 }
@@ -151,8 +133,9 @@ td.result_many_rows{
 }
 
 
-.podium td:first-child{
+.podium{
     color: var(--red);
+    font-weight:bold;
 }
 
 td.competition{
@@ -426,24 +409,12 @@ td.big_flag, td.flag{
 }
 
 
-h1{
+h1,h2,h3{
     padding:0px;
     margin:0px;
-    font-variant: small-caps;
     font-weight: normal;
 }
-h2,h3{
-    padding:0px;
-    margin:0px;
-}
 
-h1 a, h2 a, h3 a{    
-    color:var(--light_blue);
-}
-
-h1 a:hover, h2 a:hover, h3 a:hover{    
-    color: var(--blue);    
-}
 
 h3 img{
     position: relative;
@@ -452,12 +423,13 @@ h3 img{
 
 a{
     text-decoration: none;
-    color:var(--light_blue);
+    color:var(--blue);
+    
 }
 
 a:hover{
     text-decoration: underline;
-    color:var(--blue);
+    color:var(--light_blue);
 }
 
 .line{
@@ -521,18 +493,6 @@ input[type=submit].form_row{
     margin:0px;
     font-size:12px; 
     padding:5px; 
-}
-
-span.podium_1 img{
-    filter: opacity(0.7) drop-shadow(0 0 0 gold);
-}
-
-span.podium_2 img{
-    filter: opacity(0.7) drop-shadow(0 0 0 silver);
-}
-
-span.podium_3 img{
-    filter: opacity(0.7) drop-shadow(0 0 0 brown);
 }
 
 a.competition_future{
@@ -954,6 +914,15 @@ div.shadow{
     border-radius: 10px;
     box-shadow: 0px 0px 5px rgba(17, 31, 135, .3);
 }
+
+div.shadow2{
+    border:1px solid rgba(33, 33, 33);
+    margin:10px;
+    border-radius: 5px;
+     box-shadow: 0px 0px 3px rgba(33, 33, 33, .3);
+}
+
+
 
 div.shadow_inline{
     border:1px solid rgba(33, 33, 33, .3);

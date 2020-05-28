@@ -11,25 +11,13 @@ if (isset($_GET['Competitor']) and is_numeric($_GET['Competitor'])) {
 }
 if ($found) {
     ?>
-    <h2><?= $competitor['MeetingCompetitor_Name'] ?></h2>
-    <br>
-    <h3>
+<br><br><br>
+    <h1><?= $competitor['MeetingCompetitor_Name'] ?></h1>
+    <div class="shadow2" >
+    <h2>
         Competitions
-    </h3>
+    </h2>
     <table class="table_new">
-        <thead>
-            <tr>
-                <td>
-                    <i class="far fa-calendar-alt"></i>
-                    Date
-                </td>
-                <td>
-                    <i class="fas fa-cube"></i>
-                    Competition
-                </td>
-                <td></td>
-            </tr>
-        </thead>
         <tbody>    
             <?php
             $Competitor_IDs = array();
@@ -88,8 +76,9 @@ if ($found) {
         $MeetingDisciplineResultS[$row['MeetingDisciplineList_ID']][] = $row;
     }
     ?>
-    <br>
-    <h3>Results</h3>
+    </div>
+    <div class="shadow2" >
+    <h2>Results</h2>
     <table class="table_new">
         <thead>
             <tr>
@@ -144,3 +133,4 @@ if ($found) {
     <h3><span class="error">Competitor not found</span></h3>
 <?php } ?>
 
+</div>

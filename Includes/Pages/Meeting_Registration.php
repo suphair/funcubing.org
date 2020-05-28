@@ -1,4 +1,10 @@
-
+<br><br><br>
+<div class="shadow2">
+<h2>
+        <i class="fas fa-user-plus"></i>
+        Self-registration
+</h2>
+    <br>
 <?php
 DataBaseClass::FromTable("MeetingCompetitor", "Session='" . session_id() . "'");
 DataBaseClass::Where_current("Meeting=" . $meeting['Meeting_ID']);
@@ -95,8 +101,6 @@ DataBaseClass::Where_current("Round=1");
 DataBaseClass::Join_current("MeetingDisciplineList");
 DataBaseClass::OrderClear("MeetingDisciplineList", "ID");
 ?>
-<div class="wrapper">
-    <div class="form">
         <form method="POST" action="<?= PageIndex() . "Actions/MeetingRegistration" ?>">
             <h3>Select your events {Выберите дисциплины}</h3>
             <script>
@@ -147,10 +151,9 @@ DataBaseClass::OrderClear("MeetingDisciplineList", "ID");
             <input hidden name="Secret" value="<?= $meeting['Meeting_Secret'] ?>">
             <input hidden name="SecretRegistration" value="<?= $_GET['secret'] ?>">
         </form>
-    </div>
-</div>
 <script>
     $('[data-check-event]').change(function () {
         CheckDisabled();
     });
 </script>
+</div>

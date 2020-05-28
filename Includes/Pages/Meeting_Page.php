@@ -22,7 +22,8 @@ foreach ($rows as $row) {
         'Name' => $row['MeetingDisciplineList_Name'],
         'Round' => $row['MeetingDiscipline_Round'],
         'ID' => $row['MeetingDiscipline_ID'],
-        'Format' => $row['MeetingFormat_Format']
+        'Format' => $row['MeetingFormat_Format'],
+        'listId' => $row['MeetingDisciplineList_ID']
     );
 }
 
@@ -49,18 +50,18 @@ foreach ($disciplines as $discipline) {
     }
 }
 ?>
-<h2>
+<br><br><br>
+<h1>
     <a 
         class="<?= !$current_discipline ? 'config' : '' ?>"
         href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>">
-        <i class="fas fa-table"></i>
-    </a>
+        <i title='All events' class="fas fa-table"></i></a>
     <?php foreach ($disciplines as $discipline) { ?>
         <a class="<?= $current_discipline == $discipline['MeetingDiscipline_ID'] ? 'config' : '' ?>"
            title="<?= $discipline['MeetingDisciplineList_Name'] ?> / round <?= $discipline['MeetingDiscipline_Round'] ?>"
            href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Discipline=<?= $discipline['MeetingDiscipline_ID'] ?>"><i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i></a>
        <?php } ?>
-</h2>   
+</h1>   
 <?php $disciplines_special = [] ?>
 <?php foreach ($disciplines as $discipline) { ?>
     <?php
@@ -72,179 +73,183 @@ foreach ($disciplines as $discipline) {
         <?= $discipline['MeetingDiscipline_Name'] ?>
     <?php } ?>
 <?php } ?>  
-<br>
-<?php foreach ($disciplines as $discipline) { ?>
-    <?php if ($current_discipline == $discipline['MeetingDiscipline_ID']) { ?>
-        <h2>
-            <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>
-            <?= $discipline['MeetingDiscipline_Name'] ?>
-            / round <?= $discipline['MeetingDiscipline_Round'] ?>
-        </h2> 
-        <?php if ($discipline['MeetingDiscipline_Comment']) { ?>
-            <p>
-                <i class="far fa-comment"></i>
+<div class="shadow2" >
+    <?php foreach ($disciplines as $discipline) { ?>
+        <?php if ($current_discipline == $discipline['MeetingDiscipline_ID']) {
+            $current = $discipline;
+            ?>
+            <h2>
+                <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>
+        <?= $discipline['MeetingDiscipline_Name'] ?>
+                / round <?= $discipline['MeetingDiscipline_Round'] ?>
+            </h2> 
+                <?php if ($discipline['MeetingDiscipline_Comment']) { ?>
+                <p>
                 <?= $discipline['MeetingDiscipline_Comment'] ?>
-            </p>
+                </p>
+            <?php } ?>
         <?php } ?>
-    <?php } ?>
-<?php } ?>            
+    <?php } ?>            
 
 <?php if (!$current_discipline) { ?>
-    <h2>All events</h2>
-    <table class="table_new">
-        <thead>
-            <tr>
-                <td></td>
-                <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
-                    <td colspan="2" class="table_new_center">
-                        <i class="<?= $DisciplineValue['Image'] ?>"></i>
-                        <?php if ($DisciplineValue['Round'] > 1) { ?>
-                            / <?= $DisciplineValue['Round'] ?>
-                        <?php } ?>
-                    </td>
-                <?php } ?>
-            </tr>
-        </thead>
-    </tbody>
-    <?php
-    $DisciplineCount = array();
-    $DisciplineCountResult = array();
-    foreach ($Competitors as $CompetitorID => $CompetitorName) {
-        ?>
-        <tr>
-            <td>
-                <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1(); ?>/?Competitor=<?= $CompetitorID ?>"><nobr><?= $CompetitorName; ?></nobr></a>
-            </td>
-            <?php
-            foreach ($Disciplines as $DisciplineID => $DisciplineValue) {
-                if (!isset($DisciplineCount[$DisciplineID])) {
-                    $DisciplineCount[$DisciplineID] = 0;
-                }
-                if (!isset($DisciplineCountResult[$DisciplineID])) {
-                    $DisciplineCountResult[$DisciplineID] = 0;
-                }
-                ?>
-                <td align="left" style="border-right: 0px;" class="td_border_left">
-                    <?php if (isset($Results[$CompetitorID][$DisciplineID])) { ?>
-                        <font style="color:<?= $Results[$CompetitorID][$DisciplineID]['Place'] <= 3 ? 'var(--red)' : 'var(--light_gray)' ?>" >
-                        <?= $Results[$CompetitorID][$DisciplineID]['Place']; ?>
-                        </font>
-                    <?php } ?>
-                </td>
-                <?php
-                if (isset($Results[$CompetitorID][$DisciplineID])) {
-                    $DisciplineCount[$DisciplineID] ++;
-                    ?>
-                    <?php
-                    if ($Results[$CompetitorID][$DisciplineID][$DisciplineValue['Format']]) {
-                        $DisciplineCountResult[$DisciplineID] ++;
-                        ;
-                        ?>
-                        <td style="text-align:right; border-left: 0px;">
-                            <?= $Results[$CompetitorID][$DisciplineID][$DisciplineValue['Format']]; ?>
-                        </td>
-                    <?php } else { ?>
-                        <td style="text-align:center; border-left: 0px;">    
-                            &bull;
-                        </td>
-                    <?php } ?>
-                <?php } else { ?>
-                    <td style="border-left: 0px;"></td>
-                <?php } ?>
+        <table class="table_new">
+            <thead>
+                <tr>
+                    <td></td>
+                        <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
+                        <td class="table_new_center" style='vertical-align: bottom'>
+                            <?php
+                            if ($discipline_rounds[$DisciplineValue['listId']] > 1) {
+                                for ($i = 1; $i <= $DisciplineValue['Round']; $i++) {
+                                    ?>
+                                    <font size='1'>
+                                    <i class="far fa-star"></i>
+                                    </font>
             <?php } ?>
-        </tr>
-    <?php } ?>
-    </tbody>
-    <tfoot>
-        <tr>
-            <td>Total  <?= sizeof($Competitors) ?>
-            </td>
-            <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
-                <td colspan='2' align='center'><nobr>
-            <?= $DisciplineCount[$DisciplineID] != $DisciplineCountResult[$DisciplineID] ? ($DisciplineCountResult[$DisciplineID] . " / " . $DisciplineCount[$DisciplineID]) : $DisciplineCount[$DisciplineID] ?>
-        </nobr></td>
-    <?php } ?>
-    </tr>
-    </tfoot>
-    </table>
-    <?php if (!sizeof($Competitors)) { ?>
-        <p>No competitors</p>
-    <?php } ?>
-    <?php if (($Competitor and $Competitor->id == $meeting['Meeting_Competitor']) or CheckMeetingGrand()) { ?>
-        <br><a href="<?= PageIndex() . "Actions/MeetingPrintCompetitor/?Secret=" . RequestClass::getParam1(); ?>">Download certificates</a>  ▪
-        <?php if (sizeof($Competitors)) { ?>
-            <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0">Print competitors cards</a> ▪
-        <?php } ?>        
-        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0&blank">Print blank competitors cards</a>
+        <?php } ?>
+                            <h2>
+                                <a  href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Discipline=<?= $DisciplineID ?>">
+                                    <i class="<?= $DisciplineValue['Image'] ?>"></i>
+                                </a>
+                            </h2>
 
+
+                        </td>
     <?php } ?>
-
-    <?php
-} else {
-
-    DataBaseClass::FromTable("MeetingDiscipline", "ID=" . $current_discipline);
-    DataBaseClass::Join_current("MeetingFormat");
-    $format = DataBaseClass::QueryGenerate(false);
-
-    DataBaseClass::Join("MeetingDiscipline", "MeetingCompetitorDiscipline");
-    DataBaseClass::Join_current("MeetingCompetitor");
-    DataBaseClass::OrderSpecial("coalesce(MCD.Place,999)");
-    DataBaseClass::Order("MeetingCompetitor", "Name");
-    $competitors = DataBaseClass::QueryGenerate();
-    ?>
-    <table class="table_new">
-        <thead>
-            <tr>
-                <td>Place</td>
-                <td>Competitor</td>
-                <?php for ($i = 1; $i <= $format['MeetingFormat_Attempts']; $i++) { ?>
-                    <td class="attempt"><?= $i ?></td>
-                <?php } ?>
-                <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
-                    <td class="attempt">Average</td>
-                <?php } ?>
-                <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
-                    <td class="attempt">Mean</td>
-                <?php } ?>
-                <td  class="attempt">Best</td>
-            <tr>
-        </thead>
-        <tbody>
-            <?php foreach ($competitors as $result) { ?>
-                <tr class="<?= $result['MeetingCompetitorDiscipline_Place'] <= 3 ? 'podium' : '' ?>">
-                    <td align="center">
-                        <font>
-                        <?= $result['MeetingCompetitorDiscipline_Place']; ?>
-                        </font>
+                </tr>
+            </thead>
+            </tbody>
+            <?php
+            $DisciplineCount = [];
+            $DisciplineCountResult = [];
+            foreach ($Competitors as $CompetitorID => $CompetitorName) {
+                ?>
+                <tr>
+                    <td>
+                        <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1(); ?>/?Competitor=<?= $CompetitorID ?>"><nobr><?= $CompetitorName; ?></nobr></a>
                     </td>
-                    <td ><nobr>
-                <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1(); ?>/?Competitor=<?= $result['MeetingCompetitor_ID'] ?>"><?= $result['MeetingCompetitor_Name']; ?></a>
-            </nobr></td>
-        <?php for ($i = 1; $i <= $format['MeetingFormat_Attempts']; $i++) { ?>
-            <td class="<?= $i == $format['MeetingFormat_Attempts'] ? 'border-right-solid' : '' ?> attempt">
-                <?= str_replace("DNS", "", $result['MeetingCompetitorDiscipline_Attempt' . $i]) ?>
-            </td>
+                    <?php
+                    foreach ($Disciplines as $DisciplineID => $DisciplineValue) {
+                        if (!isset($DisciplineCount[$DisciplineID])) {
+                            $DisciplineCount[$DisciplineID] = 0;
+                        }
+                        if (!isset($DisciplineCountResult[$DisciplineID])) {
+                            $DisciplineCountResult[$DisciplineID] = 0;
+                        }
+                        ?>
+                        <td align="center"  style="border-right: 0px;" >
+                            <?php if (isset($Results[$CompetitorID][$DisciplineID])) { ?>
+                                <?php $DisciplineCount[$DisciplineID] ++; ?>
+                                <?php if ($Results[$CompetitorID][$DisciplineID]['Place']) { ?>
+
+                                        <?php $DisciplineCountResult[$DisciplineID] ++; ?>
+                                    <font <?= ($Results[$CompetitorID][$DisciplineID]['Place'] <= 3 and
+                    $discipline_rounds[$DisciplineValue['listId']] == $DisciplineValue['Round']) ? 'class="podium"' : ''
+                    ?> >
+                                    <?= $Results[$CompetitorID][$DisciplineID]['Place']; ?>
+                                    </font>
+                                <?php } else { ?>
+                                    &bull;
+                            <?php } ?>
+                    <?php } ?>
+                        </td>
         <?php } ?>
-        <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
-            <td  class="attempt">
-                <b>
-                    <?= str_replace(["DNF", "-cutoff"], "", $result['MeetingCompetitorDiscipline_Average']) ?>
-                </b>
-            </td>
-        <?php } ?>
-        <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
-            <td  class="attempt">
-                <b>
-                    <?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Mean']) ?>
-                </b>
-            </td>
-        <?php } ?>
-        <td  class="attempt"><?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Best']) ?></td>
-        </tr>
+                </tr>
     <?php } ?>
-    </tbody>
-    </table>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        Total <?= sizeof($Competitors) ?>
+                    </td>
+                    <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
+                        <td align='center' style="vertical-align:bottom;">
+        <?= $DisciplineCount[$DisciplineID] != $DisciplineCountResult[$DisciplineID] ? ($DisciplineCountResult[$DisciplineID] . "<br>" . $DisciplineCount[$DisciplineID]) : $DisciplineCount[$DisciplineID] ?>
+                        </td>
+        <?php } ?>
+                </tr>
+            </tfoot>
+        </table>
+        <?php if (!sizeof($Competitors)) { ?>
+            <p>No competitors</p>
+        <?php } ?>
+        <?php if (($Competitor and $Competitor->id == $meeting['Meeting_Competitor']) or CheckMeetingGrand()) { ?>
+            <br><a href="<?= PageIndex() . "Actions/MeetingPrintCompetitor/?Secret=" . RequestClass::getParam1(); ?>">Download certificates</a>  ▪
+        <?php if (sizeof($Competitors)) { ?>
+                <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0">Print competitors cards</a> ▪
+            <?php } ?>        
+            <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0&blank">Print blank competitors cards</a>
+
+        <?php } ?>
+
+        <?php
+    } else {
+
+        DataBaseClass::FromTable("MeetingDiscipline", "ID=" . $current_discipline);
+        DataBaseClass::Join_current("MeetingFormat");
+        $format = DataBaseClass::QueryGenerate(false);
+
+        DataBaseClass::Join("MeetingDiscipline", "MeetingCompetitorDiscipline");
+        DataBaseClass::Join_current("MeetingCompetitor");
+        DataBaseClass::OrderSpecial("coalesce(MCD.Place,999)");
+        DataBaseClass::Order("MeetingCompetitor", "Name");
+        $competitors = DataBaseClass::QueryGenerate();
+        ?>
+        <table class="table_new">
+            <thead>
+                <tr>
+                    <td>Place</td>
+                    <td>Competitor</td>
+                    <?php for ($i = 1; $i <= $format['MeetingFormat_Attempts']; $i++) { ?>
+                        <td class="attempt"><?= $i ?></td>
+                    <?php } ?>
+                    <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
+                        <td class="attempt">Average</td>
+                    <?php } ?>
+    <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
+                        <td class="attempt">Mean</td>
+    <?php } ?>
+                    <td  class="attempt">Best</td>
+                <tr>
+            </thead>
+            <tbody>
+                    <?php foreach ($competitors as $result) { ?>
+                    <tr>
+                        <td align="center"
+        <?= ($result['MeetingCompetitorDiscipline_Place'] <= 3 and
+        $discipline_rounds[$current['MeetingDisciplineList_ID']] == $current['MeetingDiscipline_Round']) ? 'class="podium"' : ''
+        ?>>
+                <?= $result['MeetingCompetitorDiscipline_Place']; ?> 
+                        </td>
+                        <td ><nobr>
+                    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1(); ?>/?Competitor=<?= $result['MeetingCompetitor_ID'] ?>"><?= $result['MeetingCompetitor_Name']; ?></a>
+                </nobr></td>
+                <?php for ($i = 1; $i <= $format['MeetingFormat_Attempts']; $i++) { ?>
+                    <td class="<?= $i == $format['MeetingFormat_Attempts'] ? 'border-right-solid' : '' ?> attempt">
+            <?= str_replace("DNS", "", $result['MeetingCompetitorDiscipline_Attempt' . $i]) ?>
+                    </td>
+                        <?php } ?>
+        <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
+                    <td  class="attempt">
+                        <b>
+                    <?= str_replace(["DNF", "-cutoff"], "", $result['MeetingCompetitorDiscipline_Average']) ?>
+                        </b>
+                    </td>
+                        <?php } ?>
+        <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
+                    <td  class="attempt">
+                        <b>
+            <?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Mean']) ?>
+                        </b>
+                    </td>
+        <?php } ?>
+                <td  class="attempt"><?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Best']) ?></td>
+                </tr>
+        <?php } ?>
+            </tbody>
+        </table>
     <?php if (!sizeof($competitors)) { ?>
-        <p>No competitors</p>
+            <p>No competitors</p>
     <?php } ?>
 <?php } ?>
+</div>
