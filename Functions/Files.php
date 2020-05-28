@@ -6,3 +6,11 @@ function DeleteFiles($folder){
         }
     } 
 }
+
+function delDir($dir) {
+    $files = array_diff(scandir($dir), ['.','..']);
+    foreach ($files as $file) {
+        (is_dir($dir.'/'.$file)) ? delDir($dir.'/'.$file) : unlink($dir.'/'.$file);
+    }
+    return rmdir($dir);
+}
