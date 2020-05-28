@@ -1,92 +1,94 @@
 <?php
-function sort_by_announced_at($a,$b){
-    return strtotime($a['announced_at'])<strtotime($b['announced_at']);
+
+function sort_by_announced_at($a, $b) {
+    return strtotime($a['announced_at']) < strtotime($b['announced_at']);
 }
 
-$upcomingCountry=[];
+$upcomingCountry = [];
 DataBaseClass::Query("Select * from MailUpcomingCompetitions where Status=1");
-$MailUpcomingCompetitions=DataBaseClass::getRows();
-    
-foreach($MailUpcomingCompetitions as $mailUpcomingCompetition){   
+$MailUpcomingCompetitions = DataBaseClass::getRows();
+
+foreach ($MailUpcomingCompetitions as $mailUpcomingCompetition) {
     echo "<hr>";
     echo $mailUpcomingCompetition['Email'];
-    $results=[];
-    foreach(explode(',',$mailUpcomingCompetition['Country']) as $country){
-        if(!isset($upcomingCountry[$country])){
+    $results = [];
+    foreach (explode(',', $mailUpcomingCompetition['Country']) as $country) {
+        if (!isset($upcomingCountry[$country])) {
             $ch = curl_init();
             echo $country;
-            curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/?country_iso2=$country&sort=start_date&start=".date('Y-m-d'));
+            curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/?country_iso2=$country&sort=start_date&start=" . date('Y-m-d'));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $data = curl_exec($ch);
-            $status=curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $results_country=json_decode($data,true);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $results_country = json_decode($data, true);
             curl_close($ch);
-            if($status!=200){ 
-                $results_country=[];    
+            if ($status != 200) {
+                $results_country = [];
             }
-            $upcomingCountry[$country]=$results_country;
+            $upcomingCountry[$country] = $results_country;
         }
-        $results=array_merge($results,$upcomingCountry[$country]);  
+        $results = array_merge($results, $upcomingCountry[$country]);
     }
-        
-    usort($results,'sort_by_announced_at');
-        
-    $message='';        
-    $announced_at= date("Y-m-d H:i:s",strtotime($mailUpcomingCompetition['announced_at']));
+
+    usort($results, 'sort_by_announced_at');
+
+    $message = '';
+    $announced_at = date("Y-m-d H:i:s", strtotime($mailUpcomingCompetition['announced_at']));
     echo $announced_at;
-    if(is_array($results) and sizeof($results)){
+    if (is_array($results) and sizeof($results)) {
         ob_start();
-        foreach($results as $result)
-        if(strtotime($result['announced_at'])>strtotime($announced_at)){  ?>
-            <p> 
-                <a href="<?= $result['url'] ?>"><?= $result['name'] ?></a> &#9642; 
-                <?= date_range($result['start_date'] , $result['end_date'] )?> &#9642;
-                <?= CountryName($result['country_iso2']) ?>, <?= $result['city'] ?>
-                <br> events:
-                <?php 
-                $events=[];
-                foreach($result['event_ids'] as $event_id){
-                    $events[]=$event_id;
-                } ?>
-                <?= implode(", ",$events); ?>;
-                <br> delegates:
-                <?php 
-                $delegates=[];
-                foreach($result['delegates'] as $delegate){
-                    $delegates[]=short_Name($delegate['name']);
-                } ?>
-                <?= implode(", ",$delegates); ?>;
-                <br> organizers:
-                <?php 
-                $organizers=[];
-                foreach($result['organizers'] as $organizer){
-                    $organizers[]=short_Name($organizer['name']);
-                } ?>
-                <?= implode(", ",$organizers); ?>;
-                <br>
-                announced_at <?= $result['announced_at'] ?>
-            </p>
-        <?php }
-        $message= ob_get_contents();
+        foreach ($results as $result)
+            if (strtotime($result['announced_at']) > strtotime($announced_at)) {
+                ?>
+                <p> 
+                    <a href="<?= $result['url'] ?>"><?= $result['name'] ?></a> &#9642; 
+                    <?= date_range($result['start_date'], $result['end_date']) ?> &#9642;
+                    <?= CountryName($result['country_iso2']) ?>, <?= $result['city'] ?>
+                    <br> events:
+                    <?php
+                    $events = [];
+                    foreach ($result['event_ids'] as $event_id) {
+                        $events[] = $event_id;
+                    }
+                    ?>
+                    <?= implode(", ", $events); ?>;
+                    <br> delegates:
+                    <?php
+                    $delegates = [];
+                    foreach ($result['delegates'] as $delegate) {
+                        $delegates[] = short_Name($delegate['name']);
+                    }
+                    ?>
+                    <?= implode(", ", $delegates); ?>;
+                    <br> organizers:
+                    <?php
+                    $organizers = [];
+                    foreach ($result['organizers'] as $organizer) {
+                        $organizers[] = short_Name($organizer['name']);
+                    }
+                    ?>
+                    <?= implode(", ", $organizers); ?>;
+                    <br>
+                    announced_at <?= $result['announced_at'] ?>
+                </p>
+                <?php
+            }
+        $message = ob_get_contents();
         ob_end_clean();
     }
-    if($message){
-        $subject="FunCubing: New competitions announce";
-        $message.="<hr> Your email: ".$mailUpcomingCompetition['Email']."; Tracked countries: ".CountryNames($mailUpcomingCompetition['Country']);
-        $message.="<br><a href='http://".Pageindex()."MailUpcomingCompetition'>Subscription management</a>";
-        
-        if(strpos($_SERVER['PHP_SELF'],'/'.GetIni('LOCAL','PageBase').'/')!==false){
+    if ($message) {
+        $subject = "FunCubing: New competitions announce";
+        $message .= "<hr> Your email: " . $mailUpcomingCompetition['Email'] . "; Tracked countries: " . CountryNames($mailUpcomingCompetition['Country']);
+        $message .= "<br><a href='http://" . Pageindex() . "MailUpcomingCompetition'>Subscription management</a>";
+
+        if (strpos($_SERVER['PHP_SELF'], '/' . GetIni('LOCAL', 'PageBase') . '/') !== false) {
             echo "<br><b>$subject</b><br>";
             echo $message;
         }
-        
-        if(SendMail($mailUpcomingCompetition['Email'], $subject, $message)===true){
-            DataBaseClass::Query("Update MailUpcomingCompetitions set announced_at=NOW() where ID=".$mailUpcomingCompetition['ID']);
+
+        if (SendMail($mailUpcomingCompetition['Email'], $subject, $message) === true) {
+            DataBaseClass::Query("Update MailUpcomingCompetitions set announced_at=NOW() where ID=" . $mailUpcomingCompetition['ID']);
         }
-        
-        
-        
     }
-    
 }
 exit();

@@ -75,28 +75,29 @@ foreach ($disciplines as $discipline) {
 <?php } ?>  
 <div class="shadow2" >
     <?php foreach ($disciplines as $discipline) { ?>
-        <?php if ($current_discipline == $discipline['MeetingDiscipline_ID']) {
+        <?php
+        if ($current_discipline == $discipline['MeetingDiscipline_ID']) {
             $current = $discipline;
             ?>
             <h2>
                 <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>
-        <?= $discipline['MeetingDiscipline_Name'] ?>
+                <?= $discipline['MeetingDiscipline_Name'] ?>
                 / round <?= $discipline['MeetingDiscipline_Round'] ?>
             </h2> 
-                <?php if ($discipline['MeetingDiscipline_Comment']) { ?>
+            <?php if ($discipline['MeetingDiscipline_Comment']) { ?>
                 <p>
-                <?= $discipline['MeetingDiscipline_Comment'] ?>
+                    <?= $discipline['MeetingDiscipline_Comment'] ?>
                 </p>
             <?php } ?>
         <?php } ?>
     <?php } ?>            
 
-<?php if (!$current_discipline) { ?>
+    <?php if (!$current_discipline) { ?>
         <table class="table_new">
             <thead>
                 <tr>
                     <td></td>
-                        <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
+                    <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
                         <td class="table_new_center" style='vertical-align: bottom'>
                             <?php
                             if ($discipline_rounds[$DisciplineValue['listId']] > 1) {
@@ -105,8 +106,8 @@ foreach ($disciplines as $discipline) {
                                     <font size='1'>
                                     <i class="far fa-star"></i>
                                     </font>
-            <?php } ?>
-        <?php } ?>
+                                <?php } ?>
+                            <?php } ?>
                             <h2>
                                 <a  href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Discipline=<?= $DisciplineID ?>">
                                     <i class="<?= $DisciplineValue['Image'] ?>"></i>
@@ -115,7 +116,7 @@ foreach ($disciplines as $discipline) {
 
 
                         </td>
-    <?php } ?>
+                    <?php } ?>
                 </tr>
             </thead>
             </tbody>
@@ -142,20 +143,21 @@ foreach ($disciplines as $discipline) {
                                 <?php $DisciplineCount[$DisciplineID] ++; ?>
                                 <?php if ($Results[$CompetitorID][$DisciplineID]['Place']) { ?>
 
-                                        <?php $DisciplineCountResult[$DisciplineID] ++; ?>
-                                    <font <?= ($Results[$CompetitorID][$DisciplineID]['Place'] <= 3 and
-                    $discipline_rounds[$DisciplineValue['listId']] == $DisciplineValue['Round']) ? 'class="podium"' : ''
-                    ?> >
-                                    <?= $Results[$CompetitorID][$DisciplineID]['Place']; ?>
+                                    <?php $DisciplineCountResult[$DisciplineID] ++; ?>
+                                    <font <?=
+                                    ($Results[$CompetitorID][$DisciplineID]['Place'] <= 3 and
+                                    $discipline_rounds[$DisciplineValue['listId']] == $DisciplineValue['Round']) ? 'class="podium"' : ''
+                                    ?> >
+                                        <?= $Results[$CompetitorID][$DisciplineID]['Place']; ?>
                                     </font>
                                 <?php } else { ?>
                                     &bull;
+                                <?php } ?>
                             <?php } ?>
-                    <?php } ?>
                         </td>
-        <?php } ?>
+                    <?php } ?>
                 </tr>
-    <?php } ?>
+            <?php } ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -164,9 +166,9 @@ foreach ($disciplines as $discipline) {
                     </td>
                     <?php foreach ($Disciplines as $DisciplineID => $DisciplineValue) { ?>
                         <td align='center' style="vertical-align:bottom;">
-        <?= $DisciplineCount[$DisciplineID] != $DisciplineCountResult[$DisciplineID] ? ($DisciplineCountResult[$DisciplineID] . "<br>" . $DisciplineCount[$DisciplineID]) : $DisciplineCount[$DisciplineID] ?>
+                            <?= $DisciplineCount[$DisciplineID] != $DisciplineCountResult[$DisciplineID] ? ($DisciplineCountResult[$DisciplineID] . "<br>" . $DisciplineCount[$DisciplineID]) : $DisciplineCount[$DisciplineID] ?>
                         </td>
-        <?php } ?>
+                    <?php } ?>
                 </tr>
             </tfoot>
         </table>
@@ -175,7 +177,7 @@ foreach ($disciplines as $discipline) {
         <?php } ?>
         <?php if (($Competitor and $Competitor->id == $meeting['Meeting_Competitor']) or CheckMeetingGrand()) { ?>
             <br><a href="<?= PageIndex() . "Actions/MeetingPrintCompetitor/?Secret=" . RequestClass::getParam1(); ?>">Download certificates</a>  ▪
-        <?php if (sizeof($Competitors)) { ?>
+            <?php if (sizeof($Competitors)) { ?>
                 <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0">Print competitors cards</a> ▪
             <?php } ?>        
             <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0&blank">Print blank competitors cards</a>
@@ -206,50 +208,51 @@ foreach ($disciplines as $discipline) {
                     <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
                         <td class="attempt">Average</td>
                     <?php } ?>
-    <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
+                    <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
                         <td class="attempt">Mean</td>
-    <?php } ?>
+                    <?php } ?>
                     <td  class="attempt">Best</td>
                 <tr>
             </thead>
             <tbody>
-                    <?php foreach ($competitors as $result) { ?>
+                <?php foreach ($competitors as $result) { ?>
                     <tr>
                         <td align="center"
-        <?= ($result['MeetingCompetitorDiscipline_Place'] <= 3 and
-        $discipline_rounds[$current['MeetingDisciplineList_ID']] == $current['MeetingDiscipline_Round']) ? 'class="podium"' : ''
-        ?>>
-                <?= $result['MeetingCompetitorDiscipline_Place']; ?> 
+                        <?=
+                        ($result['MeetingCompetitorDiscipline_Place'] <= 3 and
+                        $discipline_rounds[$current['MeetingDisciplineList_ID']] == $current['MeetingDiscipline_Round']) ? 'class="podium"' : ''
+                        ?>>
+                                <?= $result['MeetingCompetitorDiscipline_Place']; ?> 
                         </td>
                         <td ><nobr>
                     <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1(); ?>/?Competitor=<?= $result['MeetingCompetitor_ID'] ?>"><?= $result['MeetingCompetitor_Name']; ?></a>
                 </nobr></td>
                 <?php for ($i = 1; $i <= $format['MeetingFormat_Attempts']; $i++) { ?>
                     <td class="<?= $i == $format['MeetingFormat_Attempts'] ? 'border-right-solid' : '' ?> attempt">
-            <?= str_replace("DNS", "", $result['MeetingCompetitorDiscipline_Attempt' . $i]) ?>
+                        <?= str_replace("DNS", "", $result['MeetingCompetitorDiscipline_Attempt' . $i]) ?>
                     </td>
-                        <?php } ?>
-        <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
+                <?php } ?>
+                <?php if ($format['MeetingFormat_Format'] == 'Average') { ?>
                     <td  class="attempt">
                         <b>
-                    <?= str_replace(["DNF", "-cutoff"], "", $result['MeetingCompetitorDiscipline_Average']) ?>
+                            <?= str_replace(["DNF", "-cutoff"], "", $result['MeetingCompetitorDiscipline_Average']) ?>
                         </b>
                     </td>
-                        <?php } ?>
-        <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
+                <?php } ?>
+                <?php if ($format['MeetingFormat_Format'] == 'Mean') { ?>
                     <td  class="attempt">
                         <b>
-            <?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Mean']) ?>
+                            <?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Mean']) ?>
                         </b>
                     </td>
-        <?php } ?>
+                <?php } ?>
                 <td  class="attempt"><?= str_replace("DNF", "", $result['MeetingCompetitorDiscipline_Best']) ?></td>
                 </tr>
-        <?php } ?>
+            <?php } ?>
             </tbody>
         </table>
-    <?php if (!sizeof($competitors)) { ?>
+        <?php if (!sizeof($competitors)) { ?>
             <p>No competitors</p>
+        <?php } ?>
     <?php } ?>
-<?php } ?>
 </div>

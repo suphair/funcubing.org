@@ -16,166 +16,166 @@
 </style>
 <br><br><br>
 <div class="shadow2">
-<h2>
+    <h2>
         <i class="fas fa-users-cog"></i>
         Registrations
-              </h2>
+    </h2>
 
-<table class="table_new">
-    <thead>
-        <tr>
-            <td width=60px></td>
-            <td>#</td>
-            <td>Competitor</td>
-            <?php
-            DataBaseClass::FromTable("MeetingDiscipline", "Meeting=" . $meeting['Meeting_ID']);
-            DataBaseClass::Where_current("Round=1");
-            DataBaseClass::Join_current("MeetingDisciplineList");
-            DataBaseClass::OrderClear("MeetingDisciplineList", "ID");
-            $disciplines = DataBaseClass::QueryGenerate();
-            $disciplines_code = array();
-            foreach ($disciplines as $discipline) {
-                $disciplines_code[$discipline['MeetingDisciplineList_Name']] = $discipline['MeetingDisciplineList_Code'];
-            }
-            DataBaseClass::Join("MeetingDiscipline", "MeetingCompetitorDiscipline");
-            DataBaseClass::Join_current("MeetingCompetitor");
-            $registrations = array();
-            foreach (DataBaseClass::QueryGenerate() as $r) {
-                if (!isset($registrations[$r['MeetingCompetitor_ID']]['Delete'])) {
-                    $registrations[$r['MeetingCompetitor_ID']]['Delete'] = 0;
-                }
-                $registrations[$r['MeetingCompetitor_ID']][$r['MeetingDisciplineList_ID']] = array('Place' => $r['MeetingCompetitorDiscipline_Place']);
-                if ($r['MeetingCompetitorDiscipline_Place']) {
-                    $registrations[$r['MeetingCompetitor_ID']]['Delete'] = 1;
-                }
-            }
-            foreach ($disciplines as $discipline) {
-                ?>
-                <td>
-                    <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>    
-                </td>
-            <?php } ?>    
-            <td width="20px" >ALL</td>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        DataBaseClass::FromTable("MeetingCompetitor", "Meeting=" . $meeting['Meeting_ID']);
-        DataBaseClass::OrderClear("MeetingCompetitor", "Name");
-        $registration_rows = DataBaseClass::QueryGenerate();
-        $disciline_count = array();
-        foreach ($registration_rows as $r => $row) {
-            ?>
-            <tr id="CompetitorShow_<?= $row['MeetingCompetitor_ID'] ?>" class="CompetitorShow"
-                onclick="
-                        $('.CompetitorEdit').hide();
-                        $('.CompetitorShow').show();
-                        $('#CompetitorEdit_<?= $row['MeetingCompetitor_ID'] ?>').show();
-                        $('#CompetitorShow_<?= $row['MeetingCompetitor_ID'] ?>').hide();"
-                style="border-bottom:1px blue dotted; padding-bottom:0px;">
-                <td style="width:30px"/>
-                <td><?= $r + 1 ?></td>
-                <td style="width:250px">
-                    <?= $row['MeetingCompetitor_Name'] ?>
-                </td>
+    <table class="table_new">
+        <thead>
+            <tr>
+                <td width=60px></td>
+                <td>#</td>
+                <td>Competitor</td>
                 <?php
+                DataBaseClass::FromTable("MeetingDiscipline", "Meeting=" . $meeting['Meeting_ID']);
+                DataBaseClass::Where_current("Round=1");
+                DataBaseClass::Join_current("MeetingDisciplineList");
+                DataBaseClass::OrderClear("MeetingDisciplineList", "ID");
+                $disciplines = DataBaseClass::QueryGenerate();
+                $disciplines_code = array();
                 foreach ($disciplines as $discipline) {
-                    if (!isset($disciline_count[$discipline['MeetingDisciplineList_ID']])) {
-                        $disciline_count[$discipline['MeetingDisciplineList_ID']] = 0;
+                    $disciplines_code[$discipline['MeetingDisciplineList_Name']] = $discipline['MeetingDisciplineList_Code'];
+                }
+                DataBaseClass::Join("MeetingDiscipline", "MeetingCompetitorDiscipline");
+                DataBaseClass::Join_current("MeetingCompetitor");
+                $registrations = array();
+                foreach (DataBaseClass::QueryGenerate() as $r) {
+                    if (!isset($registrations[$r['MeetingCompetitor_ID']]['Delete'])) {
+                        $registrations[$r['MeetingCompetitor_ID']]['Delete'] = 0;
                     }
+                    $registrations[$r['MeetingCompetitor_ID']][$r['MeetingDisciplineList_ID']] = array('Place' => $r['MeetingCompetitorDiscipline_Place']);
+                    if ($r['MeetingCompetitorDiscipline_Place']) {
+                        $registrations[$r['MeetingCompetitor_ID']]['Delete'] = 1;
+                    }
+                }
+                foreach ($disciplines as $discipline) {
                     ?>
-                    <td align="center">
-                        <?php
-                        if (isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']])) {
-                            $disciline_count[$discipline['MeetingDisciplineList_ID']] ++;
-                            ?>
-                            <?php if ($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]['Place']) { ?>
-                                +
-                            <?php } else { ?>
-                                &bull;
-                            <?php } ?>
-                    <?php } ?>
-                    </td>    
-    <?php } ?>
+                    <td>
+                        <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>    
+                    </td>
+                <?php } ?>    
+                <td width="20px" >ALL</td>
             </tr>
-            <tr hidden class="CompetitorEdit" id="CompetitorEdit_<?= $row['MeetingCompetitor_ID'] ?>">
-                <td style="vertical-align: middle;" >
-    <?php if (!isset($registrations[$row['MeetingCompetitor_ID']]['Delete']) or ! $registrations[$row['MeetingCompetitor_ID']]['Delete']) { ?>
-                        <form action="<?= PageIndex() . "Actions/MeetingCompetitorDelete" ?>" method="post"
-                              onsubmit="return confirm('Delete competitor [<?= $row['MeetingCompetitor_Name'] ?>]?')">   
-                            <input style="color:red; background-color:white; margin:0px; padding:0px 3px; border:1px solid red;" type="submit" value="Delete">
-                            <input type="hidden" name="Competitor" value="<?= $row['MeetingCompetitor_ID'] ?>">
-                            <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
-                        </form>
-    <?php } ?>
-                </td>
-                <td><?= $r + 1 ?></td>
-        <form action="<?= PageIndex() . "Actions/MeetingCompetitorChange" ?>" method="post">
-            <td><nobr>   
-                <input style="font-size:14px" name="Name" value="<?= $row['MeetingCompetitor_Name'] ?>">
-                <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
-                <input type="hidden" name="Competitor" value="<?= $row['MeetingCompetitor_ID'] ?>">
-                <input style="color:green; background-color:white; margin:0px; padding:0px 3px; border:1px solid green;" type="submit" value="Save">
-            </nobr></td>
+        </thead>
+        <tbody>
             <?php
-            $checkedALL = true;
-            foreach ($disciplines as $discipline) {
+            DataBaseClass::FromTable("MeetingCompetitor", "Meeting=" . $meeting['Meeting_ID']);
+            DataBaseClass::OrderClear("MeetingCompetitor", "Name");
+            $registration_rows = DataBaseClass::QueryGenerate();
+            $disciline_count = array();
+            foreach ($registration_rows as $r => $row) {
                 ?>
-                <td align="center" style="vertical-align: middle;" >
-                    <input type="hidden" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" value="off">
-                    <?php if (isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]) and $registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]['Place']) { ?>
-                        <input type="checkbox" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" disabled checked>
-                        <?php
-                    } else {
-                        if (!isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']])) {
-                            $checkedALL = false;
+                <tr id="CompetitorShow_<?= $row['MeetingCompetitor_ID'] ?>" class="CompetitorShow"
+                    onclick="
+                            $('.CompetitorEdit').hide();
+                            $('.CompetitorShow').show();
+                            $('#CompetitorEdit_<?= $row['MeetingCompetitor_ID'] ?>').show();
+                            $('#CompetitorShow_<?= $row['MeetingCompetitor_ID'] ?>').hide();"
+                    style="border-bottom:1px blue dotted; padding-bottom:0px;">
+                    <td style="width:30px"/>
+                    <td><?= $r + 1 ?></td>
+                    <td style="width:250px">
+                        <?= $row['MeetingCompetitor_Name'] ?>
+                    </td>
+                    <?php
+                    foreach ($disciplines as $discipline) {
+                        if (!isset($disciline_count[$discipline['MeetingDisciplineList_ID']])) {
+                            $disciline_count[$discipline['MeetingDisciplineList_ID']] = 0;
                         }
                         ?>
-                        <input class="checkboxFor<?= $row['MeetingCompetitor_ID'] ?>" type="checkbox" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" <?= isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]) ? 'checked' : '' ?>>
+                        <td align="center">
+                            <?php
+                            if (isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']])) {
+                                $disciline_count[$discipline['MeetingDisciplineList_ID']] ++;
+                                ?>
+                                <?php if ($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]['Place']) { ?>
+                                    +
+                                <?php } else { ?>
+                                    &bull;
+                                <?php } ?>
+                            <?php } ?>
+                        </td>    
+                    <?php } ?>
+                </tr>
+                <tr hidden class="CompetitorEdit" id="CompetitorEdit_<?= $row['MeetingCompetitor_ID'] ?>">
+                    <td style="vertical-align: middle;" >
+                        <?php if (!isset($registrations[$row['MeetingCompetitor_ID']]['Delete']) or ! $registrations[$row['MeetingCompetitor_ID']]['Delete']) { ?>
+                            <form action="<?= PageIndex() . "Actions/MeetingCompetitorDelete" ?>" method="post"
+                                  onsubmit="return confirm('Delete competitor [<?= $row['MeetingCompetitor_Name'] ?>]?')">   
+                                <input style="color:red; background-color:white; margin:0px; padding:0px 3px; border:1px solid red;" type="submit" value="Delete">
+                                <input type="hidden" name="Competitor" value="<?= $row['MeetingCompetitor_ID'] ?>">
+                                <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
+                            </form>
+                        <?php } ?>
+                    </td>
+                    <td><?= $r + 1 ?></td>
+            <form action="<?= PageIndex() . "Actions/MeetingCompetitorChange" ?>" method="post">
+                <td><nobr>   
+                    <input style="font-size:14px" name="Name" value="<?= $row['MeetingCompetitor_Name'] ?>">
+                    <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
+                    <input type="hidden" name="Competitor" value="<?= $row['MeetingCompetitor_ID'] ?>">
+                    <input style="color:green; background-color:white; margin:0px; padding:0px 3px; border:1px solid green;" type="submit" value="Save">
+                </nobr></td>
+                <?php
+                $checkedALL = true;
+                foreach ($disciplines as $discipline) {
+                    ?>
+                    <td align="center" style="vertical-align: middle;" >
+                        <input type="hidden" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" value="off">
+                        <?php if (isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]) and $registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]['Place']) { ?>
+                            <input type="checkbox" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" disabled checked>
+                            <?php
+                        } else {
+                            if (!isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']])) {
+                                $checkedALL = false;
+                            }
+                            ?>
+                            <input class="checkboxFor<?= $row['MeetingCompetitor_ID'] ?>" type="checkbox" name="Registration[<?= $discipline['MeetingDiscipline_ID'] ?>]" <?= isset($registrations[$row['MeetingCompetitor_ID']][$discipline['MeetingDisciplineList_ID']]) ? 'checked' : '' ?>>
+                        <?php } ?>
+                    </td>    
                 <?php } ?>
-                </td>    
+                <td align="center" style="vertical-align: middle;">
+                    <input type="checkbox" <?= $checkedALL ? 'checked' : '' ?> 
+                           onclick="
+                                   if ($(this).is(':checked')) {
+                                       $('.checkboxFor<?= $row['MeetingCompetitor_ID'] ?>').attr('checked', true);
+                                   } else {
+                                       $('.checkboxFor<?= $row['MeetingCompetitor_ID'] ?>').attr('checked', false);
+                                   }">
+                </td>
+            </form>
+            </tr>
+        <?php } ?>
+        </tbody>
+        <tfoot>
+            <tr >
+                <td/><td/><td/>
+                <?php foreach ($disciplines as $discipline) { ?>
+                    <td>
+                        <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>
+                    </td>
+                <?php } ?>    
+            </tr> 
+            <tr>
+                <td/><td/><td>Total</td>
+                <?php foreach ($disciplines as $discipline) { ?>
+                    <td align="center"><?= isset($disciline_count[$discipline['MeetingDisciplineList_ID']]) ? $disciline_count[$discipline['MeetingDisciplineList_ID']] : '0' ?></td>
+                <?php } ?>
+            </tr>
+        </tfoot>
+    </table>
+    <?php if (sizeof($registration_rows)) { ?>    
+        Click on row for edit competitor/registration
     <?php } ?>
-            <td align="center" style="vertical-align: middle;">
-                <input type="checkbox" <?= $checkedALL ? 'checked' : '' ?> 
-                       onclick="
-                               if ($(this).is(':checked')) {
-                                   $('.checkboxFor<?= $row['MeetingCompetitor_ID'] ?>').attr('checked', true);
-                               } else {
-                                   $('.checkboxFor<?= $row['MeetingCompetitor_ID'] ?>').attr('checked', false);
-                               }">
-            </td>
+    <?php if (sizeof($registration_rows) and ( $meeting['Meeting_Competitor'] == $Competitor->id or CheckMeetingGrand())) { ?>    
+        <form action="<?= PageIndex() . "Actions/MeetingCompetitorsDelete" ?>" method="post"
+              onsubmit="return confirm('Delete all competitors?')">   
+            <input style="color:red; background-color:white;  border:1px solid red;" 
+                   type="submit" value="Delete all competitors">
+            <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
         </form>
-    </tr>
-<?php } ?>
-</tbody>
-<tfoot>
-    <tr >
-        <td/><td/><td/>
-<?php foreach ($disciplines as $discipline) { ?>
-            <td>
-                <i class="<?= $discipline['MeetingDisciplineList_Image'] ?>"></i>
-            </td>
-<?php } ?>    
-    </tr> 
-    <tr>
-        <td/><td/><td>Total</td>
-        <?php foreach ($disciplines as $discipline) { ?>
-            <td align="center"><?= isset($disciline_count[$discipline['MeetingDisciplineList_ID']]) ? $disciline_count[$discipline['MeetingDisciplineList_ID']] : '0' ?></td>
-<?php } ?>
-    </tr>
-</tfoot>
-</table>
-<?php if (sizeof($registration_rows)) { ?>    
-    Click on row for edit competitor/registration
-<?php } ?>
-<?php if (sizeof($registration_rows) and ( $meeting['Meeting_Competitor'] == $Competitor->id or CheckMeetingGrand())) { ?>    
-    <form action="<?= PageIndex() . "Actions/MeetingCompetitorsDelete" ?>" method="post"
-          onsubmit="return confirm('Delete all competitors?')">   
-        <input style="color:red; background-color:white;  border:1px solid red;" 
-               type="submit" value="Delete all competitors">
-        <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
-    </form>
-<?php } ?>
+    <?php } ?>
 </div>
 <div class="shadow2">
     <table><tr class="no_border"><td>
@@ -201,7 +201,8 @@
                           <br>
                           <font style='color:rgb(0,182,67)'>▪</font> You can add competitors in several parts
                           ">Instruction</span></h3><br>
-                    <?php foreach ($disciplines_code as $name => $code)
+                    <?php
+                    foreach ($disciplines_code as $name => $code)
                         if ($code) {
                             ?>
                         <p class="MeetingRegistationDiscipline" onclick="
@@ -215,11 +216,11 @@
                                 el.focus();
                                 el[0].setSelectionRange(s + code.length, s + code.length);
                            ">
-                            <?= $code ?>
+                               <?= $code ?>
                             <img width="20px" src="<?= PageIndex() . "Image/MeetingImage/" . $name ?>.png">
-                        <?= $name ?>
+                            <?= $name ?>
                         </p> 
-    <?php } ?>
+                    <?php } ?>
             </td>
         </tr>
     </table>
@@ -252,7 +253,7 @@ if ($selectComp) {
                 </tr>
             </thead>
             <tbody>
-                        <?php foreach ($Competitors as $competitorName => $competitions) { ?>
+                <?php foreach ($Competitors as $competitorName => $competitions) { ?>
                     <tr >
                         <td>
                             <?= $competitorName ?>
@@ -262,10 +263,10 @@ if ($selectComp) {
                                 +
                             <?php } else { ?>
                                 <input name="Competitors[<?= $CompetitorsID[$competitorName] ?>]" type='checkbox'>
-                    <?php } ?>    
+                            <?php } ?>    
                         </td>
                     </tr>
-    <?php } ?>
+                <?php } ?>
             </tbody>
         </table>
         <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">

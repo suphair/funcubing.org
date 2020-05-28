@@ -18,9 +18,9 @@ function CommandDeleter() {
 }
 
 function competitorActual($wcaid, $wid, $name, $country) {
-    
-    if($wcaid){
-       DataBaseClass::FromTable("Competitor", "WCAID='$wcaid'");
+
+    if ($wcaid) {
+        DataBaseClass::FromTable("Competitor", "WCAID='$wcaid'");
         DataBaseClass::QueryGenerate();
         if (DataBaseClass::rowsCount() == 1) {
             DataBaseClass::Query("Update Competitor set Name='$name', WID=$wid,Country='$country' where WCAID='$wcaid'");
@@ -28,22 +28,21 @@ function competitorActual($wcaid, $wid, $name, $country) {
             DataBaseClass::Query("Insert Into Competitor (WCAID,WID,Country,Name) values ('$wcaid',$wid,'$country','$name')");
         }
     }
-    
-    if($wid){
+
+    if ($wid) {
         DataBaseClass::FromTable("Competitor", "WID='$wid'");
         DataBaseClass::QueryGenerate();
         if (DataBaseClass::rowsCount() == 1) {
             DataBaseClass::Query("Update Competitor set Name='$name', WCAID='$wcaid',Country='$country' where WID='$wid'");
         } else {
             DataBaseClass::Query("Insert Into Competitor (WCAID,WID,Country,Name) values ('$wcaid',$wid,'$country','$name')");
-        }  
+        }
     }
-    
+
     Competitors_RemoveDuplicates();
-    
 }
 
-function Competitors_RemoveDuplicates(){
+function Competitors_RemoveDuplicates() {
     DataBaseClass::Query("
         select count(*),WID from Competitor
         where WID is not null
@@ -51,7 +50,7 @@ function Competitors_RemoveDuplicates(){
         having count(*)>1
     ");
 
-    foreach(DataBaseClass::getRows() as $Double){
+    foreach (DataBaseClass::getRows() as $Double) {
         $WID = $Double['WID'];
         DataBaseClass::Query("
             select ID from Competitor
@@ -60,13 +59,12 @@ function Competitors_RemoveDuplicates(){
         ");
         $Competitors = DataBaseClass::getRows();
 
-        $ID=$Competitors[0]['ID']; 
-        foreach($Competitors as $Competitor){
-            if($ID!=$Competitor['ID']){
-                DataBaseClass::Query("Update CommandCompetitor set Competitor=$ID where Competitor=".$Competitor['ID']);
-                DataBaseClass::Query("Delete from Competitor where ID=".$Competitor['ID']);
+        $ID = $Competitors[0]['ID'];
+        foreach ($Competitors as $Competitor) {
+            if ($ID != $Competitor['ID']) {
+                DataBaseClass::Query("Update CommandCompetitor set Competitor=$ID where Competitor=" . $Competitor['ID']);
+                DataBaseClass::Query("Delete from Competitor where ID=" . $Competitor['ID']);
             }
-
         }
     }
 }

@@ -16,18 +16,18 @@
         Name 
         <input required type="text" name="Name" value="<?= $meeting['Meeting_Name'] ?>" />
         <p>
-        <input <?= $meeting['Meeting_Show']?'checked':'' ?> type="radio" name="Show" value="1">
-        <i class="fas fa-eye"></i>
-        <b>Public</b>
-        </input> 
-        : displayed in the competition list
+            <input <?= $meeting['Meeting_Show'] ? 'checked' : '' ?> type="radio" name="Show" value="1">
+            <i class="fas fa-eye"></i>
+            <b>Public</b>
+            </input> 
+            : displayed in the competition list
         </p>
         <p>
-        <input <?= !$meeting['Meeting_Show']?'checked':'' ?> type="radio" name="Show" value="0">
-        <i class="far fa-eye-slash"></i>
-        <b>Private</b>
-        </input>
-        : сompetitions are only visible via the link (for your testing or fun)
+            <input <?= !$meeting['Meeting_Show'] ? 'checked' : '' ?> type="radio" name="Show" value="0">
+            <i class="far fa-eye-slash"></i>
+            <b>Private</b>
+            </input>
+            : сompetitions are only visible via the link (for your testing or fun)
         </p>
         Details 
         <input type="text" name="Details" value="<?= $meeting['Meeting_Details'] ?>" />
@@ -40,10 +40,10 @@
         <br>
         <input type="checkbox" <?= $meeting['Meeting_SecretRegistration'] ? 'checked' : ''; ?> name="Registraton">
         <i class="fas fa-user-plus"></i> Open self-registration (competitors can register themselves)
-              <?php
-              if ($meeting['Meeting_SecretRegistration']) {
-                  $link = PageIndex() . 'Meetings/' . $meeting['Meeting_Secret'] . '/?Registration&secret=' . $meeting['Meeting_SecretRegistration'];
-                  ?>
+        <?php
+        if ($meeting['Meeting_SecretRegistration']) {
+            $link = PageIndex() . 'Meetings/' . $meeting['Meeting_Secret'] . '/?Registration&secret=' . $meeting['Meeting_SecretRegistration'];
+            ?>
             <br>      
             <a target='_blank' href="<?= $link ?>">link for self-registration</a>
         <?php } ?>

@@ -1,65 +1,65 @@
-    <div class="shadow2" >
-        <?php $Competitor = GetCompetitorData(); ?>
-        <?php if (!$Competitor) { ?>    
-            <?php $_SESSION['Refer'] = $_SERVER['REQUEST_URI']; ?>    
+<div class="shadow2" >
+    <?php $Competitor = GetCompetitorData(); ?>
+    <?php if (!$Competitor) { ?>    
+        <?php $_SESSION['Refer'] = $_SERVER['REQUEST_URI']; ?>    
         <h3>
             <i class="error far fa-hand-paper"></i> 
             To create unofficial competition you need to sign in with WCA.
         </h3>
-        <?php } else { ?>
-            <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-            <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-            <script>
-                $(function () {
-                    $("#datepicker").datepicker({dateFormat: "dd.mm.yy"});
-                });
-            </script>
+    <?php } else { ?>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                $("#datepicker").datepicker({dateFormat: "dd.mm.yy"});
+            });
+        </script>
 
 
-            <form method="POST" action="<?= PageIndex() . "Actions/MeetingCreate" ?>">
-                <b>Create unofficial competition</b> 
-                <input required placeholder="RamenskoeMeeting #1" type="text" name="Name" value="" />
+        <form method="POST" action="<?= PageIndex() . "Actions/MeetingCreate" ?>">
+            <b>Create unofficial competition</b> 
+            <input required placeholder="RamenskoeMeeting #1" type="text" name="Name" value="" />
 
-                <input style="width:140px" placeholder="Select date" required type="text" id="datepicker" name="Date">
+            <input style="width:140px" placeholder="Select date" required type="text" id="datepicker" name="Date">
 
-                <button>
-                    <i class="fas fa-plus-circle"></i> 
-                    Create
-                </button>
-            </form>
-<i class="fas fa-info-circle"></i> Competitions is created privately.
-You can make them public later in the settings.
-Or leave them hidden for your testing or fun.
-        <?php } ?>
-    </div>
+            <button>
+                <i class="fas fa-plus-circle"></i> 
+                Create
+            </button>
+        </form>
+        <i class="fas fa-info-circle"></i> Competitions is created privately.
+        You can make them public later in the settings.
+        Or leave them hidden for your testing or fun.
+    <?php } ?>
+</div>
 <div class="shadow" >
-<?php $mine= ($Competitor and isset($_GET['Mine']));?>
+    <?php $mine = ($Competitor and isset($_GET['Mine'])); ?>
     <h2>
-        <?php if($mine){ ?>
+        <?php if ($mine) { ?>
             My Unofficial Competitions
         <?php } else { ?>
             Public Unofficial Competitions
         <?php } ?>
     </h2>
-    
-    <?php if($mine){ ?>
-    <p>
-        <i class="far fa-eye"></i>
-        <a href="<?= PageIndex() ?>?Meetings">
-            Show all
-        </a>
-    </p>
-    <?php }elseif($Competitor) {?>
-    <p>
+
+    <?php if ($mine) { ?>
+        <p>
+            <i class="far fa-eye"></i>
+            <a href="<?= PageIndex() ?>?Meetings">
+                Show all
+            </a>
+        </p>
+    <?php } elseif ($Competitor) { ?>
+        <p>
             <i class="fas fa-crown"></i>
-        <a href="<?= PageIndex() ?>?Meetings&Mine">
-        
+            <a href="<?= PageIndex() ?>?Meetings&Mine">
+
                 Show only mine
-        </a>
-    </p>
+            </a>
+        </p>
     <?php } ?>
-    
-    
+
+
     <?php
     $sql = "SELECT 
         Meeting.Website Meeting_Website,
@@ -77,7 +77,7 @@ Or leave them hidden for your testing or fun.
     FROM Meeting
     JOIN Competitor on Competitor.WID = Meeting.Competitor 
     ";
-    if($mine){
+    if ($mine) {
         $sql .= "
         WHERE Meeting.Competitor = {$Competitor->id}
             OR '{$Competitor->wca_id}' IN 
@@ -86,8 +86,7 @@ Or leave them hidden for your testing or fun.
                 FROM MeetingOrganizer
                 WHERE MeetingOrganizer.Meeting = Meeting.ID)
         ";
-    }
-    elseif ($Competitor and ! CheckMeetingGrand()) {
+    } elseif ($Competitor and ! CheckMeetingGrand()) {
         $sql .= "
         WHERE
             Meeting.Show
@@ -100,7 +99,7 @@ Or leave them hidden for your testing or fun.
                 FROM MeetingOrganizer
                 WHERE MeetingOrganizer.Meeting = Meeting.ID)
         ";
-    }elseif(!CheckMeetingGrand()){
+    } elseif (!CheckMeetingGrand()) {
         $sql .= "WHERE
             Meeting.Show
         ";
@@ -146,7 +145,7 @@ Or leave them hidden for your testing or fun.
                         <td align="center" >
                             <?php if ($meeting['Meeting_Competitor'] == $Competitor->id) { ?>
                                 <i class="far fa-crown"></i>
-                            <?php }elseif(in_array($Competitor->wca_id,explode(",",$meeting['Meeting_Organizer']))){ ?>
+                            <?php } elseif (in_array($Competitor->wca_id, explode(",", $meeting['Meeting_Organizer']))) { ?>
                                 <i class="fas fa-user-tie"></i>
                             <?php } ?>
                         </td>

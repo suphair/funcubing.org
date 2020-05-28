@@ -153,7 +153,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
             if (!Mosaic::$step) {
                 $title = "";
             } elseif (Mosaic::$step <= STEPS) {
-                if (in_array('_', Mosaic::$customColorsSchema) or Mosaic::$step>1) {
+                if (in_array('_', Mosaic::$customColorsSchema) or Mosaic::$step > 1) {
                     $title = "Step " . Mosaic::$step . " of " . (STEPS) . " &#9642; Click on the image most similar to the original";
                 } else {
                     $title = "Step " . Mosaic::$step . " of " . (STEPS) . " "
@@ -247,7 +247,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
                                                             </a>
                                                         </div>
                                                     </div>    
-                                                <?php
+                                                    <?php
                                                 }
                                             }
                                             ?>
@@ -255,7 +255,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
                                     </td>
                                     </tr>
                                     </table>
-                            <?php } ?>
+                                <?php } ?>
                             </div>  
-<?php } ?> 
+                        <?php } ?> 
                     </div>

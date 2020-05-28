@@ -21,11 +21,13 @@ if ($Competitor) {
             ?>    
             &#9642; <a href="<?= PageIndex() ?>?Meetings&Mine">My unofficial competitions</a> 
         <?php } ?>  
-    <?php }
+        <?php
+    }
     if ($Section == 'CompetitionGoals') {
         ?>
         &#9642; <a href="<?= PageIndex() ?>?CompetitionGoals&My">My competition goals</a> 
-    <?php }
+        <?php
+    }
 } else {
     ?>
 

@@ -92,9 +92,9 @@ $sectionData = arrayToObject([
 <html  lang="en">
     <head>
         <meta name="Description" content="Fun Cubing">
-       
+
         <?php if (isset($sectionData->$Section)) { ?>
-        <title><?= $sectionData->$Section->title ?></title>
+            <title><?= $sectionData->$Section->title ?></title>
             <link rel="icon" href="<?= PageLocal() ?>Logo/<?= $sectionData->$Section->logo ?>.png" >
         <?php } else { ?>
             <title><?= RequestClass::getTitle(); ?></title>

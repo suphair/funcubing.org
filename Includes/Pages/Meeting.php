@@ -1,28 +1,28 @@
 <div class="shadow" >
-<?php
-DataBaseClass::FromTable("Meeting", "Secret='" . RequestClass::getParam1() . "'");
-$meeting = DataBaseClass::QueryGenerate(false);
+    <?php
+    DataBaseClass::FromTable("Meeting", "Secret='" . RequestClass::getParam1() . "'");
+    $meeting = DataBaseClass::QueryGenerate(false);
 
-DataBaseClass::FromTable("Competitor", "WID=" . $meeting['Meeting_Competitor']);
-$competitor_row = DataBaseClass::QueryGenerate(false);
-$Competitor = GetCompetitorData();
+    DataBaseClass::FromTable("Competitor", "WID=" . $meeting['Meeting_Competitor']);
+    $competitor_row = DataBaseClass::QueryGenerate(false);
+    $Competitor = GetCompetitorData();
 
-DataBaseClass::Query("Select count(*) count"
-        . " from MeetingDiscipline MD"
-        . " where Meeting=" . $meeting['Meeting_ID']);
-$countDiscipline = DataBaseClass::getRow()['count'];
-?>
-<h1>
-    <?php if(!$meeting['Meeting_Show']){ ?>
-        <i class="far fa-eye-slash"></i>
-    <?php } ?>
-    <span class='flag-icon flag-icon-<?= strtolower($competitor_row['Competitor_Country']) ?>'></span>
-    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>"><?= $meeting['Meeting_Name'] ?></a>
+    DataBaseClass::Query("Select count(*) count"
+            . " from MeetingDiscipline MD"
+            . " where Meeting=" . $meeting['Meeting_ID']);
+    $countDiscipline = DataBaseClass::getRow()['count'];
+    ?>
+    <h1>
+        <?php if (!$meeting['Meeting_Show']) { ?>
+            <i class="far fa-eye-slash"></i>
+        <?php } ?>
+        <span class='flag-icon flag-icon-<?= strtolower($competitor_row['Competitor_Country']) ?>'></span>
+        <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>"><?= $meeting['Meeting_Name'] ?></a>
 
-</h1>
-<h2>
-    <?= $meeting['Meeting_Details'] ?>
-</h2>
+    </h1>
+    <h2>
+        <?= $meeting['Meeting_Details'] ?>
+    </h2>
 
     <i class="far fa-calendar-alt"></i> 
     <?= date('d F Y', strtotime($meeting['Meeting_Date'])) ?>    
@@ -43,58 +43,58 @@ $countDiscipline = DataBaseClass::getRow()['count'];
            <?= Short_Name($competitor_row['Competitor_Name']) ?>
     </a>   
 
-<?php if ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
-    <i class="fas fa-cog"></i>
-    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Setting">Setting</a> 
-<?php } ?>
+    <?php if ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
+        <i class="fas fa-cog"></i>
+        <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Setting">Setting</a> 
+    <?php } ?>
 
-<?php if ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
-    <i class="fas fa-users-cog"></i>
-    <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Registrations">Registrations</a> 
-<?php } ?>
+    <?php if ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand())) { ?>
+        <i class="fas fa-users-cog"></i>
+        <a href="<?= PageIndex() . "Meetings/" . RequestClass::getParam1() ?>/?Registrations">Registrations</a> 
+    <?php } ?>
 
-<?php if ($meeting['Meeting_SecretRegistration'] and $meeting['Meeting_ShareRegistration']) { ?>
-    <i class="fas fa-user-plus"></i>
-    <a href="<?= PageIndex() . 'Meetings/' . $meeting['Meeting_Secret'] . '/?Registration&secret=' . $meeting['Meeting_SecretRegistration']; ?>">
-        Self-registration
-    </a>
-<?php } ?>
+    <?php if ($meeting['Meeting_SecretRegistration'] and $meeting['Meeting_ShareRegistration']) { ?>
+        <i class="fas fa-user-plus"></i>
+        <a href="<?= PageIndex() . 'Meetings/' . $meeting['Meeting_Secret'] . '/?Registration&secret=' . $meeting['Meeting_SecretRegistration']; ?>">
+            Self-registration
+        </a>
+    <?php } ?>
 
-<?php
-if (isset($_GET['Competitor'])) {
-    include 'Meeting_Competitor.php';
-} elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand()) and isset($_GET['Setting'])) {
-    include 'Meeting_Setting.php';
-} elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand()) and isset($_GET['Registrations'])) {
-    if (!$countDiscipline) {
+    <?php
+    if (isset($_GET['Competitor'])) {
+        include 'Meeting_Competitor.php';
+    } elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand()) and isset($_GET['Setting'])) {
         include 'Meeting_Setting.php';
+    } elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand()) and isset($_GET['Registrations'])) {
+        if (!$countDiscipline) {
+            include 'Meeting_Setting.php';
+        } else {
+            include 'Meeting_Registrations.php';
+        }
+    } elseif ($Competitor and CheckMeetingOrganizer($meeting['Meeting_ID']) and isset($_GET['Registrations'])) {
+        if (!$countDiscipline) {
+            include 'Meeting_Page.php';
+        } else {
+            include 'Meeting_Registrations.php';
+        }
+    } elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand() or CheckMeetingOrganizer($meeting['Meeting_ID'])) and isset($_GET['Discipline'])) {
+        include 'Meeting_Results.php';
     } else {
-        include 'Meeting_Registrations.php';
-    }
-} elseif ($Competitor and CheckMeetingOrganizer($meeting['Meeting_ID']) and isset($_GET['Registrations'])) {
-    if (!$countDiscipline) {
-        include 'Meeting_Page.php';
-    } else {
-        include 'Meeting_Registrations.php';
-    }
-} elseif ($Competitor and ( $Competitor->id == $meeting['Meeting_Competitor'] or CheckMeetingGrand() or CheckMeetingOrganizer($meeting['Meeting_ID'])) and isset($_GET['Discipline'])) {
-    include 'Meeting_Results.php';
-} else {
-    $reg_fl = false;
-    if (isset($_GET['Registration']) and isset($_GET['secret'])) {
-        $SecretRegistation = DataBaseClass::Escape($_GET['secret']);
+        $reg_fl = false;
+        if (isset($_GET['Registration']) and isset($_GET['secret'])) {
+            $SecretRegistation = DataBaseClass::Escape($_GET['secret']);
 
-        DataBaseClass::FromTable("Meeting", "SecretRegistration='$SecretRegistation'");
-        $m = DataBaseClass::QueryGenerate(false);
-        if (is_array($m)) {
-            $reg_fl = true;
+            DataBaseClass::FromTable("Meeting", "SecretRegistration='$SecretRegistation'");
+            $m = DataBaseClass::QueryGenerate(false);
+            if (is_array($m)) {
+                $reg_fl = true;
+            }
+        }
+        if ($reg_fl) {
+            include 'Meeting_Registration.php';
+        } else {
+            include 'Meeting_Page.php';
         }
     }
-    if ($reg_fl) {
-        include 'Meeting_Registration.php';
-    } else {
-        include 'Meeting_Page.php';
-    }
-}
-?>
+    ?>
 </div>

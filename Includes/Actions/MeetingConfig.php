@@ -6,14 +6,14 @@ $Competitor = GetCompetitorData();
 if ($Competitor) {
 
     if ($_POST['Action'] == 'Change') {
-        CheckPostIsset('Name', 'Details', 'Secret', 'Action', 'Website', 'Date','Show');
+        CheckPostIsset('Name', 'Details', 'Secret', 'Action', 'Website', 'Date', 'Show');
         CheckPostNotEmpty('Name', 'Secret', 'Action', 'Date');
         $Website = DataBaseClass::Escape($_POST['Website']);
         $Name = DataBaseClass::Escape($_POST['Name']);
         $Details = DataBaseClass::Escape($_POST['Details']);
         $Secret = DataBaseClass::Escape($_POST['Secret']);
         $Date = date('Y-m-d', strtotime($_POST['Date']));
-        $Show = (int)$_POST['Show'];
+        $Show = (int) $_POST['Show'];
 
         if (isset($_POST['Registraton']) or isset($_POST['ShareRegistration'])) {
             $SecretRegistration = "'" . substr(md5($Secret), 0, 10) . "'";

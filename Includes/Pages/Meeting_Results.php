@@ -305,20 +305,22 @@ foreach ($disciplines as $discipline) {
                             <?php if (!$competitor['MeetingCompetitorDiscipline_Place']) { ?>
                                 <input onclick="
                                         if (!confirm('Remove <?= $competitor['MeetingCompetitor_Name'] ?>?')) {
-                                            return(false)};
+                                            return(false)
+                                        }
+                                        ;
                                         $('#CompetitorIDRemove').val(<?= $competitor['MeetingCompetitorDiscipline_ID'] ?>);
                                         $('#CompetitorRemove').submit();
                                        " style="margin:0px;padding:1px 2px;" type="submit" value="x" class="delete">
-                        <?php } ?>
+                                   <?php } ?>
                         </td>
                         <?php for ($i = 1; $i <= $Attemps; $i++) { ?>
                             <td class="attempt"> <?= $competitor['MeetingCompetitorDiscipline_Attempt' . $i] ?></td>
                         <?php } ?>
                         <?php foreach ($Formats as $f => $format) { ?>  
                             <td class="attempt" <?= $f == 0 ? 'style="font-weight:bold"' : '' ?>> <?= $competitor['MeetingCompetitorDiscipline_' . $format] ?></td>
-                    <?php } ?>
+                        <?php } ?>
                     </tr>
-        <?php } ?>
+                <?php } ?>
                 </tbody>
             </table>
             <form method="POST" action="" ID="CompetitorRemove">
@@ -329,7 +331,7 @@ foreach ($disciplines as $discipline) {
         <br>    
         <?php if (sizeof($competitors) > 0) { ?>
             <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print competitors cards [<?= sizeof($competitors) ?>]</a> ▪
-    <?php } ?>        
+        <?php } ?>        
         <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>&blank">Print blank competitors cards</a> ▪
         <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print the results</a> ▪
         <a target="_blank" href="<?= PageIndex() . "Actions/MeetingExportResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Export results</a>
@@ -587,12 +589,12 @@ foreach ($disciplines as $discipline) {
                             </tr>
                         </thead>
                         <tbody>
-            <?php foreach ($competitors as $competitor) { ?>
+                            <?php foreach ($competitors as $competitor) { ?>
                                 <tr>
                                     <td><?= $competitor['Name'] ?> </td>
                                     <td align="center"><input name="Competitor[<?= $competitor['ID'] ?>]"  type="Checkbox"></td>
                                 </tr>
-            <?php } ?>
+                            <?php } ?>
                         </tbody>
                     </table>
                     <input type="hidden" value="<?= $current_discipline ?>" name="Discipline">
@@ -602,7 +604,7 @@ foreach ($disciplines as $discipline) {
                         Add competitions
                     </button>
                 </form>
-        <?php } ?>
+            <?php } ?>
         </div>     
     <?php } else { ?>
         <?php
@@ -636,23 +638,23 @@ order by MCD.Place");
                             </tr>
                         </thead>
                         <tbody>
-            <?php foreach ($competitors as $competitor) { ?>
+                            <?php foreach ($competitors as $competitor) { ?>
                                 <tr>
                                     <td align="right">
-                <?= $competitor['Place'] ?> 
+                                        <?= $competitor['Place'] ?> 
                                     </td>
                                     <td>
-                <?= $competitor['Name'] ?>
+                                        <?= $competitor['Name'] ?>
                                     </td>
                                     <td align="center">
                                         <?php if ($competitor['Reg']) { ?>
                                             +
                                         <?php } else { ?>
                                             <input name="Competitor[<?= $competitor['ID'] ?>]"  type="Checkbox">
-                <?php } ?>
+                                        <?php } ?>
                                     </td>
                                 </tr>
-            <?php } ?>
+                            <?php } ?>
                         </tbody>
                     </table>
                     <input type="hidden" value="<?= $current_discipline ?>" name="Discipline">
@@ -663,6 +665,6 @@ order by MCD.Place");
                     </button>
                 </form>  
             <?php } ?>
-    <?php } ?>
+        <?php } ?>
     </div>
 <?php } ?>
