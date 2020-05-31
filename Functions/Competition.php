@@ -1,6 +1,5 @@
 <?php
 
-
 function date_range($start,$end=''){
     if(!$end)$end=$start;
     if(sizeof(explode("-",$start))!=3 or sizeof(explode("-",$end))!=3 ){
@@ -111,4 +110,30 @@ function UpdateLocalID($competition){
     }
     
  }
+ 
+ function getCompetitionRegistration($wca) {
+    $data = GetValue('registrations_' . $wca, true);
+    if (!$data) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/$wca/registrations");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $persons = [];
+        if ($status == 200) {
+            SaveValue('registrations_' . $wca, $data);
+            $persons = json_decode($data);
+        }
+    } else {
+        $persons = json_decode($data);
+    }
+
+    $registrations = [];
+    foreach ($persons as $person) {
+        $registrations[$person->user_id]=$person->event_ids;
+    }
+
+    return $registrations;
+}
+
  

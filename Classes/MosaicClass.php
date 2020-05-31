@@ -95,9 +95,10 @@ class Mosaic {
     private static function UpdateID(){
         self::$id = $_SESSION['GUID'];
         @mkdir("Images");
-        @mkdir("Images/".self::$id);
+        @mkdir("Images/MosaciBuilding");
+        @mkdir("Images/MosaciBuilding/".self::$id);
         self::$add_schema = false;
-        self::$dirName = "Images/".self::$id ."/";
+        self::$dirName = "Images/MosaciBuilding/".self::$id ."/";
         self::$fileNameImage=self::$dirName."Image.jpg";
         self::$fileNameCut=self::$dirName."Image_cut.png";
         self::$fileNamePDF_template=self::$dirName."[STEP]/Image_border_[SCHEMA].png";

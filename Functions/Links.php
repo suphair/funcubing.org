@@ -1,41 +1,4 @@
 <?php
-function LinkDiscipline($code){
-    return PageIndex()."Discipline/$code";
-}
-
-function LinkEvent($ID){
-    DataBaseClass::FromTable('Event',"ID=$ID");
-    DataBaseClass::Join('Event', 'Competition');
-    DataBaseClass::Join('Event', 'DisciplineFormat');
-    DataBaseClass::Join_current( 'Discipline');
-    $event=DataBaseClass::QueryGenerate(false);
-    return PageIndex()."Competition/".$event['Competition_WCA']."/".$event['Discipline_Code']."/".$event['Event_Round'];
-}
-
-
-function LinkCompetitor($ID,$WCAID=""){
-    return PageIndex()."Competitor/".($WCAID?$WCAID:$ID);
-}
-
-function LinkCompetition($WCA){
-    return PageIndex()."Competition/$WCA";
-}
-
-
-function LinkLogin(){
-    return PageIndex()."Login";
-}
-
-function LinkDelegate($Site){
-    return PageIndex()."Delegate/$Site";  
-}
-
-function LinkDelegateAdd(){
-   return PageIndex()."Delegate/Add";  
-}
-function LinkConfigBack(){
-    return "http://".$_SERVER['HTTP_HOST'].str_replace("/config","",$_SERVER['REQUEST_URI']);
-}
 
 function GetUrlWCA(){
    $scope= GetIni('WCA_AUTH','scope');

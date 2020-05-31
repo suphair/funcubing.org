@@ -1,15 +1,5 @@
 <?php
 
-function TakeSession($name){
-    $return="";
-    if(isset($_SESSION[$name])){
-        $return=$_SESSION[$name];
-        unset($_SESSION[$name]);
-    }
-    
-    return $return;
-}
-
 function SetMessage($str="Complete"){
     if(isset($_POST['Password'])){
         $_POST['Password']="***";

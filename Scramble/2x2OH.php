@@ -1,1 +1,0 @@
-<?php include '2x2.php' ?>

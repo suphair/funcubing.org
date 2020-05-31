@@ -31,10 +31,12 @@ $isMeeting = false;
 if (isset($_GET['Meetings']) or ( isset(getRequest()[0]) and getRequest()[0] == 'Meetings')) {
     $Section = 'UnofficialCompetitions';
 }
+
 $isGoal = false;
-if (isset($_GET['CompetitionGoals']) or ( isset(getRequest()[0]) and getRequest()[0] == 'CompetitionGoals')) {
-    $Section = 'CompetitionGoals';
+if (isset(getRequest()[0]) and getRequest()[0] == 'Goals') {
+    $Section = 'Goals';
 }
+
 $isMosaic = false;
 if (isset($_GET['MosaicBuilding']) or ( isset(getRequest()[0]) and getRequest()[0] == 'MosaicBuilding')) {
     $Section = 'MosaicBuilding';
@@ -55,6 +57,7 @@ if (isset($_GET['AllProjects']) or ( sizeof($_GET) == 0 and $Section == 'Unoffic
     $Section = 'AllProjects';
 }
 
+
 $sectionData = arrayToObject([
     'UnofficialCompetitions' => [
         'logo' => 'Logo_Color_UC',
@@ -62,10 +65,10 @@ $sectionData = arrayToObject([
         'link' => '?Meetings',
         'descrption' => 'For WCA events at unofficial competitions. Any speedcuber can register a competition.'
     ],
-    'CompetitionGoals' => [
+    'Goals' => [
         'logo' => 'Logo_Color_GC',
         'title' => 'Competition Goals',
-        'link' => '?CompetitionGoals',
+        'link' => 'Goals',
         'descrption' => 'To set personal goals for official disciplines in official competitions.'
     ],
     'MosaicBuilding' => [
@@ -92,7 +95,7 @@ $sectionData = arrayToObject([
 <html  lang="en">
     <head>
         <meta name="Description" content="Fun Cubing">
-
+        <script src="https://kit.fontawesome.com/<?= GetIni('Keys', 'fontawesome')?>.js" crossorigin="anonymous"></script>
         <?php if (isset($sectionData->$Section)) { ?>
             <title><?= $sectionData->$Section->title ?></title>
             <link rel="icon" href="<?= PageLocal() ?>Logo/<?= $sectionData->$Section->logo ?>.png" >
@@ -102,12 +105,7 @@ $sectionData = arrayToObject([
         <?php } ?>
 
         <link rel="stylesheet" href="<?= PageLocal() ?>style_design.css?t=27d" type="text/css"/>
-        <!--<link rel="stylesheet" href="<?= PageLocal() ?>flags.css?t=bb" type="text/css"/>-->
         <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
-
-        <meta name="yandex-verification" content="71a3f60630008926" />
-        <!-- Yandex.Metrika counter -->
-        <link rel="stylesheet" href="<?= PageLocal(); ?>fontawesome-free-5.12.0-web/css/all.css?t=3" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>flag-icon-css/css/flag-icon.css" type="text/css"/>
         <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
         <script src="<?= PageLocal() ?>jQuery/chosen_v1/chosen.jquery.js?2" type="text/javascript"></script>

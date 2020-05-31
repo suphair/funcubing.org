@@ -99,7 +99,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
                         <?php } ?>
                 </select>
                 <?php foreach (Mosaic::$colors as $c => $tmp) { ?>
-                    <img class="border" valign="middle" width=20px src='<?= PageIndex() ?>Image/CubeImage/<?= $c ?>_<?= Mosaic::$pdfImages ?>.png'>
+                    <img class="border" valign="middle" width=20px src='<?= PageIndex() ?>Image/MosaicBuilding/<?= $c ?>_<?= Mosaic::$pdfImages ?>.png'>
                 <?php } ?>
                 <button>
                     <i class="far fa-save"></i>

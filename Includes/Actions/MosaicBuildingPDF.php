@@ -104,7 +104,7 @@ if ($dy < $dx)
 for ($h = 0; $h < $heigth; $h ++) {
     for ($w = 0; $w < $width; $w ++) {
         $color_name = $Image->colors_img_256[$w][$h];
-        $Imagename = "Image/CubeImage/$color_name" . "_" . Mosaic::$pdfImages . ".png";
+        $Imagename = "Image/MosaicBuilding/$color_name" . "_" . Mosaic::$pdfImages . ".png";
         if (file_exists($Imagename)) {
             $pdf->Image($Imagename, $w * $cell_w + $dx, $h * $cell_h + $dy, $cell_w, $cell_h);
         } else {
@@ -187,7 +187,7 @@ for ($j = $Cube_height; $j >= 1; $j--) {
                 $yy = $ddy + 5 + $kk / $P * ($jj - 1);
                 if (isset($Image->colors_img_256[$ii + $W * ($i - 1) - 1][$jj + $H * ($j - 1) - 1])) {
                     $color_name = $Image->colors_img_256[$ii + $W * ($i - 1) - 1][$jj + $H * ($j - 1) - 1];
-                    $Imagename = "Image/CubeImage/$color_name" . "_" . Mosaic::$pdfImages . ".png";
+                    $Imagename = "Image/MosaicBuilding/$color_name" . "_" . Mosaic::$pdfImages . ".png";
                     if (file_exists($Imagename)) {
                         $pdf->Image($Imagename, $xx, $yy, $kk / $P, $kk / $P);
                     } else {

@@ -62,9 +62,9 @@ if (isset($_GET['code'])) {
     $wcaid = json_decode($result)->me->wca_id;
     $wid = json_decode($result)->me->id;
     $country = json_decode($result)->me->country_iso2;
-
+    
     competitorActual($wcaid, $wid, $name, $country);
-
+     
     if (isset($_SESSION['ReferAuth']) and strpos($_SESSION['ReferAuth'], '/flag-icon-css/css/flag-icon.css') === false) {
         header('Location: ' . $_SESSION['ReferAuth']);
     } else {

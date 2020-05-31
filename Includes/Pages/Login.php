@@ -23,11 +23,6 @@ if ($Competitor) {
         <?php } ?>  
         <?php
     }
-    if ($Section == 'CompetitionGoals') {
-        ?>
-        &#9642; <a href="<?= PageIndex() ?>?CompetitionGoals&My">My competition goals</a> 
-        <?php
-    }
 } else {
     ?>
 
