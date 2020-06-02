@@ -1,5 +1,15 @@
 <?php
 
+$_details['competitions']['all'] = 0;
+$_details['competitions']['update'] = 0;
+$_details['competitions']['delete'] = 0;
+$_details['results']['all'] = 0;
+$_details['results']['load'] = 0;
+
+DataBaseClass::Query("Select WCA from GoalCompetition ");
+$competitions = DataBaseClass::getRows();
+$_details['competitions']['all']=sizeof($competitions);
+
 DataBaseClass::Query("Select WCA from GoalCompetition WHERE TimeUpdate < DATE_ADD(current_date(),INTERVAL - 4 HOUR) ");
 $competitions = DataBaseClass::getRows();
 foreach ($competitions as $competition) {
@@ -14,15 +24,18 @@ foreach ($competitions as $competition) {
     $competitorData = json_decode($data);
     if ($status == 200 and ! isset($competitorData->error)) {
         GoalUpdateCompetition($competitorData);
+        $_details['competitions']['update']++;
     }
 
     if (isset($competitorData->error) and $competitorData->error == "Competition with id $competition_wca not found") {
         DataBaseClass::Query("DELETE FROM GoalCompetition where WCA='{$competition_wca}'");
+        $_details['competitions']['delete']++;
     }
 }
 echo '<hr>';
 DataBaseClass::Query("Select distinct GC.WCA from GoalCompetition GC join Goal G on GC.WCA=G.Competition where GC.DateStart<current_date() and GC.DateEnd>DATE_ADD(current_date(),INTERVAL -4 Week)");
 $competitions = DataBaseClass::getRows();
+$_details['results']['all']=sizeof($competitions);
 foreach ($competitions as $competition) {
     $competition_wca = $competition['WCA'];
     echo $competition_wca . '<br>';
@@ -34,9 +47,9 @@ foreach ($competitions as $competition) {
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $results = json_decode($data, true);
     if ($status == 200 and sizeof($results)) {
-        
+        $_details['results']['update']++;
         DataBaseClass::Query("Update GoalCompetition set Result=1 where WCA='$competition_wca'");
-        
+
         $result = [];
         $result_best = ['best' => [], 'average' => []];
         foreach ($results as $result) {
@@ -67,12 +80,5 @@ foreach ($competitions as $competition) {
             $Competitors[$row['Competitor']] = 1;
         }
         DataBaseClass::Query("Update Goal set Result='' where Competition='$competition_wca' and Result is null");
-
     }
 }
-
-AddLog('GoalsReload', 'CronReload', sizeof($competitions));
-SaveValue('GoalCompetitionReload', date("d.m.Y H:i:s"));
-
-exit();
-?>

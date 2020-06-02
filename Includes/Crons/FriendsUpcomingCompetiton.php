@@ -14,10 +14,15 @@ DataBaseClass::Query("
             OR TIMESTAMPDIFF(MINUTE,Timestamp,now()) > 60   
 ");
 $friends = DataBaseClass::getRows();
-
 foreach ($friends as $friend) {
-    echo "<p>{$friend['FriendWCAID']}</p>";
     GetUpcomingCompetition($friend['FriendWCAID']);
 }
+$_details['friends']['reload'] = count($friends);
 
-exit();
+DataBaseClass::Query("
+        SELECT DISTINCT
+            FriendWCAID
+        FROM Friend
+");
+$friends = DataBaseClass::getRows();
+$_details['friends']['total'] = count($friends);

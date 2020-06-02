@@ -95,7 +95,7 @@ $sectionData = arrayToObject([
 <html  lang="en">
     <head>
         <meta name="Description" content="Fun Cubing">
-        <script src="https://kit.fontawesome.com/<?= GetIni('Keys', 'fontawesome')?>.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/<?= GetIni('Keys', 'fontawesome') ?>.js" crossorigin="anonymous"></script>
         <?php if (isset($sectionData->$Section)) { ?>
             <title><?= $sectionData->$Section->title ?></title>
             <link rel="icon" href="<?= PageLocal() ?>Logo/<?= $sectionData->$Section->logo ?>.png" >
@@ -141,9 +141,14 @@ $sectionData = arrayToObject([
         <?php Include ("Includes/Pages/" . RequestClass::getPage() . ".php"); ?>
 
         <p style="padding:10px 0px">
-            Support 
-            <i class="far fa-envelope"></i>
-            <a href="mailto:suphair@gmail.com?subject=funcubung.org">suphair@gmail.com</a>
+            <a style="padding:0px 0px 10px 0px" href="mailto:suphair@gmail.com?subject=funcubung.org">
+                <i class="far fa-envelope"></i>
+                suphair@gmail.com
+            </a>
+            <a style="padding:0px 0px 10px 0px"  target="_blank" href="https://github.com/suphair/funcubing.org">
+                <i class="fab fa-github"></i>
+                GitHub
+            </a>
         </p>
     </body>
 </html>    

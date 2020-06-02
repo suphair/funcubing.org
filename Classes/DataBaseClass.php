@@ -224,6 +224,81 @@ class DataBaseClass {
         }
     }
 
+    public static function getRowAssoc($sql, $key = [], $out = false) {
+        self::Query($sql, $out);
+        return self::getRow();
+    }
+
+    public static function getRowsAssoc($sql, $key = false, $out = false) {
+        self::Query($sql, $out);
+        $rows = self::getRows();
+        if ($key) {
+            $return = [];
+            foreach ($rows as $row) {
+                $return[$row[$key]] = $row;
+            }
+            return $return;
+        } else {
+            return $rows;
+        }
+    }
+
+    public static function getRowsObject($sql, $key = false, $out = false) {
+        return arrayToObject(self::getRowsAssoc($sql, $key, $out));
+    }
+
+    public static function getRowObject($sql, $key = false, $out = false) {
+        $row = self::getRowAssoc($sql, $key, $out);
+        if ($row) {
+            return arrayToObject($row);
+        } else {
+            return (object) [];
+        }
+    }
+
+    public static function getColumn($sql, $filter = [], $out = false) {
+        $where = "";
+        if (is_array($filter)) {
+            foreach ($filter as $value) {
+                $where .= "AND $value ";
+            }
+        } else {
+            $where .= "AND $filter ";
+        }
+        $sql = str_replace('%f', $where, $sql);
+        self::Query($sql, $out);
+        $rows = self::getRows();
+        if ($rows) {
+            $column = array_keys($rows[0])[0];
+            return array_column($rows, $column);
+        }
+        return [];
+    }
+
+    public static function getValue($sql) {
+        self::Query($sql);
+        $row = self::getRow();
+        if ($row) {
+            $column = array_keys($row)[0];
+            return $row[$column];
+        }
+        return false;
+    }
+
+    public static function getColumnAssoc($sql) {
+        self::Query($sql);
+        $rows = self::getRows();
+        $return = [];
+        if ($rows) {
+            $columnKey = array_keys($rows[0])[0];
+            $columnValue = array_keys($rows[0])[1];
+            foreach ($rows as $row) {
+                $return[$row[$columnKey]] = $row[$columnValue];
+            }
+        }
+        return $return;
+    }
+
     public static function getRow() {
         return self::$query->fetch_assoc();
     }
@@ -261,6 +336,10 @@ class DataBaseClass {
 
     public static function echoQueriesCount() {
         return sizeof(self::$queries);
+    }
+
+    public static function close() {
+        mysqli_close(self::$connection);
     }
 
 }

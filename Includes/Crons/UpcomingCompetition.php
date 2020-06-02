@@ -1,31 +1,49 @@
 <?php
+$_details['message'] = 0;
+$_details['subscribe'] = 0;
 
 function sort_by_announced_at($a, $b) {
     return strtotime($a['announced_at']) < strtotime($b['announced_at']);
 }
 
 $upcomingCountry = [];
+
+$page = 1;
+while ($page !== FALSE) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/?sort=start_date&start=" . date('Y-m-d') . "&page=$page");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $data = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $results = json_decode($data, true);
+    curl_close($ch);
+    if ($status == 200) {
+        if (sizeof($results)) {
+            foreach ($results as $result) {
+                if (!isset($upcomingCountry[$result['country_iso2']])) {
+                    $upcomingCountry[$result['country_iso2']] = [];
+                }
+                $upcomingCountry[$result['country_iso2']][] = $result;
+            }
+            $page++;
+        } else {
+            $page = FALSE;
+        }
+    } else {
+        $page = FALSE;
+    }
+}
+
 DataBaseClass::Query("Select * from MailUpcomingCompetitions where Status=1");
 $MailUpcomingCompetitions = DataBaseClass::getRows();
-
+$_details['subscribe'] = sizeof($MailUpcomingCompetitions);
 foreach ($MailUpcomingCompetitions as $mailUpcomingCompetition) {
     echo "<hr>";
     echo $mailUpcomingCompetition['Email'];
     $results = [];
     foreach (explode(',', $mailUpcomingCompetition['Country']) as $country) {
         if (!isset($upcomingCountry[$country])) {
-            $ch = curl_init();
-            echo $country;
-            curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/?country_iso2=$country&sort=start_date&start=" . date('Y-m-d'));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $data = curl_exec($ch);
-            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $results_country = json_decode($data, true);
-            curl_close($ch);
-            if ($status != 200) {
-                $results_country = [];
-            }
-            $upcomingCountry[$country] = $results_country;
+            $upcomingCountry[$country] = [];
         }
         $results = array_merge($results, $upcomingCountry[$country]);
     }
@@ -77,6 +95,8 @@ foreach ($MailUpcomingCompetitions as $mailUpcomingCompetition) {
         ob_end_clean();
     }
     if ($message) {
+        $_details['message'] ++;
+
         $subject = "FunCubing: New competitions announce";
         $message .= "<hr> Your email: " . $mailUpcomingCompetition['Email'] . "; Tracked countries: " . CountryNames($mailUpcomingCompetition['Country']);
         $message .= "<br><a href='http://" . Pageindex() . "MailUpcomingCompetition'>Subscription management</a>";
@@ -91,4 +111,3 @@ foreach ($MailUpcomingCompetitions as $mailUpcomingCompetition) {
         }
     }
 }
-exit();

@@ -1,6 +1,8 @@
 <?php
 
 $time = time();
+$_details['delete'] = 0;
+$_details['safe'] = 0;
 echo '<br>';
 foreach (scandir('Images/MosaciBuilding') as $file) {
     $dir="Images/MosaciBuilding/$file";
@@ -16,10 +18,11 @@ foreach (scandir('Images/MosaciBuilding') as $file) {
         if ($days > 1 or $count==0) {
             delDir($dir);
             echo "del $file $days<br>";
+            $_details['delete']++;
         } else {
             echo "safe $file $days<br>";
+            $_details['safe']++;
         }
     }
 }
-AddLog('MosaicBuilderClearImages', 'CronReload', sizeof($competitions));
-exit();
+

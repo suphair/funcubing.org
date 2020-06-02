@@ -13,3 +13,28 @@ Function AddLog($Object,$Action,$Details){
     
 }
 
+Function AddLogCronStart($cronId, $cronName){
+    DataBaseClass::Query("
+        INSERT INTO LogsCron 
+            (
+                cronId,
+                cronName
+            ) 
+        VALUES
+            (
+                $cronId,
+                '$cronName'
+            ) 
+    ");
+    return DataBaseClass::getID();
+}
+
+function AddLogCronEnd($cronId,$details){
+    DataBaseClass::Query("
+        UPDATE LogsCron
+        SET
+            details = '$details'
+        WHERE
+            id = $cronId
+    ");
+}
