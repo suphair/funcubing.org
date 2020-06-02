@@ -7,7 +7,10 @@ function IncluderAction() {
             echo '!! only CRON';
             exit();
         }
-        IncludeExists('Includes/Crons/master.php');
+        $cron = new cron(DataBaseClass::getConection());
+        $cron->run();
+        DataBaseClass::close();
+        exit();
     }
 
     if (sizeof($request) >= 2 and $request[0] == "Actions") {
