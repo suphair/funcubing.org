@@ -93,6 +93,16 @@ foreach ($disciplines as $discipline) {
     <?php } ?>            
 
     <?php if (!$current_discipline) { ?>
+        <?php if (($Competitor and $Competitor->id == $meeting['Meeting_Competitor']) or CheckMeetingGrand()) { ?>
+            <p>
+                <a href="<?= PageIndex() . "Actions/MeetingPrintCompetitor/?Secret=" . RequestClass::getParam1(); ?>">Download certificates</a>  ▪
+                <?php if (sizeof($Competitors)) { ?>
+                    <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0">Print competitors cards</a> ▪
+                <?php } ?>     
+                <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintResult/?Secret=" . RequestClass::getParam1(); ?>">Print the results</a> ▪
+                <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0&blank">Print blank competitors cards</a>
+            </p>
+        <?php } ?>
         <table class="table_new">
             <thead>
                 <tr>
@@ -175,15 +185,6 @@ foreach ($disciplines as $discipline) {
         <?php if (!sizeof($Competitors)) { ?>
             <p>No competitors</p>
         <?php } ?>
-        <?php if (($Competitor and $Competitor->id == $meeting['Meeting_Competitor']) or CheckMeetingGrand()) { ?>
-            <br><a href="<?= PageIndex() . "Actions/MeetingPrintCompetitor/?Secret=" . RequestClass::getParam1(); ?>">Download certificates</a>  ▪
-            <?php if (sizeof($Competitors)) { ?>
-                <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0">Print competitors cards</a> ▪
-            <?php } ?>        
-            <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=0&blank">Print blank competitors cards</a>
-
-        <?php } ?>
-
         <?php
     } else {
 

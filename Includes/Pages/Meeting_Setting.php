@@ -58,16 +58,16 @@
             Save
         </button>
     </form>
-    <?php if (DataBaseClass::getRow()['count'] == 0) { ?>
+    <?php
+    DataBaseClass::Query("Select sum(case when MC.ID is not null or MD.ID is not null then 1 else 0 end) count from Meeting M "
+            . " left outer join MeetingCompetitor MC on MC.Meeting=M.ID "
+            . " left outer join MeetingDiscipline MD on MD.Meeting=M.ID "
+            . " where M.ID=" . $meeting['Meeting_ID']);
+    if (DataBaseClass::getRow()['count'] == 0) {
+        ?>
         <form method="POST" action="<?= PageIndex() . "Actions/MeetingConfig" ?>">
             <input type="hidden" name="Action" value="Delete">
             <input type="hidden" name="Secret" value="<?= RequestClass::getParam1() ?>">
-            <?php
-            DataBaseClass::Query("Select sum(case when MC.ID is not null or MD.ID is not null then 1 else 0 end) count from Meeting M "
-                    . " left outer join MeetingCompetitor MC on MC.Meeting=M.ID "
-                    . " left outer join MeetingDiscipline MD on MD.Meeting=M.ID "
-                    . " where M.ID=" . $meeting['Meeting_ID']);
-            ?>
             <button class="delete">
                 <i class="fas fa-trash"></i>
                 Delete

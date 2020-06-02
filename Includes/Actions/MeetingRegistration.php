@@ -11,7 +11,8 @@ if (isset($_POST['CreateRegistration'])) {
     DataBaseClass::Query("Select * from `Meeting` where Secret='$Secret' and SecretRegistration='$SecretRegistration'");
     $meeting = DataBaseClass::getRow();
 
-    $Name = DataBaseClass::Escape($_POST['Name']);
+    $Name = strip_tags(DataBaseClass::Escape($_POST['Name']));
+    
     $Disciplines = array();
     foreach ($_POST['Disciplines'] as $discipline => $tmp) {
         if (is_numeric($discipline)) {

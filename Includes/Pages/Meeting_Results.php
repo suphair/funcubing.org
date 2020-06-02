@@ -144,14 +144,7 @@ foreach ($disciplines as $discipline) {
                   <font style='var(--green)'>▪</font> Press enter to save attempts">
                 <i class="fas fa-info-circle"></i> 
                 Instruction
-            </span>
-        </p>
-        <?php if ($Current_discipline['MeetingDiscipline_Comment']) { ?>
-            <p>
-                <i class="far fa-comment"></i>
-                <?= $Current_discipline['MeetingDiscipline_Comment'] ?>
-            </p>
-        <?php } ?>
+            </span>  ▪
         <?php
         if (isset($current_discipline)) {
             DataBaseClass::FromTable("MeetingDiscipline", "ID=$current_discipline");
@@ -182,6 +175,19 @@ foreach ($disciplines as $discipline) {
             }
             $competitors = DataBaseClass::QueryGenerate();
             ?> 
+        <?php if (sizeof($competitors) > 0) { ?>
+            <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print competitors cards [<?= sizeof($competitors) ?>]</a> ▪
+        <?php } ?>        
+        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>&blank">Print blank competitors cards</a> ▪
+        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print the results</a> ▪
+        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingExportResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Export results</a>
+</p>
+<?php if ($Current_discipline['MeetingDiscipline_Comment']) { ?>
+            <p>
+                <i class="far fa-comment"></i>
+                <?= $Current_discipline['MeetingDiscipline_Comment'] ?>
+            </p>
+        <?php } ?>
             <table class="table_new">
                 <form action=""method="post"> 
                     <tr>
@@ -328,15 +334,6 @@ foreach ($disciplines as $discipline) {
                 <input hidden id="CompetitorIDRemove" name="CompetitorID">
             </form>
         <?php } ?> 
-        <br>    
-        <?php if (sizeof($competitors) > 0) { ?>
-            <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print competitors cards [<?= sizeof($competitors) ?>]</a> ▪
-        <?php } ?>        
-        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintScoreCards/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>&blank">Print blank competitors cards</a> ▪
-        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingPrintResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Print the results</a> ▪
-        <a target="_blank" href="<?= PageIndex() . "Actions/MeetingExportResult/?Secret=" . RequestClass::getParam1(); ?>&Discipline=<?= $current_discipline ?>">Export results</a>
-
-        <br>
         <script>
             function ParseName(name) {
                 name = name.replace(/[^A-zА-яЁё]/gim, ' ');
