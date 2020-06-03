@@ -7,7 +7,7 @@ function IncluderAction() {
             echo '!! only CRON';
             exit();
         }
-        $cron = new cron(DataBaseClass::getConection());
+        $cron = new \Suphair\Cron(DataBaseClass::getConection());
         $cron->run();
         DataBaseClass::close();
         exit();

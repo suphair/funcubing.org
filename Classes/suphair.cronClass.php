@@ -1,18 +1,21 @@
 <?php
-class cron {
+
+namespace Suphair;
+
+const COMMAND_FUNCTION = 'function';
+const VERSION = '1.0.2';
+
+class Cron {
 
     protected $connection;
     protected $id;
-
-    const COMMAND_FUNCTION = 'function';
-    const VERSION = '1.0.1';
 
     function __construct($connection) {
         $this->connection = $connection;
     }
 
     public function run() {
-        $id = $this->logBegin("suphair.cron ".self::VERSION);
+        $id = $this->logBegin("suphair.cron " . VERSION);
 
         $querySelect = "
             SELECT name, command,type
@@ -34,21 +37,21 @@ class cron {
                         THEN DATE_ADD(now(),INTERVAL period MINUTE)
                 END    
             WHERE name = '{name}'";
-        $details=[];
+        $details = [];
         $result = mysqli_query($this->connection, $querySelect);
         while ($row = $result->fetch_assoc()) {
             mysqli_query($this->connection, str_replace('{name}', $row['name'], $queryUpdate));
             $this->execCommand($row['name'], $row['command'], $row['type']);
-            $details[]=$row['name'];
+            $details[] = $row['name'];
         }
         $result->free();
-        $this->logEnd($id,json_encode($details));
+        $this->logEnd($id, json_encode($details));
     }
 
     private function execCommand($name, $command, $type) {
         $id = $this->logBegin($name);
         switch ($type) {
-            case self::COMMAND_FUNCTION:
+            case COMMAND_FUNCTION:
                 if (!function_exists($command)) {
                     $details = "ERROR: $type $command not found";
                 } else {
