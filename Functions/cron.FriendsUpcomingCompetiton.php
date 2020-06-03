@@ -19,7 +19,7 @@ function FriendsUpcomingCompetiton() {
     foreach ($friends as $friend) {
         GetUpcomingCompetition($friend['FriendWCAID']);
     }
-    $_details['friends']['reload'] = count($friends);
+    $_details['reload'] = count($friends);
 
     DataBaseClass::Query("
             SELECT DISTINCT
@@ -27,6 +27,6 @@ function FriendsUpcomingCompetiton() {
             FROM Friend
     ");
     $friends = DataBaseClass::getRows();
-    $_details['friends']['total'] = count($friends);
+    $_details['total'] = count($friends);
     return json_encode($_details);
 }
