@@ -26,7 +26,6 @@ if ($Competitor) {
 } else {
     ?>
 
-    <?php $_SESSION['ReferAuth'] = $_SERVER['REQUEST_URI']; ?> 
     <a href="<?= GetUrlWCA(); ?>">
         <i class="fas fa-sign-in-alt"></i>
         Sign in with WCA
