@@ -10,7 +10,7 @@ class OauthWca {
     protected static $clientSecret;
     protected static $connection;
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
 
     private function __construct() {
         
@@ -42,7 +42,7 @@ class OauthWca {
     }
 
     static function url() {
-        $_SESSION['suphair.oauth.request_uri'] = filter_input(INPUT_SERVER, 'REQUEST_URI');
+        $_SESSION['suphair.oauthwca.request_uri'] = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
         return "https://www.worldcubeassociation.org/oauth/authorize?"
                 . "client_id=" . self::$clientId . "&"
@@ -52,7 +52,7 @@ class OauthWca {
     }
 
     static function location() {
-        header("Location: {$_SESSION['suphair.oauth.request_uri']}");
+        header("Location: {$_SESSION['suphair.oauthwca.request_uri']}");
         exit();
     }
 
@@ -99,8 +99,10 @@ class OauthWca {
             if (isset(json_decode($result)->me->id)) {
                 $me = json_decode($result)->me;
                 self::log($me);
+                $_SESSION['suphair.oauthwca.me'] = $me;
                 return $me;
             } else {
+                $_SESSION['suphair.oauthwca.me'] = false;
                 self::location();
             }
         }
