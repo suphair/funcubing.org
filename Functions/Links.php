@@ -1,8 +1,7 @@
 <?php
 
 function GetUrlWCA() {
-
-    Suphair\OauthWca::set(
+    Suphair \ Wca \ Oauth::set(
             GetIni('WCA_AUTH', 'client_id')
             , GetIni('WCA_AUTH', 'client_secret')
             , GetIni('WCA_AUTH', 'scope')
@@ -10,5 +9,5 @@ function GetUrlWCA() {
             , DataBaseClass::getConection()
     );
 
-    return Suphair\OauthWca::url();
+    return Suphair \ Wca \ Oauth::url();
 }

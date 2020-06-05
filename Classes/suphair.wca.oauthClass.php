@@ -1,8 +1,8 @@
 <?php
 
-namespace Suphair;
+namespace Suphair \ Wca;
 
-class OauthWca {
+class Oauth {
 
     protected static $scope = 'public';
     protected static $clientId;
@@ -10,7 +10,7 @@ class OauthWca {
     protected static $clientSecret;
     protected static $connection;
 
-    const VERSION = '1.0.1';
+    const VERSION = '1.1.0';
 
     private function __construct() {
         
@@ -42,7 +42,7 @@ class OauthWca {
     }
 
     static function url() {
-        $_SESSION['suphair.oauthwca.request_uri'] = filter_input(INPUT_SERVER, 'REQUEST_URI');
+        $_SESSION['suphair.wca.oauth.request_uri'] = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
         return "https://www.worldcubeassociation.org/oauth/authorize?"
                 . "client_id=" . self::$clientId . "&"
@@ -52,7 +52,7 @@ class OauthWca {
     }
 
     static function location() {
-        header("Location: {$_SESSION['suphair.oauthwca.request_uri']}");
+        header("Location: {$_SESSION['suphair.wca.oauth.request_uri']}");
         exit();
     }
 
@@ -99,10 +99,10 @@ class OauthWca {
             if (isset(json_decode($result)->me->id)) {
                 $me = json_decode($result)->me;
                 self::log($me);
-                $_SESSION['suphair.oauthwca.me'] = $me;
+                $_SESSION['suphair.wca.oauth.me'] = $me;
                 return $me;
             } else {
-                $_SESSION['suphair.oauthwca.me'] = false;
+                $_SESSION['suphair.wca.oauth.me'] = false;
                 self::location();
             }
         }
@@ -139,7 +139,7 @@ class OauthWca {
         } else {
             $countryiso2_escape = FALSE;
         }
-        $query = " INSERT INTO oauthwca_logs "
+        $query = " INSERT INTO wca_oauth_logs "
                 . "(`me_id`,`me_name`,`me_wcaid`,`me_countryiso2`,`version`) "
                 . "VALUES"
                 . "('$id_escape',"
@@ -156,8 +156,8 @@ class OauthWca {
         $queries = [];
         $errors = [];
 
-        $queries['oauthwca_logs'] = "
-            CREATE TABLE `oauthwca_logs` (
+        $queries['wca_oauth_logs'] = "
+            CREATE TABLE `wca_oauth_logs` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `me_id` int(11) DEFAULT NULL,
                 `me_name` varchar(255) DEFAULT NULL,
@@ -176,7 +176,7 @@ class OauthWca {
         }
 
         if (sizeof($errors)) {
-            trigger_error("oauthwca.createTables: " . json_encode($errors), E_USER_ERROR);
+            trigger_error("wca.oauth.createTables: " . json_encode($errors), E_USER_ERROR);
         }
     }
 

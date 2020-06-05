@@ -1,6 +1,6 @@
 <?php
 
-Suphair\OauthWca::set(
+Suphair \ Wca \ Oauth::set(
         GetIni('WCA_AUTH', 'client_id')
         , GetIni('WCA_AUTH', 'client_secret')
         , GetIni('WCA_AUTH', 'scope')
@@ -8,7 +8,7 @@ Suphair\OauthWca::set(
         , DataBaseClass::getConection()
 );
 
-$competitor = Suphair\OauthWca::authorize();
+$competitor = Suphair \ Wca \ Oauth::authorize();
 
 unset($_SESSION['Competitor']);
 
@@ -20,5 +20,5 @@ if ($competitor) {
     $country = $competitor->country_iso2;
     competitorActual($wcaid, $wid, $name, $country);
 }
-Suphair\OauthWca::location();
+Suphair \ Wca \ Oauth::location();
 ?>  
