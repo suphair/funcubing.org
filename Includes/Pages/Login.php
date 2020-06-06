@@ -1,6 +1,5 @@
 <?php
 $Competitor = GetCompetitorData();
-#$Delegate=GetDelegateData(); 
 $isAdmin = CheckAdmin();
 
 if ($Competitor) {

@@ -3,7 +3,12 @@
 function IncluderAction() {
     $request = getRequest();
     if (sizeof($request) == 1 and $request[0] == 'Cron') {
-        if (!( CheckAdmin() or $_SERVER['HTTP_USER_AGENT'] == 'Wget/1.17.1 (linux-gnu)' or strpos($_SERVER['PHP_SELF'], '/' . GetIni('LOCAL', 'PageBase') . '/') !== false)) {
+        if (
+                ( CheckAdmin()
+                or $_SERVER['HTTP_USER_AGENT'] == 'Wget/1.17.1 (linux-gnu)'
+                or Suphair \ Config :: isLocalhost()
+                ) === false
+        ) {
             echo '!! only CRON';
             exit();
         }
@@ -32,8 +37,13 @@ function IncludeExists($file) {
 function getRequest() {
 
     global $request;
-    $request = explode("/", str_replace("/" . getIni("LOCAL", "PageBase") . "/", "/", $_SERVER['REQUEST_URI']));
-    unset($request[0]);
+
+    $prefix = str_replace("index.php", "", filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+    $request = explode('/', str_replace($prefix, ''
+                    , filter_input(INPUT_SERVER, 'REQUEST_URI')
+            )
+    );
+
     foreach ($request as $n => $v) {
         $request[$n] = explode('?fbclid', $v)[0];
         if (!$v)
@@ -41,10 +51,6 @@ function getRequest() {
     }
     $request = array_values($request);
     return $request;
-}
-
-function getRequestString() {
-    return str_replace("/" . getIni("LOCAL", "PageBase") . "/", "/", $_SERVER['REQUEST_URI']);
 }
 
 function Request() {

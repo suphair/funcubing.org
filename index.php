@@ -12,17 +12,11 @@ define('FPDF_FONTPATH', 'Classes/fpdf17/font');
 require_once "file_utils.php";
 RequireDir("Classes");
 RequireDir("Functions");
+Suphair \ Config :: init('Config');
 DataBaseInit();
-
-Suphair \ Wca \ Api::setConnection(DataBaseClass::getConection());
+Suphair \ Wca \ Api :: setConnection(DataBaseClass::getConection());
 
 IncluderAction();
-
-
-//getPersonRecords('2015solo01');
-//getCompetitionRegistration('VolgaNizhnyNovgorod2020');
-//GetUpcomingCompetition(6834);
-//UpcomingCompetition();
 
 RequestClass::setRequest();
 
@@ -103,8 +97,9 @@ $sectionData = arrayToObject([
 <!DOCTYPE HTML>
 <html  lang="en">
     <head>
+        <!-- <?= Suphair \ Config :: info() ?>-->
         <meta name="Description" content="Fun Cubing">
-        <script src="https://kit.fontawesome.com/<?= GetIni('Keys', 'fontawesome') ?>.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/<?= Suphair \ Config :: get('Keys', 'fontawesome') ?>.js" crossorigin="anonymous"></script>
         <?php if (isset($sectionData->$Section)) { ?>
             <title><?= $sectionData->$Section->title ?></title>
             <link rel="icon" href="<?= PageLocal() ?>Logo/<?= $sectionData->$Section->logo ?>.png" >
@@ -123,7 +118,7 @@ $sectionData = arrayToObject([
         $Competitor = GetCompetitorData();
         ?>
     </head>
-    <body>
+    <body>        
         <table class="title">
             <tbody><tr>
                     <td class="logo">

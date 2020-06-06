@@ -18,10 +18,6 @@ function PageLocal(){
     return str_replace("index.php","",$_SERVER['PHP_SELF']);
 }
 
-function PageBase(){
-    return getIni("LOCAL","PageBase");
-}
-
 Function HeaderExit(){
     if(isset($_SERVER['HTTP_REFERER']) and str_replace(PageIndex(),"",$_SERVER['HTTP_REFERER'])!=$_SERVER['HTTP_REFERER']){
         header('Location: '.$_SERVER['HTTP_REFERER']); 

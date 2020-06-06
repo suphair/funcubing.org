@@ -2,11 +2,7 @@
 
 Function CheckAdmin() {
     if (isset($_SESSION['Competitor'])) {
-        DataBaseClass::FromTable("Delegate", "WCA_ID='" . $_SESSION['Competitor']->wca_id . "' and Admin=1 and Status='Active'");
-        $delegate = DataBaseClass::QueryGenerate(false);
-        if (DataBaseClass::rowsCount()) {
-            return true;
-        }
+        return $_SESSION['Competitor']->wca_id == Suphair \ Config :: get ('Admin','wcaid');
     }
     return false;
 }
@@ -17,9 +13,6 @@ Function GetCompetitorData() {
             unset($_SESSION['Competitor']);
             return false;
         }
-
-#        $_SESSION['Competitor']->wca_id = '2019MECK01';
-
         return $_SESSION['Competitor'];
     }
     return false;

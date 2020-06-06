@@ -86,7 +86,7 @@ function UpcomingCompetition() {
             $message .= "<hr> Your email: " . $mailUpcomingCompetition['Email'] . "; Tracked countries: " . CountryNames($mailUpcomingCompetition['Country']);
             $message .= "<br><a href='http://" . Pageindex() . "MailUpcomingCompetition'>Subscription management</a>";
 
-            if (strpos($_SERVER['PHP_SELF'], '/' . GetIni('LOCAL', 'PageBase') . '/') !== false) {
+            if (Suphair \ Config :: isLocalhost()) {
                 echo "<br><b>$subject</b><br>";
                 echo $message;
             }

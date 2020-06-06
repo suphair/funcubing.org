@@ -2,10 +2,10 @@
 
 function GetUrlWCA() {
     Suphair \ Wca \ Oauth::set(
-            GetIni('WCA_OAUTH', 'client_id')
-            , GetIni('WCA_OAUTH', 'client_secret')
-            , GetIni('WCA_OAUTH', 'scope')
-            , PageIndex() . GetIni('WCA_OAUTH', 'url_refer')
+            Suphair \ Config :: get('WCA_OAUTH', 'client_id')
+            , Suphair \ Config :: get('WCA_OAUTH', 'client_secret')
+            , Suphair \ Config :: get('WCA_OAUTH', 'scope')
+            , PageIndex() . Suphair \ Config :: get('WCA_OAUTH', 'url_refer')
             , DataBaseClass::getConection()
     );
 

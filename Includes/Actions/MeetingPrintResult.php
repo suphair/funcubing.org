@@ -183,10 +183,6 @@ foreach ($resultsOut as $results) {
             $pdf->Line($xEnd - $dX * $xAttempt, 30, $xEnd - $dX * $xAttempt, 32 + 8 * $on_page);
             $dX++;
         }
-
-
-        //$pdf->SetFont('Arial','',10);
-        //$pdf->Text(75, 286,GetIni('TEXT','print_meeting'));
     }
 }
 if ($Discipline) {
