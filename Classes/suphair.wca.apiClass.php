@@ -6,7 +6,7 @@ class Api {
 
     protected static $connection;
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
     const URL = 'https://www.worldcubeassociation.org/api/v0/';
     const MINUTES = 60;
 
@@ -118,7 +118,7 @@ class Api {
         self::setCash($key, $returnData);
 
         if (!$returnData) {
-            if($options['page']){
+            if(isset($options['page'])){
                 $returnData = '[]';
             }else{
                 return false;
