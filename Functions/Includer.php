@@ -38,12 +38,11 @@ function getRequest() {
 
     global $request;
 
-    $prefix = str_replace("index.php", "", filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+    $prefix = str_replace("/index.php", "", filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
     $request = explode('/', str_replace($prefix, ''
                     , filter_input(INPUT_SERVER, 'REQUEST_URI')
             )
     );
-
     foreach ($request as $n => $v) {
         $request[$n] = explode('?fbclid', $v)[0];
         if (!$v)
