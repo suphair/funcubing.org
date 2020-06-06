@@ -65,9 +65,6 @@ class RequestClass {
         if (isset($_GET['FriendsCompetitions']) or $request[0] == 'FriendsCompetitions') {
             self::$title = "Friends' Competitions";
         }
-        if (isset($_GET['WCA_API']) or $request[0] == 'WCA_API') {
-            self::$title = "WCA API";
-        }
 
         $type = $request[0];
 
@@ -125,10 +122,6 @@ class RequestClass {
             self::$page = "MosaicBuilding";
         }
 
-        if ($type == 'MosaicBuilding2') {
-            self::$page = "MosaicBuilding2";
-        }
-
         if ($type == 'Achievements') {
             self::$page = "Achievements";
         }
@@ -137,16 +130,8 @@ class RequestClass {
             self::$page = "FriendsCompetitions";
         }
 
-        if ($type == 'WCA_API') {
-            self::$page = "WCA_API";
-        }
-
         if ($type == 'MailUpcomingCompetition') {
             self::$page = "MailUpcomingCompetition";
-        }
-
-        if ($type == 'Schedule') {
-            self::$page = "Schedule";
         }
     }
 
