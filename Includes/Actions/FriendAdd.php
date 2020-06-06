@@ -16,18 +16,17 @@ if ($competitorWCAID != $_POST['CompetitorWCAID']) {
 }
 $FriendWCAID = strtoupper(DataBaseClass::Escape($_POST['FriendWCAID']));
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/persons/" . $FriendWCAID);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-$data = curl_exec($ch);
-$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-if ($status != 200) {
+$data = Suphair \ Wca \ Api::
+        getPerson(
+                $FriendWCAID, 'actions.FriendAdd', [], false);
+
+if (!isset($data->person->wca_id)) {
     SetMessageName("AddFriendError", "Person with WCA ID $FriendWCAID not found");
     SetMessageName("AddFriend_FriendWCAID", $FriendWCAID);
     header('Location: ' . $_SERVER['HTTP_REFERER']);
     exit();
 }
-$wcaid = json_decode($data)->person->wca_id;
+$wcaid = $data->person->wca_id;
 
 if ($wcaid == $competitorWCAID) {
     SetMessageName("AddFriendError", "It is your WCA ID [$FriendWCAID]");
@@ -36,12 +35,11 @@ if ($wcaid == $competitorWCAID) {
     exit();
 }
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/users/" . $FriendWCAID);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-$data = curl_exec($ch);
-$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-if ($status != 200) {
+$data = Suphair \ Wca \ Api::
+        getUser(
+                $FriendWCAID, 'actions.FriendAdd', [], false);
+
+if (!$data) {
     SetMessageName("AddFriendError", "User with WCA ID $FriendWCAID not found");
     SetMessageName("AddFriend_FriendWCAID", $FriendWCAID);
     header('Location: ' . $_SERVER['HTTP_REFERER']);

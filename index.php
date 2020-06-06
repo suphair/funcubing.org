@@ -13,7 +13,16 @@ require_once "file_utils.php";
 RequireDir("Classes");
 RequireDir("Functions");
 DataBaseInit();
+
+Suphair \ Wca \ Api::setConnection(DataBaseClass::getConection());
+
 IncluderAction();
+
+
+//getPersonRecords('2015solo01');
+//getCompetitionRegistration('VolgaNizhnyNovgorod2020');
+//GetUpcomingCompetition(6834);
+//UpcomingCompetition();
 
 RequestClass::setRequest();
 

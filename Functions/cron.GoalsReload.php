@@ -7,6 +7,7 @@ function GoalsReload() {
     $_details['competitions']['delete'] = 0;
     $_details['results']['all'] = 0;
     $_details['results']['load'] = 0;
+    $_details['results']['update'] = 0;
 
     DataBaseClass::Query("Select WCA from GoalCompetition ");
     $competitions = DataBaseClass::getRows();
@@ -18,13 +19,11 @@ function GoalsReload() {
         $competition_wca = $competition['WCA'];
         echo $competition_wca . '<br>';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/$competition_wca");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $competitorData = json_decode($data);
-        if ($status == 200 and ! isset($competitorData->error)) {
+        $competitorData = Suphair \ Wca \ Api::
+                getCompetition(
+                        $competition_wca, 'cron.GoalsReload', [], false);
+
+        if (!isset($competitorData->error)) {
             GoalUpdateCompetition($competitorData);
             $_details['competitions']['update'] ++;
         }
@@ -38,17 +37,17 @@ function GoalsReload() {
     DataBaseClass::Query("Select distinct GC.WCA from GoalCompetition GC join Goal G on GC.WCA=G.Competition where GC.DateStart<current_date() and GC.DateEnd>DATE_ADD(current_date(),INTERVAL -4 Week)");
     $competitions = DataBaseClass::getRows();
     $_details['results']['all'] = sizeof($competitions);
+    $competitions = [['WCA' => 'RamenskoeOpen2017']];
     foreach ($competitions as $competition) {
         $competition_wca = $competition['WCA'];
         echo $competition_wca . '<br>';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/$competition_wca/results");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $results = json_decode($data, true);
-        if ($status == 200 and sizeof($results)) {
+
+        $results = Suphair \ Wca \ Api::
+                getCompetitionResults(
+                        $competition_wca, 'cron.GoalsReload');
+
+        if (sizeof($results)) {
             $_details['results']['update'] ++;
             DataBaseClass::Query("Update GoalCompetition set Result=1 where WCA='$competition_wca'");
 

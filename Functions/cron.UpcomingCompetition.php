@@ -6,36 +6,15 @@ function UpcomingCompetition() {
     $_details['message'] = 0;
     $_details['subscribe'] = 0;
 
-    function sort_by_announced_at($a, $b) {
-        return strtotime($a['announced_at']) < strtotime($b['announced_at']);
-    }
+
+    $resultsApi = Suphair \ Wca \ Api ::getCompetitionsUpcoming('cron.UpcomingCompetition');
 
     $upcomingCountry = [];
-
-    $page = 1;
-    while ($page !== FALSE) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://www.worldcubeassociation.org/api/v0/competitions/?sort=start_date&start=" . date('Y-m-d') . "&page=$page");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $results = json_decode($data, true);
-        curl_close($ch);
-        if ($status == 200) {
-            if (sizeof($results)) {
-                foreach ($results as $result) {
-                    if (!isset($upcomingCountry[$result['country_iso2']])) {
-                        $upcomingCountry[$result['country_iso2']] = [];
-                    }
-                    $upcomingCountry[$result['country_iso2']][] = $result;
-                }
-                $page++;
-            } else {
-                $page = FALSE;
-            }
-        } else {
-            $page = FALSE;
+    foreach ($resultsApi as $result) {
+        if (!isset($upcomingCountry[$result['country_iso2']])) {
+            $upcomingCountry[$result['country_iso2']] = [];
         }
+        $upcomingCountry[$result['country_iso2']][] = $result;
     }
 
     DataBaseClass::Query("Select * from MailUpcomingCompetitions where Status=1");
@@ -52,7 +31,9 @@ function UpcomingCompetition() {
             $results = array_merge($results, $upcomingCountry[$country]);
         }
 
-        usort($results, 'sort_by_announced_at');
+        usort($results, function($a, $b) {
+            return strcmp($a['announced_at'], $b['announced_at']);
+        });
 
         $message = '';
         $announced_at = date("Y-m-d H:i:s", strtotime($mailUpcomingCompetition['announced_at']));
