@@ -37,7 +37,7 @@ function GoalsReload() {
     DataBaseClass::Query("Select distinct GC.WCA from GoalCompetition GC join Goal G on GC.WCA=G.Competition where GC.DateStart<current_date() and GC.DateEnd>DATE_ADD(current_date(),INTERVAL -4 Week)");
     $competitions = DataBaseClass::getRows();
     $_details['results']['all'] = sizeof($competitions);
-    $competitions = [['WCA' => 'RamenskoeOpen2017']];
+ 
     foreach ($competitions as $competition) {
         $competition_wca = $competition['WCA'];
         echo $competition_wca . '<br>';
