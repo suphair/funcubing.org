@@ -40,6 +40,7 @@ class Mosaic {
     private static $color_schemas = array("WYORBB","WYORRB","WYOORB","WYYORB","WWYORB","WYORBG","WYORGB");
     CONST START_LAYER = 6;
     CONST CUBE_AMOUNT=300;
+    CONST STEPS=5;
     CONST MAX_PIXELS=7;
     Const StepPicture='Load picture';
     Const StepPreparation='Set cubes';
@@ -94,9 +95,15 @@ class Mosaic {
     
     private static function UpdateID(){
         self::$id = $_SESSION['GUID'];
-        @mkdir("Images");
-        @mkdir("Images/MosaciBuilding");
-        @mkdir("Images/MosaciBuilding/".self::$id);
+        if(!file_exists("Images")){
+            mkdir("Images");
+        }
+        if(!file_exists("Images/MosaciBuilding")){
+        mkdir("Images/MosaciBuilding");
+        }
+        if(!file_exists("Images/MosaciBuilding/".self::$id)){
+            mkdir("Images/MosaciBuilding/".self::$id);
+        }
         self::$add_schema = false;
         self::$dirName = "Images/MosaciBuilding/".self::$id ."/";
         self::$fileNameImage=self::$dirName."Image.jpg";

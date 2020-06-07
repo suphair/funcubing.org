@@ -3,7 +3,7 @@
 namespace Suphair;
 
 const COMMAND_FUNCTION = 'function';
-const VERSION = '1.0.2';
+const VERSION = '1.1.0';
 
 class Cron {
 
@@ -18,7 +18,7 @@ class Cron {
         $id = $this->logBegin("suphair.cron " . VERSION);
 
         $querySelect = "
-            SELECT name, command,type
+            SELECT name, command, type, argument
             FROM cron_config
             WHERE next < now() OR next IS NULL
             ORDER BY next ";
@@ -41,21 +41,21 @@ class Cron {
         $result = mysqli_query($this->connection, $querySelect);
         while ($row = $result->fetch_assoc()) {
             mysqli_query($this->connection, str_replace('{name}', $row['name'], $queryUpdate));
-            $this->execCommand($row['name'], $row['command'], $row['type']);
+            $this->execCommand($row['name'], $row['command'], $row['type'], $row['argument']);
             $details[] = $row['name'];
         }
         $result->free();
         $this->logEnd($id, json_encode($details));
     }
 
-    private function execCommand($name, $command, $type) {
+    private function execCommand($name, $command, $type, $argument) {
         $id = $this->logBegin($name);
         switch ($type) {
             case COMMAND_FUNCTION:
                 if (!function_exists($command)) {
                     $details = "ERROR: $type $command not found";
                 } else {
-                    $details = $command();
+                    $details = $command($argument);
                 }
                 break;
             default: $details = "ERROR: Unsupported type $type";
@@ -76,29 +76,37 @@ class Cron {
         mysqli_query($this->connection, $query);
     }
 
-    public function add($name, $command, $period, $schedule, $type) {
+    public function add($name, $command, $period, $schedule, $type, $argument = FALSE) {
 
         $name_escape = mysqli_real_escape_string($this->connection, $name);
         $command_escape = mysqli_real_escape_string($this->connection, $command);
         $type_escape = mysqli_real_escape_string($this->connection, $type);
+        $schedule_escape = mysqli_real_escape_string($this->connection, $schedule);
+        $argument_escape = mysqli_real_escape_string($this->connection, $argument);
 
         if (!is_numeric($period)) {
             $period = 'null';
         }
 
-        if (!$schedule) {
-            $schedule = 'null';
+        if (!$schedule_escape) {
+            $schedule_escape = 'null';
         } else {
-            $schedule = "'$schedule'";
+            $schedule_escape = "'$schedule_escape'";
+        }
+
+        if (!$argument_escape) {
+            $argument_escape = 'null';
+        } else {
+            $argument_escape = "'$argument_escape'";
         }
 
         $query = "
             REPLACE INTO cron_config
-                (`name`,`command`,`type`,`last`,`next`,`period`,`schedule`)
+                (`name`,`command`,`type`,`last`,`next`,`period`,`schedule`,`argument`)
             VALUES
                 ('$name_escape','$command_escape','$type_escape',
                 null,null,
-                $period,$schedule)";
+                $period,$schedule_escape,'$argument_escape')";
 
         mysqli_query($this->connection, $query);
     }
@@ -130,6 +138,7 @@ class Cron {
                 `next` datetime DEFAULT NULL,
                 `period` int(11) DEFAULT NULL COMMENT 'in minutes',
                 `schedule` time DEFAULT NULL,
+                `argument` varchar(255) NOT NULL,
                 PRIMARY KEY (`name`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";

@@ -152,15 +152,15 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
             <?php
             if (!Mosaic::$step) {
                 $title = "";
-            } elseif (Mosaic::$step <= STEPS) {
+            } elseif (Mosaic::$step <= Mosaic::STEPS) {
                 if (in_array('_', Mosaic::$customColorsSchema) or Mosaic::$step > 1) {
-                    $title = "Step " . Mosaic::$step . " of " . (STEPS) . " &#9642; Click on the image most similar to the original";
+                    $title = "Step " . Mosaic::$step . " of " . (Mosaic::STEPS) . " &#9642; Click on the image most similar to the original";
                 } else {
-                    $title = "Step " . Mosaic::$step . " of " . (STEPS) . " "
+                    $title = "Step " . Mosaic::$step . " of " . (Mosaic::STEPS) . " "
                             . " &#9642; Click on the image if the custom scheme is correct"
                             . " <br>Or <a target='_blank' href='" . PageIndex() . "Actions/MosaicBuildingPDF/" . implode(Mosaic::$customColorsSchema) . "'>generate PDF</a> with custom scheme!";
                 }
-            } elseif (Mosaic::$step == STEPS + 1) {
+            } elseif (Mosaic::$step == Mosaic::STEPS + 1) {
                 $title = "Click on the image to generate a PDF";
             }
             ?>
@@ -187,7 +187,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
                                     </td>
                                     <td valign="top" style="border-bottom:0px;">
                                         <?php
-                                        if (Mosaic::$step <= STEPS and Mosaic::$step) {
+                                        if (Mosaic::$step <= Mosaic::STEPS and Mosaic::$step) {
                                             if (Mosaic::$color == 'W') {
                                                 $Color_1 = 'W';
                                                 $Color_2 = 'B';
@@ -225,7 +225,7 @@ if (Mosaic::$step_name != Mosaic::StepPreparation and Mosaic::$step_name != Mosa
 
                                         <div style="clear:both; padding-top:10px;">
                                             <?php
-                                            if (Mosaic::$step == STEPS + 1) {
+                                            if (Mosaic::$step == Mosaic::STEPS + 1) {
                                                 if (Mosaic::$color == 'W') {
                                                     $Color_1 = 'W';
                                                     $Color_2 = 'B';
