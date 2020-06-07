@@ -33,8 +33,8 @@ if ($width > $heigth) {
 $dx = 30;
 $dy = 10;
 
-$pdf_w = $pdf->w;
-$pdf_h = $pdf->h;
+$pdf_w = $pdf->GetPageWidth();
+$pdf_h = $pdf->GetPageHeight();
 
 $w_total = $Cube_width * $W;
 $h_total = $Cube_height * $H;
@@ -138,7 +138,7 @@ $pdf->SetLineWidth(0.2);
 $pdf->SetDrawColor(0, 0, 0);
 for ($h = 0; $h < $heigth; $h += $H) {
     $pdf->Text($dx - 6, $h * $cell_h + $dy + $cell_h * 3 * 4 / 2 + 4, $Cube_height - $h / $H);
-    $pdf->Text($pdf->w - $dx + 2, $h * $cell_h + $dy + $cell_h * $H / 2 + 4, $Cube_height - $h / $H);
+    $pdf->Text($pdf->GetPageWidth() - $dx + 2, $h * $cell_h + $dy + $cell_h * $H / 2 + 4, $Cube_height - $h / $H);
     $pdf->Line($dx / 2, $h * $cell_h + $dy + $cell_h * $H, $dx * 3 / 2 + $Cube_width * $W * $cell_w, $h * $cell_h + $dy + $cell_h * $H);
 }
 $pdf->Line($dx / 2, $dy, $dx * 3 / 2 + $Cube_width * $W * $cell_w, $dy);
@@ -165,8 +165,8 @@ for ($j = $Cube_height; $j >= 1; $j--) {
     for ($i = 1; $i <= $Cube_width; $i++) {
         $pdf->SetFillColor(200, 200, 200);
         $pdf->addPage("P");
-        $pdf_w = $pdf->w;
-        $pdf_h = $pdf->h;
+        $pdf_w = $pdf->GetPageWidth();
+        $pdf_h = $pdf->GetPageHeight();
         $kk = min(($pdf_w - 2 * $ddx) / $W_max, ($pdf_h - 2 * $ddy) / $H_max);
 
 
@@ -229,4 +229,4 @@ for ($j = $Cube_height; $j >= 1; $j--) {
 
 $pdf->Output(date("dMY") . '_MosaicBuilding.pdf', 'I');
 $pdf->Close();
-?>
+exit();

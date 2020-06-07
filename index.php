@@ -1,33 +1,15 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 session_start();
-
-CONST CUBE_AMOUNT = 300;
-CONST STEPS = 5;
-
-@require( 'Classes/fpdf17/fpdf.php' );
-define('FPDF_FONTPATH', 'Classes/fpdf17/font');
 
 require_once "file_utils.php";
 RequireDir("Classes");
 RequireDir("Functions");
 Suphair \ Config :: init('Config');
+Suphair \ Error :: register(Suphair \ Config :: isLocalhost());
 DataBaseInit();
 Suphair \ Wca \ Api :: setConnection(DataBaseClass::getConection());
-
 IncluderAction();
-
 RequestClass::setRequest();
-
-if (RequestClass::getError(404)) {
-    header('HTTP/1.0 404 not found');
-}
-
-if (RequestClass::getError(401)) {
-    header('HTTP/1.1 401 Unauthorized');
-}
-
 $Section = 'UnofficialEvents';
 
 $isMeeting = false;
@@ -100,6 +82,7 @@ $sectionData = arrayToObject([
         <!-- <?= Suphair \ Config :: info() ?>-->
         <meta name="Description" content="Fun Cubing">
         <script src="https://kit.fontawesome.com/<?= Suphair \ Config :: get('Keys', 'fontawesome') ?>.js" crossorigin="anonymous"></script>
+
         <?php if (isset($sectionData->$Section)) { ?>
             <title><?= $sectionData->$Section->title ?></title>
             <link rel="icon" href="<?= PageLocal() ?>Logo/<?= $sectionData->$Section->logo ?>.png" >
@@ -118,7 +101,7 @@ $sectionData = arrayToObject([
         $Competitor = GetCompetitorData();
         ?>
     </head>
-    <body>        
+    <body>     
         <table class="title">
             <tbody><tr>
                     <td class="logo">

@@ -197,19 +197,23 @@ class DataBaseClass {
         self::$queries[] = $sql;
         if (!self::$query = mysqli_query(self::$connection, $sql)) {
 
-            $time = date("Y-m-d H:i:s");
-            $handle = fopen("SQLError.txt", "a");
-            fwrite($handle, "\r\n$time\r\n$sql\r\n" . mysqli_error(self::$connection));
-            fwrite($handle, print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
-            fclose($handle);
+            #$time = date("Y-m-d H:i:s");
+            #$handle = fopen("SQLError.txt", "a");
+            #fwrite($handle, "\r\n$time\r\n$sql\r\n" . mysqli_error(self::$connection));
+            #fwrite($handle, print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
+            #fclose($handle);
 
-            if ( Suphair \ Config :: isLocalhost()) {
-                echo "<p>[SQLError] $sql :" . mysqli_error(self::$connection) . "<br>" . print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true) . "</p>";
-            } else {
-                echo '"';
-                echo "<h1><font color='red'>Unexpected error. We'll fix it soon.</font></h1>$time";
-            }
+            $error="Query:<br>$sql<br><br>Error:<br>" . mysqli_error(self::$connection)."<br>";
+            
+            #if ( Suphair \ Config :: isLocalhost()) {
+            #    echo "<p>[SQLError] $sql :" . mysqli_error(self::$connection) . "<br>" . print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true) . "</p>";
+            #} else {
+            #    echo '"';
+            #    echo "<h1><font color='red'>Unexpected error. We'll fix it soon.</font></h1>$time";
+            #}
 
+            trigger_error($error, E_USER_ERROR);
+            
             exit();
         }
         if ($out) {

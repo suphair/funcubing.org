@@ -61,7 +61,7 @@
 
 
     <?php
-    $sql = "SELECT 
+    $sql = "SELECT
         Meeting.Website Meeting_Website,
         Meeting.ID Meeting_ID,
         Meeting.Show, 

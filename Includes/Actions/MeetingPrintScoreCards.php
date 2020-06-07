@@ -64,11 +64,11 @@ foreach ($disciplines as $round => $round_disciplines) {
 
         $points = array();
         $points[] = array(5, 5);
-        $points[] = array($pdf->w / 2 + 5, 5);
-        $points[] = array(5, $pdf->h / 2 + 5);
-        $points[] = array($pdf->w / 2 + 5, $pdf->h / 2 + 5);
-        $sizeX = $pdf->w / 2 - 10;
-        $sizeY = $pdf->h / 2 - 10;
+        $points[] = array($pdf->GetPageWidth() / 2 + 5, 5);
+        $points[] = array(5, $pdf->GetPageHeight() / 2 + 5);
+        $points[] = array($pdf->GetPageWidth() / 2 + 5, $pdf->GetPageHeight() / 2 + 5);
+        $sizeX = $pdf->GetPageWidth() / 2 - 10;
+        $sizeY = $pdf->GetPageHeight() / 2 - 10;
 
         if (!isset($cards[$round][$discipline]) or isset($_GET['blank'])) {
             $list = 1;
@@ -82,13 +82,10 @@ foreach ($disciplines as $round => $round_disciplines) {
         for ($l = 0; $l < $list; $l++) {
             $pdf->AddPage();
             $pdf->SetLineWidth(0.5);
-            $pdf->Line(5, $pdf->h / 2, $pdf->w - 5, $pdf->h / 2);
-            $pdf->Line($pdf->w / 2, 5, $pdf->w / 2, $pdf->h - 5);
+            $pdf->Line(5, $pdf->GetPageHeight() / 2, $pdf->GetPageWidth() - 5, $pdf->GetPageHeight() / 2);
+            $pdf->Line($pdf->GetPageWidth() / 2, 5, $pdf->GetPageWidth() / 2, $pdf->GetPageHeight() - 5);
             for ($i = 0; $i < 4; $i++) {
                 $point = $points[$i];
-
-                //$pdf->Image("Image/MeetingImage/$discipline.png",$point[0],$point[1]+1,10,10,'png');
-                //$pdf->Image("Image/UC_B.png",$point[0]+$pdf->w /2-20,$point[1]+1,10,10,'png');
 
                 if (isset($competitors[$i + $l * 4])) {
                     $competitor = $competitors[$i + $l * 4];
@@ -151,8 +148,4 @@ foreach ($disciplines as $round => $round_disciplines) {
 }
 $pdf->Output($meeting['Name'] . '_ScoreCards_' . $_GET['Discipline'] . ".pdf", 'I');
 $pdf->Close();
-
-
-
-
-
+exit();

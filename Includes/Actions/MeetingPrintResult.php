@@ -53,7 +53,7 @@ foreach ($resultsOut as $results) {
     $pages = ceil(sizeof($results) / $max_page);
 
     $xStart = 5;
-    $xEnd = $pdf->w - 5;
+    $xEnd = $pdf->GetPageWidth() - 5;
 
     for ($p = 0; $p < $pages; $p++) {
         $start = $p * $max_page;
@@ -72,13 +72,13 @@ foreach ($resultsOut as $results) {
 
             if ($c % 2 == 0) {
                 $pdf->SetFillColor(240, 240, 240);
-                $pdf->Rect(5, 38 + ($n - 1) * 8, $pdf->w - 10, 8, "F");
+                $pdf->Rect(5, 38 + ($n - 1) * 8, $pdf->GetPageWidth() - 10, 8, "F");
             }
             $pdf->SetLineWidth(0.3);
             if ($n > 0) {
-                $pdf->Line(5, 38 + ($n - 1) * 8, $pdf->w - 5, 38 + ($n - 1) * 8);
+                $pdf->Line(5, 38 + ($n - 1) * 8, $pdf->GetPageWidth() - 5, 38 + ($n - 1) * 8);
             }
-            $pdf->Line(5, 38 + $n * 8, $pdf->w - 5, 38 + $n * 8);
+            $pdf->Line(5, 38 + $n * 8, $pdf->GetPageWidth() - 5, 38 + $n * 8);
 
             $pdf->SetFont('Arial', 'B', 12);
             $pdf->Text(7, 35 + $n * 8, $result['MeetingCompetitorDiscipline_Place']);
@@ -120,15 +120,6 @@ foreach ($resultsOut as $results) {
             }
         }
 
-        //if(file_exists("Image/Competition/".$data['Competition_WCA'].'.jpg')){
-        //    $pdf->Image("Image/Competition/".$data['Competition_WCA'].'.jpg',5,5,25,25,'jpg');
-        //}
-        //$pdf->Image("Image/MeetingImage/".$meeting['MeetingDisciplineList_Name'].'.png',5,5,20,20,'png');
-        //$pdf->Image("Image/UC_B.png",$pdf->w-25,5,20,20,'png');
-
-
-
-
         $pdf->SetFont('msserif', '', 18);
         $lat = iconv('utf-8', 'windows-1251', $result['Meeting_Name'] . ', ' . date('j F Y', strtotime($result['Meeting_Date'])));
         $pdf->Text(5, 23, $lat);
@@ -143,7 +134,7 @@ foreach ($resultsOut as $results) {
         $pdf->Text(5, 13, $lat . ' / round ' . $result['MeetingDiscipline_Round']);
         $pdf->SetFont('Arial', '', 20);
         $pdf->SetLineWidth(0.3);
-        $pdf->Line(5, 38, $pdf->w - 5, 38);
+        $pdf->Line(5, 38, $pdf->GetPageWidth() - 5, 38);
 
         $pdf->SetLineWidth(0.1);
         $pdf->SetFont('Arial', '', 10);

@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 if (!isset($_POST['FriendWCAID']) or ! $_POST['FriendWCAID']) {
     SetMessageName("AddFriendError", "WCA ID empty");
     header('Location: ' . $_SERVER['HTTP_REFERER']);

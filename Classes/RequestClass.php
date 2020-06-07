@@ -139,12 +139,14 @@ class RequestClass {
         self::$title .= ' &#9642;  404';
         self::$error[404] = $error;
         self::$page = "error";
+        header('HTTP/1.0 404 not found');
     }
 
     private static function set401($error) {
         self::$title .= ' &#9642;  401';
         self::$error[401] = $error;
         self::$page = "error";
+        header('HTTP/1.1 401 Unauthorized');
     }
 
     public static function getParam1() {

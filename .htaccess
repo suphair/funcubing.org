@@ -24,4 +24,5 @@ RewriteRule .* index.php [L,QSA]
 php_value session.gc_maxlifetime 7200
 php_value session.cookie_lifetime 0
 php_value session.save_path Sessions
+php_value display_errors on
 

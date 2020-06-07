@@ -97,7 +97,8 @@ class Smtp {
     }
 
     private function _parseServer($socket, $response) {
-        while (@substr($responseServer, 3, 1) != ' ') {
+        $responseServer='xxx';
+        while (substr($responseServer, 3, 1) != ' ') {
             if (!($responseServer = fgets($socket, 256))) {
                 return false;
             }
