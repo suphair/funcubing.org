@@ -4,7 +4,7 @@ namespace Suphair;
 
 class Error {
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
     const _NEW = 'new';
     const _DONE = 'done';
     const _SKIP = 'skip';
@@ -85,7 +85,9 @@ class Error {
                 . "<b>SESSION</b><br>"
                 . "<pre>" . print_r($_SESSION, true) . "</pre>"
                 . "<b>debug_backtrace</b><br>"
-                . "<pre>" . print_r($backtrace, true) . "</pre>";
+                . "<pre>" . print_r($backtrace, true) . "</pre>"
+                . "<b>VERSION</b><br>"
+                . self :: VERSION;
 
         if (self::$echo) {
             echo $text;
@@ -103,7 +105,7 @@ class Error {
         if ($errno == E_ERROR
                 or $errno == E_USER_ERROR
                 or self::$echo) {
-            exit("<script>alert('Error: #$number')</script>Error: #$number");
+            exit("<script>alert('Error: #$number')</script><p>Error: #$number</p>");
         } else {
             return false;
         }
