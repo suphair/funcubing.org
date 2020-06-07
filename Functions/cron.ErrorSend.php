@@ -1,6 +1,6 @@
 <?php
 
-function errorSend() {
+function errorSend($daily = 0 ) {
 
     $errors = Suphair \ Error :: getAll();
     $count = 0;
@@ -10,10 +10,16 @@ function errorSend() {
         }
     }
 
-    SendMail(
+    if($count){
+        SendMail(
             Suphair \ Config :: get('Admin', 'email'), "FunCubing error: $count"
             , "New errors on the site ".PageIndex().": $count<br><a href='http:". PageIndex()."Classes/suphair_error'>http:". PageIndex()."Classes/suphair_error</a>"
-    );
-
+        );
+    }elseif($daily){
+        SendMail(
+            Suphair \ Config :: get('Admin', 'email'), "FunCubing NO ERROR"
+            , "No new errors on the site ".PageIndex().": $count<br><a href='http:". PageIndex()."Classes/suphair_error'>http:". PageIndex()."Classes/suphair_error</a>"
+        );
+    }
     return $count;
 }
