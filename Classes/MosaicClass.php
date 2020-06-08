@@ -141,7 +141,9 @@ class Mosaic {
     
     public static function DeleteStep(){
         DeleteDirectoryFiles(self::$id."/".self::$step);
-        @mkdir(self::$dirNameStep);
+        if(!file_exists(self::$dirNameStep)){
+            mkdir(self::$dirNameStep);
+        }
     }
     
     public static function AddImage($step,$code){
