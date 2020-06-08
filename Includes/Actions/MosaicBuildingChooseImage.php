@@ -2,9 +2,7 @@
 
 Mosaic::Init();
 
-if ($_POST['Step'] > 0 and $_POST['Step'] <= STEPS) {
-    //print_r($_POST);
-    //exit();
+if ($_POST['Step'] > 0 and $_POST['Step'] <= Mosaic::STEPS) {
     Mosaic::AddImage($_POST['Step'], $_POST['Code']);
     Mosaic::generatePaints();
 }
