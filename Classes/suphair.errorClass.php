@@ -4,7 +4,7 @@ namespace Suphair;
 
 class Error {
 
-    const VERSION = '1.0.2';
+    const VERSION = '1.0.3';
     const _NEW = 'new';
     const _DONE = 'done';
     const _SKIP = 'skip';
@@ -103,9 +103,11 @@ class Error {
             fclose($handle);
         }
 
-        if ($errno == E_ERROR
+        if (self::$echo
+                or $errno == E_ERROR
                 or $errno == E_USER_ERROR
-                or self::$echo) {
+                or $errno == E_CORE_ERROR
+                or $errno == E_COMPILE_ERROR) {
             exit("<script>alert('Error: #$number')</script><p>Error: #$number</p>");
         } else {
             return false;
@@ -130,9 +132,12 @@ class Error {
             default:
                 $type = E_USER_ERROR;
         }
-        trigger_error(
-                '[shutdown] ' . print_r($err, true), $type
-        );
+
+        if (!in_array($err['type'], [E_WARNING])) {
+            trigger_error(
+                    '[shutdown] ' . print_r($err, true), $type
+            );
+        }
     }
 
     private static function dir() {
