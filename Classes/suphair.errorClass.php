@@ -4,10 +4,11 @@ namespace Suphair;
 
 class Error {
 
-    const VERSION = '1.0.1';
+    const VERSION = '1.0.2';
     const _NEW = 'new';
     const _DONE = 'done';
     const _SKIP = 'skip';
+    const _WORK = 'work';
 
     private static $echo;
 
@@ -154,8 +155,16 @@ class Error {
         return self::get(self::_NEW);
     }
 
+    static function getWork() {
+        return self::get(self::_WORK);
+    }
+
     static function getDone() {
         return self::get(self::_DONE);
+    }
+
+    static function getSkip() {
+        return self::get(self::_SKIP);
     }
 
     static function getAll() {
@@ -184,37 +193,46 @@ class Error {
     }
 
     static function done($id) {
-        if (!$id) {
-            return;
-        }
         self::setStatus($id, self::_DONE);
     }
 
+    static function work($id) {
+        self::setStatus($id, self::_WORK);
+    }
+
+    static function skip($id) {
+        for ($i = 1; $i <= $id; $i++) {
+            $status = self::getStatus($id);
+            if (in_array($status, [self::_NEW, self::_WORK])) {
+                self::setStatus($id, self::_SKIP);
+            }
+        }
+    }
+
+    private static function getStatus($id) {
+        if (!$id) {
+            return;
+        }
+        $dir = self::dir();
+        foreach (scandir($dir) as $file) {
+            $explode = explode("_", $file);
+            if (sizeof($explode) == 4
+                    and $explode[0] == $id) {
+                return $explode[3];
+            }
+        }
+    }
+
     private static function setStatus($id, $status) {
+        if (!$id) {
+            return;
+        }
         $dir = self::dir();
         foreach (scandir($dir) as $file) {
             $explode = explode("_", $file);
             if (sizeof($explode) == 4
                     and $explode[0] == $id) {
                 $explode[3] = $status;
-                $newFile = implode("_", $explode);
-                rename($dir . "/" . $file
-                        , $dir . "/" . $newFile);
-            }
-        }
-    }
-
-    static function skip($id) {
-        if (!$id) {
-            return;
-        }
-        $dir = self::dir();
-        foreach (scandir($dir) as $file) {
-            $explode = explode("_", $file);
-            if (sizeof($explode) == 4
-                    and $explode[3] == self::_NEW
-                    and $explode[0] <= $id) {
-                $explode[3] = self::_SKIP;
                 $newFile = implode("_", $explode);
                 rename($dir . "/" . $file
                         , $dir . "/" . $newFile);
