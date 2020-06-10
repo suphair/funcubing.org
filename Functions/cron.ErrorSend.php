@@ -17,7 +17,7 @@ function errorSend($daily = 0) {
     $skip = $counts[Suphair \ Error :: _SKIP];
     $done = $counts[Suphair \ Error :: _DONE];
 
-    if ($daily) {
+    if (!$daily) {
         if ($new) {
             SendMail(
                     Suphair \ Config :: get('Admin', 'email'), "FunCubing error: $new"

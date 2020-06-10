@@ -10,7 +10,7 @@ class Oauth {
     protected static $clientSecret;
     protected static $connection;
 
-    const VERSION = '1.1.0';
+    const VERSION = '1.1.1';
 
     private function __construct() {
         
@@ -73,17 +73,25 @@ class Oauth {
                         'redirect_uri' => self::$urlRefer
                     ]
             );
+            $ch = curl_init("https://www.worldcubeassociation.org/oauth/token");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded', '"Accept-Language: en-us,en;q=0.5";']);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+            $result = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            curl_close($ch);
 
-            $opts = array('http' =>
-                array(
-                    'method' => 'POST',
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $postdata
-                )
-            );
-            $context = stream_context_create($opts);
-            $token = file_get_contents("https://www.worldcubeassociation.org/oauth/token", false, $context);
-            $accessToken = json_decode($token)->access_token;
+            if (isset(json_decode($result)->error)) {
+                trigger_error("wca.oauth.getToken: $result <br>" . print_r($postdata, true), E_USER_ERROR);
+            }
+
+            if ($status != 200) {
+                trigger_error("wca.oauth.getToken: $status<br>$url", E_USER_ERROR);
+            }
+
+            $accessToken = json_decode($result)->access_token;
 
             if (!$accessToken) {
                 self::location();
@@ -94,7 +102,13 @@ class Oauth {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', $authorization));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
             curl_close($ch);
+
+            if ($status != 200) {
+                trigger_error("wca.oauth.getMe: $status<br>$url", E_USER_ERROR);
+            }
 
             if (isset(json_decode($result)->me->id)) {
                 $me = json_decode($result)->me;
