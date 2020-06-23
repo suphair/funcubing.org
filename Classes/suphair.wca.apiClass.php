@@ -6,7 +6,7 @@ class Api {
 
     protected static $connection;
 
-    const VERSION = '1.0.1';
+    const VERSION = '1.0.2';
     const URL = 'https://www.worldcubeassociation.org/api/v0/';
     const MINUTES = 60;
 
@@ -29,56 +29,54 @@ class Api {
     private function __wakeup() {
         
     }
-    
-    public static function setConnection($connection){
-        self::$connection=$connection;
+
+    public static function setConnection($connection) {
+        self::$connection = $connection;
     }
-    
-    public static function getUserCompetitionsUpcoming($id,$context,$assoc=true){
-        $options=['upcoming_competitions' => 'true'];
+
+    public static function getUserCompetitionsUpcoming($id, $context, $assoc = true) {
+        $options = ['upcoming_competitions' => 'true'];
         return self::getUser($id, $context, $options, $assoc);
     }
-    
-    public static function getUser($id,$context, $options = [], $assoc = true){
-        return self:: curl($context, $options, $assoc,"users/$id");   
-    }
-    
-    public static function getPerson($id,$context, $options = [], $assoc = true){
-        return self:: curl($context, $options, $assoc,"persons/$id");   
-    }
-    
-    
-    public static function getCompetitionsUpcoming( $context, $assoc = true) {
-        $options=['start' => date('Y-m-d')];
-        return self::getCompetitions( $context, $options, $assoc);
-    }
-                        
-    public static function getCompetitions( $context, $options = [], $assoc = true) {
 
-        $options['sort']='start_date';
-        $options['page']=1;
-        return self:: curl($context, $options, $assoc,'competitions');
-    }
-    
-        
-    public static function getCompetition($wid,$context, $options = [], $assoc = true){
-        return self:: curl($context, $options, $assoc,"competitions/$wid");   
-    }
-    
-    public static function getCompetitionResults($wid,$context, $options = [], $assoc = true){
-        return self:: curl($context, $options, $assoc,"competitions/$wid/results");   
-    }
-    
-    public static function getCompetitionRegistrations( $wca,$context,$options = [], $assoc = true) {
-        return self:: curl($context, $options, $assoc,"competitions/$wca/registrations");
+    public static function getUser($id, $context, $options = [], $assoc = true) {
+        return self:: curl($context, $options, $assoc, "users/$id");
     }
 
-    private static function curl($context, $options, $assoc,$method){
-        $key="$method:";
+    public static function getPerson($id, $context, $options = [], $assoc = true) {
+        return self:: curl($context, $options, $assoc, "persons/$id");
+    }
+
+    public static function getCompetitionsUpcoming($context, $assoc = true) {
+        $options = ['start' => date('Y-m-d')];
+        return self::getCompetitions($context, $options, $assoc);
+    }
+
+    public static function getCompetitions($context, $options = [], $assoc = true) {
+
+        $options['sort'] = 'start_date';
+        $options['page'] = 1;
+        return self:: curl($context, $options, $assoc, 'competitions');
+    }
+
+    public static function getCompetition($wid, $context, $options = [], $assoc = true) {
+        return self:: curl($context, $options, $assoc, "competitions/$wid");
+    }
+
+    public static function getCompetitionResults($wid, $context, $options = [], $assoc = true) {
+        return self:: curl($context, $options, $assoc, "competitions/$wid/results");
+    }
+
+    public static function getCompetitionRegistrations($wca, $context, $options = [], $assoc = true) {
+        return self:: curl($context, $options, $assoc, "competitions/$wca/registrations");
+    }
+
+    private static function curl($context, $options, $assoc, $method) {
+        $key = "$method:";
         foreach ($options as $value => $option) {
             $key .= mysqli_real_escape_string(self::$connection, "$value=$option;");
         }
-        
+
         $cash = self::getCash($key);
         if ($cash) {
             return json_decode($cash, $assoc);
@@ -87,10 +85,10 @@ class Api {
         $returnData = false;
         while (TRUE) {
             $query = http_build_query($options);
-            if($query){
-            $url = self::URL.$method. "/?" . $query;
-            }else{
-            $url = self::URL.$method;    
+            if ($query) {
+                $url = self::URL . $method . "/?" . $query;
+            } else {
+                $url = self::URL . $method;
             }
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -100,16 +98,16 @@ class Api {
             $dataJson = json_decode($data);
             curl_close($ch);
             self::log($url, $data, $status, $context);
-            if ($status != 200) {
-                break;
-            }
             if (!$dataJson) {
                 break;
             }
             $returnData .= $data;
-            if(isset($options['page'])){
-                $options['page']++;
-            }else{
+            if ($status != 200) {
+                break;
+            }
+            if (isset($options['page'])) {
+                $options['page'] ++;
+            } else {
                 break;
             }
         }
@@ -118,16 +116,16 @@ class Api {
         self::setCash($key, $returnData);
 
         if (!$returnData) {
-            if(isset($options['page'])){
+            if (isset($options['page'])) {
                 $returnData = '[]';
-            }else{
+            } else {
                 return false;
             }
         }
 
         return json_decode($returnData, $assoc);
     }
-    
+
     private static function log($request, $response, $status, $context) {
 
         $request_escape = mysqli_real_escape_string(self::$connection, $request);
