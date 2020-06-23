@@ -11,6 +11,7 @@ class Oauth {
     protected static $connection;
 
     const VERSION = '1.1.1';
+    const ME = 'suphair.wca.oauth.me';
 
     private function __construct() {
         
@@ -113,10 +114,10 @@ class Oauth {
             if (isset(json_decode($result)->me->id)) {
                 $me = json_decode($result)->me;
                 self::log($me);
-                $_SESSION['suphair.wca.oauth.me'] = $me;
+                $_SESSION[self::ME] = $me;
                 return $me;
             } else {
-                $_SESSION['suphair.wca.oauth.me'] = false;
+                $_SESSION[self::ME] = false;
                 self::location();
             }
         }
@@ -192,6 +193,14 @@ class Oauth {
         if (sizeof($errors)) {
             trigger_error("wca.oauth.createTables: " . json_encode($errors), E_USER_ERROR);
         }
+    }
+    
+    static function out(){
+        $_SESSION[self::ME] = FALSE;
+    }
+    
+    static function me(){
+        return $_SESSION[self::ME] ??= FALSE;
     }
 
 }
