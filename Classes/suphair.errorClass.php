@@ -4,7 +4,7 @@ namespace Suphair;
 
 class Error {
 
-    const VERSION = '1.0.3';
+    const VERSION = '1.0.5';
     const _NEW = 'new';
     const _DONE = 'done';
     const _SKIP = 'skip';
@@ -66,7 +66,7 @@ class Error {
             }
             $maxNumber = max([$maxNumber, $explode[0]]);
             if ($explode[2] == $cash
-                    and $explode[3] == self::_NEW) {
+                    and in_array($explode[3], [self::_NEW, self::_WORK])) {
                 $number = $explode[0];
                 $newError = false;
             }
@@ -133,7 +133,7 @@ class Error {
                 $type = E_USER_ERROR;
         }
 
-        if (!in_array($err['type'], [E_WARNING])) {
+        if (!in_array($err['type'], [E_WARNING, E_NOTICE])) {
             trigger_error(
                     '[shutdown] ' . print_r($err, true), $type
             );
@@ -183,7 +183,7 @@ class Error {
             $explode = explode("_", $file);
             if (sizeof($explode) == 4
                     and ( $explode[3] == $status
-                    or ! $status)) {
+                    or!$status)) {
                 $result[$explode[0]] = [
                     'err' => $explode[1],
                     'hash' => $explode[2],
@@ -207,9 +207,9 @@ class Error {
 
     static function skip($id) {
         for ($i = 1; $i <= $id; $i++) {
-            $status = self::getStatus($id);
+            $status = self::getStatus($i);
             if (in_array($status, [self::_NEW, self::_WORK])) {
-                self::setStatus($id, self::_SKIP);
+                self::setStatus($i, self::_SKIP);
             }
         }
     }
