@@ -15,7 +15,7 @@ if ($comp_data->event_rounds[$event]->id ?? FALSE) {
     $events = $comp_data->event_rounds;
 }
 
-@$pdf = new FPDF('P', 'mm');
+$pdf = new FPDF('P', 'mm');
 
 foreach ($events as $event) {
 
@@ -79,17 +79,19 @@ foreach ($events as $event) {
             }
 
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Text($point[0] + 35, $point[1] + $Ry + 1, 'Result');
+            $pdf->Text($point[0] + 40, $point[1] + $Ry + 1, 'Result');
             $pdf->Text($point[0] + 67, $point[1] + $Ry + 1, 'Judge');
             $pdf->Text($point[0] + 83, $point[1] + $Ry + 1, 'Comp');
+            $pdf->Text($point[0] + 15, $point[1] + $Ry + 1, 'Scr');
 
             $format = $formats_dict[$comp_data->events[$event->event_dict]->format_dict];
             foreach (range(1, $format->attempts) as $k) {
                 $pdf->SetFont('Arial', '', 14);
                 $pdf->Text($point[0], $point[1] + $Ry + 10 + ($k - 1) * 16, $k);
-                $pdf->Rect($point[0] + 10, $point[1] + $Ry + 2 + ($k - 1) * 16, 53, 13);
+                $pdf->Rect($point[0] + 26, $point[1] + $Ry + 2 + ($k - 1) * 16, 37, 13);
                 $pdf->Rect($point[0] + 64, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
                 $pdf->Rect($point[0] + 80, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
+                $pdf->Rect($point[0] + 10, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
             }
 
             $pdf->SetFont('Arial', '', 14);
