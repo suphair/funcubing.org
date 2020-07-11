@@ -2,7 +2,7 @@
 
 class errors {
 
-    const VERSION = '2.0.0';
+    const VERSION = '2.0.1';
     const _NEW = 'new';
     const _DONE = 'done';
     const _SKIP = 'skip';
@@ -145,13 +145,13 @@ class errors {
     static function register($echo = false) {
         error_reporting(E_ALL);
         ini_set('display_errors', 0);
-        set_error_handler("Suphair\Error::handler");
+        set_error_handler("errors::handler");
         self::$echo = $echo;
         $dir = self::dir();
         if (!file_exists($dir)) {
             mkdir($dir);
         }
-        register_shutdown_function("Suphair\Error::shutdown");
+        register_shutdown_function("errors::shutdown");
     }
 
     static function getNew() {
