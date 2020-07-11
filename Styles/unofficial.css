@@ -1,0 +1,33 @@
+.registration_event img{
+    border: 1px solid white;   
+}
+
+.registration_event:hover{
+    cursor: pointer;
+    color:green;
+}
+
+.registration_event:hover  img{
+    border: 1px solid green;
+}
+
+.next_round{
+    color: var(--red);
+    font-weight:bold;
+}
+
+.podium{
+    color: var(--red);
+    font-weight:bold;
+}
+
+span.checked{
+    background:#FFFFFF;
+    color:#000000;
+    border:1px solid var(--light_green);
+    border-radius: 5px;
+}
+
+.select{
+    color: var(--red); 
+}

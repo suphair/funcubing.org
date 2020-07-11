@@ -1,0 +1,110 @@
+form{
+    padding:0px;
+    margin:0px;
+}
+
+div.Wrapper{
+    clear:both;
+    padding: 10px;
+}
+
+.images {
+    cursor:pointer
+}
+
+img.pdf{
+    border: 1px solid rgb(255, 255, 255); 
+}
+
+img.choose {
+ border: 1px solid rgb(170, 170, 170); 
+}         
+
+img.choose:hover a:hover img.pdf {
+ border: 1px solid white;
+}
+
+
+div.wrapper_img{
+    width:200px;
+    padding:10px;
+}
+
+div.wrapper_img img.images, div.wrapper_img img.images_src{
+    max-height: 100%;
+    max-width: 100%;
+    display: block;
+    margin: auto;
+    height: auto;
+}
+
+div.wrapper>div{
+    text-align: center;
+}
+
+
+
+div.custom_schema{
+    height:120px;
+}
+
+input{
+    font-size:14px;
+}
+
+.CustomSchema img, img.border{
+    border:1px solid black;
+    border-radius:4px;
+    padding:4px;
+}
+
+img.color{
+    width: 15px;
+    padding:0px;
+    margin:2px;
+    border-radius: 5px;
+
+}
+
+img.selected{
+    border:1px solid black;
+    padding:0px;
+    width: 15px;
+}
+
+
+.CustomSchema{
+    padding:10px;
+    float:left;
+}
+
+p{
+    padding:0px;
+    margin:0px;
+}
+
+input[type=submit]{
+    cursor: pointer;
+}
+
+div.content_border{
+    border: 1px solid var(--green);
+    text-align: left;
+    clear:both;
+    padding: 20px;
+    margin: 5px; 
+    border-radius: 20px;
+    display:inline-block;
+}
+
+
+.custom{
+    padding :0px;
+    margin:0px;
+    background-color:white;
+}
+.custom img{
+    width: 17px;
+    padding :0px;
+    margin:0px;
+}

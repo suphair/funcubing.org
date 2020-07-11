@@ -1,19 +1,19 @@
 <?php
 
-function SendMail($to, $subject, $body) {
+function sendMail($to, $subject, $body) {
 
-    $smpt = new Suphair\Smtp(
-            DataBaseClass::getConection()
-            , Suphair \ Config :: get('SMTP', 'username')
-            , Suphair \ Config :: get('SMTP', 'password')
-            , Suphair \ Config :: get('SMTP', 'host')
-            , Suphair \ Config :: get('SMTP', 'port'));
+    $smpt = new smtp(
+            db::connection()
+            , config::get('SMTP', 'username')
+            , config::get('SMTP', 'password')
+            , config::get('SMTP', 'host')
+            , config::get('SMTP', 'port'));
     $result = $smpt->send(
             $to
             , $subject
             , $body
-            , Suphair \ Config :: get('SMTP', 'from')
-            , Suphair \ Config :: get('SMTP', 'username')
+            , config::get('SMTP', 'from')
+            , config::get('SMTP', 'username')
     );
     return $result;
 }

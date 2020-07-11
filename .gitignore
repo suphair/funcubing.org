@@ -1,8 +1,11 @@
 .DS_Store
-/fontawesome-free-5.12.0-web/
+/fontawesome-free-5.13.0-web/
 /flag-icon-css/
 /Images/
 /Sessions/
 /Config/
 /Classes/fpdf182/
-/Classes/suphair_error/
+/Classes/errors/
+/Styles/fontawesome-free-5.13.0-web/
+/Styles/flag-icon-css/
+/Scripts/
