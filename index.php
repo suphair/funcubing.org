@@ -1,9 +1,4 @@
 <?php
-
-#if($_SERVER['REMOTE_ADDR']!='31.10.109.171'){
-#    die('! The site is temporarily unavailable.');
-#}
-
 session_start();
 
 foreach (['Classes', 'Functions'] as $dir) {
