@@ -4,7 +4,7 @@ class wcaapi {
 
     protected static $connection;
 
-    const VERSION = '2.0.0';
+    const VERSION = '2.0.1';
     const URL = 'https://www.worldcubeassociation.org/api/v0/';
     const MINUTES = 60;
 
@@ -110,6 +110,9 @@ class wcaapi {
             }
         }
 
+        if (isset($options['page'])) {
+            $returnData = str_replace("][",",",$returnData);
+        }
 
         self::setCash($key, $returnData);
 
@@ -120,7 +123,7 @@ class wcaapi {
                 return false;
             }
         }
-
+        
         return json_decode($returnData, $assoc);
     }
 
