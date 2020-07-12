@@ -1,10 +1,3 @@
-<?php
-db::exec("INSERT INTO announcements SET email = '{$me->email}', user = {$me->id}, countries='" . json_encode([$me->country_iso2]) . "'
-        ON DUPLICATE KEY UPDATE email = '{$me->email}' ");
-
-$announcements = db::row("SELECT * FROM announcements WHERE user = {$me->id}");
-$countries = json_decode($announcements->countries);
-?>   
 <table class='table_info'>
     <tr>
         <td>
@@ -90,7 +83,6 @@ $countries = json_decode($announcements->countries);
         <?php if (!$countryData) continue; ?>
         <tr>
             <td>
-
                 <span class='flag-icon flag-icon-<?= strtolower($country) ?>'></span>
             </td>
             <td>

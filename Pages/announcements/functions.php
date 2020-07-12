@@ -10,10 +10,10 @@ function cron() {
     $countries = [];
     
     foreach ($competitions as $competition) {
-        if (!isset($countries[$competition->country_iso2])) {
-            $countries[$competition->country_iso2] = [];
+        $countries[$competition->country_iso2] ??= [];
+        if(!$competition->cancelled_at){
+            $countries[$competition->country_iso2][] = $competition;
         }
-        $countries[$competition->country_iso2][] = $competition;
     }
 
     $announcements = \db::rows("SELECT * FROM announcements WHERE Status = 1");

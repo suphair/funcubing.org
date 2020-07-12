@@ -8,7 +8,12 @@
     <?php
     $me = wcaoauth::me();
     if ($me) {
+        db::exec("INSERT INTO announcements SET email = '{$me->email}', user = {$me->id}, countries='" . json_encode([$me->country_iso2]) . "'
+        ON DUPLICATE KEY UPDATE email = '{$me->email}' ");
+        $announcements = db::row("SELECT * FROM announcements WHERE user = {$me->id}");
+        $countries = json_decode($announcements->countries);
         include 'authorized.php';
+        include 'upcoming.php';
     } else {
         include 'unauthorized.php';
     }
