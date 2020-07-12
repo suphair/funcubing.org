@@ -207,10 +207,11 @@ function cron() {
     foreach ($competitionsDetails as $wca) {
         $competitionData = \wcaapi::getCompetition($wca, __FILE__ . ': ' . __LINE__, [], FALSE);
         $error = $competitionData->error ?? FALSE;
-        if (!$error) {
+        if (!$error and!($competitionData->cancelled_at ?? FALSE)) {
             updateCompetition($competitionData);
             $details['competitions']['update']++;
-        } elseif ($error == "Competition with id $wca not found") {
+        }
+        if ($error == "Competition with id $wca not found" or ($competitionData->cancelled_at ?? FALSE)) {
             \db::exec("DELETE FROM goals_competitions WHERE wca='$wca'");
             $details['competitions']['delete']++;
         }
