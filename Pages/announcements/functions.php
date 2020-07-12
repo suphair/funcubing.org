@@ -7,8 +7,8 @@ function cron() {
     $_details['subscribe'] = 0;
 
     $competitions = \wcaapi::getCompetitionsUpcoming(__FILE__ . ': ' . __FUNCTION__, false);
-
     $countries = [];
+    
     foreach ($competitions as $competition) {
         if (!isset($countries[$competition->country_iso2])) {
             $countries[$competition->country_iso2] = [];
@@ -57,7 +57,7 @@ function cron() {
                         <?php
                         $delegates = [];
                         foreach ($result->delegates as $delegate) {
-                            $delegates[] = short_Name($delegate->name);
+                            $delegates[] = explode(" (",$delegate->name)[0];
                         }
                         ?>
                         <?= implode(", ", $delegates); ?>;
@@ -65,7 +65,7 @@ function cron() {
                         <?php
                         $organizers = [];
                         foreach ($result->organizers as $organizer) {
-                            $organizers[] = short_Name($organizer->name);
+                            $organizers[] = explode(" (",$organizer->name)[0];
                         }
                         ?>
                         <?= implode(", ", $organizers); ?>;
@@ -82,9 +82,9 @@ function cron() {
 
             $subject = "FunCubing: New competitions announce";
             $message .= "<hr> Your email: " . $announcement->email . "; Tracked countries: " . $announcement->countries;
-            $message .= "<br><a href='http://" . Pageindex() . "MailUpcomingCompetition'>Subscription management</a>";
+            $message .= "<br><a href='http://" . Pageindex() . "announcements'>Subscription management</a>";
 
-            if (\Suphair\Config::isLocalhost()) {
+            if (\config::isLocalhost()) {
                 echo "<br><b>$subject</b><br>";
                 echo $message;
             }
