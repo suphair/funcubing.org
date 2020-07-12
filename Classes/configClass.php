@@ -2,7 +2,7 @@
 
 class config {
 
-    const VERSION = '2.0.0';
+    const VERSION = '2.0.1';
 
     protected static $dir;
     protected static $server;
@@ -73,6 +73,23 @@ class config {
         } else {
             trigger_error("config: value $section/$param not found", E_USER_ERROR);
         }
+    }
+
+    static function template($dir) {
+        $configDefault = parse_ini_file(self::$configDefault, true);
+        $configServer = parse_ini_file(self::$configServer, true);
+        $config = '';
+        $config .= ';version ' . self::VERSION . "\n";
+        $config .= ';' . date('d M Y') . "\n";
+        foreach (array_merge($configDefault, $configServer) as $section => $values) {
+            $config .= "[$section]\n";
+            foreach ($values as $key => $value) {
+                $config .= "    $key=\n";
+            }
+        }
+        $handle = fopen("$dir/config_template.ini", "w+");
+        fwrite($handle, $config);
+        fclose($handle);
     }
 
 }
