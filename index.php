@@ -49,6 +49,11 @@ if ($request_0 == 'cron') {
     include('Pages/cron/index.php');
 }
 
+if ($request_0 == 'template') {
+    include('Pages/template/index.php');
+}
+
+
 $title = [
     'unofficial' => 'Unofficial Competitions',
     'goals' => 'Competition Goals',
@@ -83,9 +88,9 @@ $title = [
             <tbody><tr>
 
                     <?php if ($title) { ?>
-                    <td class="header">
-                        <a href="<?= PageIndex() ?>">FC</a>    
-                    </td>
+                        <td class="header">
+                            <a href="<?= PageIndex() ?>">FC</a>    
+                        </td>
                         <td class="logo">
                             <img src="<?= PageIndex() ?>Pages/<?= $request_0 ?>/icon.png">  
                         </td>
@@ -94,13 +99,13 @@ $title = [
                                 <?= $title ?>
                             </a>
                         </td>
-                    <?php }else{ ?>
-                                            <td class="logo">
-                        <img src="<?= PageIndex() ?>Pages/index.png">  
-                    </td>
-                    <td class="header">
-                        <a href="<?= PageIndex() ?>">Fun Cubing</a>    
-                    </td>
+                    <?php } else { ?>
+                        <td class="logo">
+                            <img src="<?= PageIndex() ?>Pages/index.png">  
+                        </td>
+                        <td class="header">
+                            <a href="<?= PageIndex() ?>">Fun Cubing</a>    
+                        </td>
                     <?php } ?>
                 </tr>
             </tbody>
