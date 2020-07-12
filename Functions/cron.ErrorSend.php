@@ -21,19 +21,19 @@ function errorSend($daily = 0) {
         if ($new) {
             sendMail(
                     config::get('Admin', 'email'), "FunCubing error: $new"
-                    , "New errors on the site http:" . PageIndex() . " $new<br><a href='http:" . PageIndex() . "Classes/suphair_error'>http:" . PageIndex() . "Classes/suphair_error</a>"
+                    , "New errors on the site http:" . PageIndex() . " $new<br><a href='http:" . PageIndex() . "Classes/errors'>http:" . PageIndex() . "Classes/errors</a>"
             );
         }
     } elseif($counts[errors::_NEW] == 0){
         if ($counts[errors::_WORK] == 0) {
             sendMail(
                     config::get('Admin', 'email'), "FunCubing NO ERROR"
-                    , "No new errors on the site http:" . PageIndex() . "<br><a href='http:" . PageIndex() . "Classes/suphair_error'>http:" . PageIndex() . "Classes/suphair_error</a>"
+                    , "No new errors on the site http:" . PageIndex() . "<br><a href='http:" . PageIndex() . "Classes/errors'>http:" . PageIndex() . "Classes/errors</a>"
             );
         } else {
             sendMail(
                     config::get('Admin', 'email'), "FunCubing error in work: $work"
-                    , "Errors in work on site http:" . PageIndex() . " $work<br><a href='http:" . PageIndex() . "Classes/suphair_error'>http:" . PageIndex() . "Classes/suphair_error</a>"
+                    , "Errors in work on site http:" . PageIndex() . " $work<br><a href='http:" . PageIndex() . "Classes/errors'>http:" . PageIndex() . "Classes/errors</a>"
             );
         }
     }
