@@ -1,6 +1,6 @@
 <?php
 
-if (!config::get('Admin', 'wcaid')) {
+if ((wcaoauth::me()->wca_id ?? FALSE) != config::get('Admin', 'wcaid')) {
     die(json_encode(['error' => 'Access denied']));
 }
 

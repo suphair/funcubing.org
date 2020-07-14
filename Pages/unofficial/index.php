@@ -23,14 +23,14 @@ if ($secret == 'competitor') {
         $section = db::escape(request(2));
         switch ($section) {
             case 'registrations':
-                if ($comp->my ?? FALSE) {
+                if ($comp->my or $comp->organizer) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'setting':
-                if ($comp->my ?? FALSE) {
+                if ($comp->my) {
                     $include = 'competition.setting.php';
                 } else {
                     $include = 'competition.accessdenied.php';

@@ -10,10 +10,10 @@ if (!$secret) {
     if ($action == 'certificate') {
         $competitor_id = db::escape(request(2));
         $competitor = unofficial\getCompetitor($competitor_id);
-        if($competitor){
+        if ($competitor) {
             include 'action.certificate.php';
-        }else{
-            include 'action.competitor.certificate.notfound.php';    
+        } else {
+            include 'action.competitor.certificate.notfound.php';
         }
     } else {
         include 'action.wrong.php';
@@ -21,13 +21,13 @@ if (!$secret) {
 } elseif ($me->wca_id ?? FALSE) {
 
     $comp = unofficial\getCompetition($secret, $me);
-    $comp_data = unofficial\getCompetitionData($comp->id);
+    $comp_data = unofficial\getCompetitionData($comp->id ?? -1);
     $events_dict = unofficial\getEventsDict();
     $formats_dict = unofficial\getFormatsDict();
     $rounds_dict = unofficial\getRoundsDict();
     $results_dict = unofficial\getResultsDict();
 
-    if ($comp->my ?? FALSE) {
+    if ($comp->my ?? FALSE or $comp->organizer ?? FALSE) {
         switch ($action) {
             case 'cards':
                 include 'action.cards.php';
@@ -44,9 +44,9 @@ if (!$secret) {
             default:
                 include 'action.wrong.php';
         }
-    } elseif(!$comp) {
+    } elseif (!$comp) {
         include 'action.competition.notfound.php';
-    }else{
+    } else {
         include 'action.accessdenied.php';
     }
 } else {

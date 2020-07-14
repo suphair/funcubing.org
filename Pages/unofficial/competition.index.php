@@ -13,7 +13,7 @@
     <?php } ?>
 </h1>   
 <div class="shadow2" >
-    <?php if ($comp->my) { ?>
+    <?php if ($comp->my or $comp->organizer) { ?>
         <p>
             <?php if (!$event_round_this) { ?>
                 <a href="?action=certificates">Download certificates</a>  ▪
@@ -30,7 +30,7 @@
         <?php
         if ($event_round_this == null) {
             include 'competition.event.wrong.php';
-        } elseif ($comp->my and $section == 'result') {
+        } elseif (($comp->my or $comp->organizer) and $section == 'result') {
             include 'competition.event.result.php';
         } else {
             include 'competition.event.php';
@@ -54,10 +54,10 @@
                             <?php } ?>
                             </font>
                             <br>
-                                <a  href="<?= PageIndex() . "unofficial/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
-                                    <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
-                                </a>
-                            
+                            <a  href="<?= PageIndex() . "unofficial/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
+                                <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
+                            </a>
+
 
 
                         </td>
@@ -65,21 +65,22 @@
                 </tr>
             </thead>
             </tbody>
-            <?php 
-            $c=0;
-            foreach ($comp_data->competitors as $competitor_id => $competitor) { 
-                if($c++==15){
-                    $c=0; ?>
-            <tr>
-                <td/>
-                    <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
-                        <td align='center'>
-                            <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
+            <?php
+            $c = 0;
+            foreach ($comp_data->competitors as $competitor_id => $competitor) {
+                if ($c++ == 15) {
+                    $c = 0;
+                    ?>
+                    <tr>
+                        <td/>
+                        <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
+                            <td align='center'>
+                                <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
                             </td>
-                    <?php } ?>
-                 </tr>       
+                        <?php } ?>
+                    </tr>       
                 <?php } ?>
-                        
+
                 <tr>
                     <td>
                         <a href="<?= PageIndex() . "unofficial/competitor/$competitor->id" ?>">

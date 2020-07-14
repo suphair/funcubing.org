@@ -12,7 +12,7 @@ $formats = array_unique([$event->format, 'best']);
     <?php if (!$event->final and $event->rounds > 1) { ?>   
         , round <?= $event->round ?>
     <?php } ?>    
-    <?php if ($comp->my) { ?>
+    <?php if ($comp->my or $comp->organizer) { ?>
         <a href="<?= PageIndex() . "unofficial/$secret/result/{$events_dict[$event->event_dict]->code}/$event->round" ?> ">
             <i class="far fa-keyboard"></i> Enter results
         </a>

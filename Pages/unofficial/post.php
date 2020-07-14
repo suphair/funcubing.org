@@ -22,6 +22,25 @@ if ($me->wca_id ?? FALSE) {
                 include 'post.competition.organizer.remove.php';
             }
 
+            if (filter_input(INPUT_GET, 'rounds') !== NULL) {
+                $events_dict = unofficial\getEventsDict();
+                $formats_dict = unofficial\getFormatsDict();
+                $rounds_dict = unofficial\getRoundsDict();
+                $results_dict = unofficial\getResultsDict();
+                include 'post.competition.rounds.php';
+            }
+
+            if (filter_input(INPUT_GET, 'delete') !== NULL) {
+                include 'post.competition.delete.php';
+            }
+
+            if (filter_input(INPUT_GET, 'comments') !== NULL) {
+                $events_dict = unofficial\getEventsDict();
+                include 'post.competition.comments.php';
+            }
+        }
+        if ($comp->my ?? FALSE or $comp->organizer ?? FALSE) {
+
             if (filter_input(INPUT_GET, 'competitors_add') !== NULL) {
                 $comp_data = unofficial\getCompetitionData($comp->id);
                 include 'post.competition.competitors.add.php';
@@ -39,51 +58,32 @@ if ($me->wca_id ?? FALSE) {
                 include 'post.competition.competitors.delete.php';
             }
 
-            if (filter_input(INPUT_GET, 'rounds') !== NULL) {
-                $events_dict = unofficial\getEventsDict();
-                $formats_dict = unofficial\getFormatsDict();
-                $rounds_dict = unofficial\getRoundsDict();
-                $results_dict = unofficial\getResultsDict();
-                include 'post.competition.rounds.php';
-            }
-
-            if (filter_input(INPUT_GET, 'delete') !== NULL) {
-                include 'post.competition.delete.php';
-            }
-
-            if (filter_input(INPUT_GET, 'comments') !== NULL) {
-                $events_dict = unofficial\getEventsDict();
-                include 'post.competition.comments.php';
-            }
-            
             if (filter_input(INPUT_GET, 'result_delete') !== NULL) {
                 include 'post.result.delete.php';
             }
-            
+
             if (filter_input(INPUT_GET, 'results_delete') !== NULL) {
                 include 'post.results.delete.php';
             }
-            
+
             if (filter_input(INPUT_GET, 'results_add') !== NULL) {
                 include 'post.results.add.php';
             }
-            
-            
-            
+
             if (filter_input(INPUT_GET, 'resuts_registrations_add_first') !== NULL) {
                 include 'post.resuts.registrations.add.first.php';
             }
-            
+
             if (filter_input(INPUT_GET, 'resuts_registration_add') !== NULL) {
                 include 'post.resuts.registration.add.php';
             }
-            
+
             if (filter_input(INPUT_GET, 'resuts_registrations_add_next') !== NULL) {
                 $comp_data = unofficial\getCompetitionData($comp->id);
                 include 'post.resuts.registrations.add.next.php';
             }
         }
-        
+
         if (filter_input(INPUT_GET, 'registration_add') !== NULL) {
             include 'post.registration.add.php';
         }

@@ -3,7 +3,7 @@
 namespace unofficial;
 
 function admin() {
-    return ((\wcaoauth::me()->id ?? FALSE) == 6834);
+    return (\wcaoauth::me()->wca_id ?? FALSE) == \config::get('Admin', 'wcaid');
 }
 
 function getCompetitions($me, $mine) {
@@ -42,6 +42,7 @@ function getCompetitions($me, $mine) {
 
 function getCompetition($secret, $me = FALSE) {
     $me_id = ($me->id ?? -1);
+    $me_wcaid = ($me->wca_id ?? -1);
     $admin = admin() ? 'TRUE' : 'FALSE';
     $sql = "SELECT
         unofficial_competitions.website,
@@ -58,11 +59,11 @@ function getCompetition($secret, $me = FALSE) {
         dict_competitors.wcaid competitor_wcaid,
         dict_competitors.country competitor_country,
         (unofficial_competitions.competitor = $me_id OR $admin) my,
-        unofficial_organizers.id >0 organizer
+        unofficial_organizers.id > 0 organizer
     FROM unofficial_competitions
     JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
     LEFT OUTER JOIN unofficial_organizers 
-    ON unofficial_organizers.competition = unofficial_competitions.id and unofficial_organizers.wcaid='$me_id' 
+    ON unofficial_organizers.competition = unofficial_competitions.id and unofficial_organizers.wcaid='$me_wcaid' 
     WHERE  unofficial_competitions.secret = '$secret' 
     ";
     return \db::row($sql);
