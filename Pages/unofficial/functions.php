@@ -386,7 +386,7 @@ function getCompetitorsByEventround($eventround) {
     return $competitors;
 }
 
-function getCompetitorsByEventdictRound($event_dict, $round) {
+function getCompetitorsByEventdictRound($comp_id, $event_dict, $round) {
     $competitors = [];
     foreach (\db::rows("SELECT"
             . " unofficial_competitors.name, "
@@ -398,7 +398,8 @@ function getCompetitorsByEventdictRound($event_dict, $round) {
             . " JOIN unofficial_competitors_round ON unofficial_competitors_round.round = unofficial_events_rounds.id"
             . " JOIN unofficial_competitors on unofficial_competitors_round.competitor = unofficial_competitors.id"
             . " LEFT OUTER JOIN unofficial_competitors_result on unofficial_competitors_result.competitor_round = unofficial_competitors_round.id"
-            . " WHERE unofficial_events.event_dict = $event_dict"
+            . " WHERE unofficial_events.competition =$comp_id "
+            . " AND unofficial_events.event_dict = $event_dict"
             . " AND unofficial_events_rounds.round = $round"
             . " ORDER BY COALESCE(unofficial_competitors_result.place,999), unofficial_competitors.name ") as $competitor) {
         $competitors[$competitor->id] = $competitor;

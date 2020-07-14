@@ -203,7 +203,7 @@ $formats = array_unique([$event->format, 'best']);
 
     <?php } else { ?>
         <?php
-        $competitors_prev = unofficial\getCompetitorsByEventdictRound($event_dict, $round - 1);
+        $competitors_prev = unofficial\getCompetitorsByEventdictRound($comp->id,$event_dict, $round - 1);
         foreach ($competitors_prev as $competitor_id => $competitor_first) {
             if ($competitors[$competitor_id] ?? FALSE) {
                 $competitors_prev[$competitor_id]->this_register = TRUE;
