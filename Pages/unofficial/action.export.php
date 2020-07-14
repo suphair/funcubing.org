@@ -32,14 +32,19 @@ foreach ($events as $event_round) {
 
     $competitors = unofficial\getCompetitorsByEventround($event_round->id);
     $event = unofficial\getEventByEventround($event_round->id);
+    foreach ($competitors as $c => $competitor) {
+        if (!$competitor->place) {
+            unset($competitors[$c]);
+        }
+    }
     $competitors = array_values($competitors);
     $rounds = $event_round->rounds;
     $export = [];
-    $formats= array_unique(['best',$event->format]); 
+    $formats = array_unique(['best', $event->format]);
     foreach ($competitors as $competitor) {
         $results = [];
         $results['place'] = $competitor->place;
-        foreach($formats as $format){
+        foreach ($formats as $format) {
             $results[$format] = $competitor->$format;
         }
         foreach (range(1, $event->attempts) as $i) {
