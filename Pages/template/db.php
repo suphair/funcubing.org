@@ -1,0 +1,3 @@
+<?php
+
+db::template($dir);

@@ -2,10 +2,15 @@
 
 class db {
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.0';
 
     protected static $_instance;
     protected static $connection;
+    protected static $host;
+    protected static $username;
+    protected static $password;
+    protected static $schema;
+    protected static $port;
 
     private function __construct() {
         
@@ -32,6 +37,12 @@ class db {
     }
 
     static function set($host, $username, $password, $schema, $port) {
+
+        self::$host = $host;
+        self::$username = $username;
+        self::$password = $password;
+        self::$schema = $schema;
+        self::$port = $port;
         self::$connection = mysqli_init();
         mysqli_real_connect(self::$connection
                 , $host, $username, $password, $schema, $port);
@@ -82,6 +93,45 @@ class db {
             trigger_error($error, E_USER_ERROR);
         }
         return $result;
+    }
+
+    static function dump($dir) {
+        $class = 'Ifsnop\Mysqldump\Mysqldump';
+        if (class_exists($class)) {
+            $dump = new $class(
+                    "mysql:host=" . self::$host . ";port=" . self::$port . ";dbname=" . self::$schema,
+                    self::$username,
+                    self::$password,
+                    ['add-drop-table' => true]);
+
+            $filename = "$dir/dump.sql";
+            $dump->start($filename);
+            $zip = new ZipArchive();
+            $zip_name = $filename . ".zip";
+            $zip->open($zip_name, ZIPARCHIVE::CREATE);
+            $zip->addFile($filename);
+            $zip->close();
+            unlink($filename);
+        } else {
+            trigger_error("$class not found", E_USER_ERROR);
+        }
+    }
+
+    static function template($dir) {
+        $class = 'Ifsnop\Mysqldump\Mysqldump';
+        if (class_exists($class)) {
+            $dump = new $class(
+                    "mysql:host=" . self::$host . ";port=" . self::$port . ";dbname=" . self::$schema,
+                    self::$username,
+                    self::$password,
+                    ['no-data' => true,
+                'reset-auto-increment' => true]);
+
+            $filename = "$dir/db_template.sql";
+            $dump->start($filename);
+        } else {
+            trigger_error("$class not found", E_USER_ERROR);
+        }
     }
 
 }

@@ -1,7 +1,13 @@
 <?php
-if(config::get('Admin', 'wcaid')){
-    config::template('Templates');
-    die('Templates generation is complete');
-}else{
-    die('Access denied');
+
+if (!config::get('Admin', 'wcaid')) {
+    die(json_encode(['error' => 'Access denied']));
 }
+
+$dir = 'Templates';
+
+include 'config.php';
+include 'db.php';
+
+die(json_encode(['message' => 'Templates generation is complete']));
+
