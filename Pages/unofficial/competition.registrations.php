@@ -1,4 +1,59 @@
-
+<div class="shadow2">
+    <h2> 
+        <i class="far fa-list-alt"></i>
+        Add competitors
+    </h2>
+    <form method="POST" action="?competitors_add">
+        <table width='100%'>
+            <tr class="no_border">
+                <td width='50%'>    
+                    <textarea  name="competitors" style="width: 400px; height: 350px; font-size:20px;"></textarea>
+                </td>
+                <td width='50%' valign="top">
+                    <h3>
+                        <span style="border-bottom:1px dotted rgb(0,182,67); cursor: help; color:rgb(0,182,67);" 
+                              data-tooltip="
+                              <font style='color:rgb(0,182,67)'>▪</font> Enter competitors separated by a <b>newline</b> or <b>comma</b><font style='color:rgb(0,182,67)'>:</font><br>
+                              [Competitor Alfa<br>Competitor Beta] <font style='color:rgb(0,182,67)'>&#8658;</font> <b>1)</b> Competitor Alfa <b>2)</b> Competitor Beta<br>
+                              [Competitor Delta, Competitor Gamma] <font style='color:rgb(0,182,67)'>&#8658;</font> <b>1)</b> Competitor Delta <b>2)</b> Competitor Gamma<br>
+                              <font style='color:rgb(0,182,67)'>▪</font> You can enter the name in any case the first letters will become large<br>
+                              [comPETitor epSiLon] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Epsilon<br>
+                              <font style='color:rgb(0,182,67)'>▪</font> When you create a competitor, you can register it for the discipline by adding a tag<br>
+                              (also you can click on the discipline on the right)<br>
+                              [Competitor Dseta 2 3] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Dseta +2x2x2 Cube +3x3x3 Cube<br>
+                              <br>
+                              <font style='color:rgb(0,182,67)'>▪</font> You can register a competitor in the disciplines later
+                              <br>
+                              <font style='color:rgb(0,182,67)'>▪</font> You can add competitors in several parts
+                              ">Instruction</span>
+                    </h3>
+                    <br>
+                    <?php foreach ($comp_data->events as $event) { ?>
+                        <p class="registration_event" onclick="
+                                var el = $('form textarea[name=competitors]');
+                                var s = el[0].selectionStart;
+                                var val = el.val();
+                                var val_s = val.substring(0, s);
+                                var val_e = val.substring(s);
+                                var code = ' <?= $events_dict[$event->event_dict]->code ?> ';
+                                el.val(val_s + code + val_e);
+                                el.focus();
+                                el[0].setSelectionRange(s + code.length, s + code.length);
+                           ">
+                            <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
+                            [<b><?= $events_dict[$event->event_dict]->code ?></b>]
+                            <?= $event->name ?>
+                        </p> 
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+        <button>
+            <i class="fas fa-user-plus"></i>
+            Add competitors and registration
+        </button>    
+    </form>
+</div>
 <?php if (sizeof($comp_data->competitors)) { ?>
     <div class="shadow2">
         <h2>
@@ -92,62 +147,6 @@
         </form>
     </div>
 <?php } ?>
-<div class="shadow2">
-    <h2> 
-        <i class="far fa-list-alt"></i>
-        Add competitors
-    </h2>
-    <form method="POST" action="?competitors_add">
-        <table width='100%'>
-            <tr class="no_border">
-                <td width='50%'>    
-                    <textarea  name="competitors" style="width: 400px; height: 350px; font-size:20px;"></textarea>
-                </td>
-                <td width='50%' valign="top">
-                    <h3>
-                        <span style="border-bottom:1px dotted rgb(0,182,67); cursor: help; color:rgb(0,182,67);" 
-                              data-tooltip="
-                              <font style='color:rgb(0,182,67)'>▪</font> Enter competitors separated by a <b>newline</b> or <b>comma</b><font style='color:rgb(0,182,67)'>:</font><br>
-                              [Competitor Alfa<br>Competitor Beta] <font style='color:rgb(0,182,67)'>&#8658;</font> <b>1)</b> Competitor Alfa <b>2)</b> Competitor Beta<br>
-                              [Competitor Delta, Competitor Gamma] <font style='color:rgb(0,182,67)'>&#8658;</font> <b>1)</b> Competitor Delta <b>2)</b> Competitor Gamma<br>
-                              <font style='color:rgb(0,182,67)'>▪</font> You can enter the name in any case the first letters will become large<br>
-                              [comPETitor epSiLon] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Epsilon<br>
-                              <font style='color:rgb(0,182,67)'>▪</font> When you create a competitor, you can register it for the discipline by adding a tag<br>
-                              (also you can click on the discipline on the right)<br>
-                              [Competitor Dseta 2 3] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Dseta +2x2x2 Cube +3x3x3 Cube<br>
-                              <br>
-                              <font style='color:rgb(0,182,67)'>▪</font> You can register a competitor in the disciplines later
-                              <br>
-                              <font style='color:rgb(0,182,67)'>▪</font> You can add competitors in several parts
-                              ">Instruction</span>
-                    </h3>
-                    <br>
-                    <?php foreach ($comp_data->events as $event) { ?>
-                        <p class="registration_event" onclick="
-                                var el = $('form textarea[name=competitors]');
-                                var s = el[0].selectionStart;
-                                var val = el.val();
-                                var val_s = val.substring(0, s);
-                                var val_e = val.substring(s);
-                                var code = ' <?= $events_dict[$event->event_dict]->code ?> ';
-                                el.val(val_s + code + val_e);
-                                el.focus();
-                                el[0].setSelectionRange(s + code.length, s + code.length);
-                           ">
-                            <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
-                            [<b><?= $events_dict[$event->event_dict]->code ?></b>]
-                            <?= $event->name ?>
-                        </p> 
-                    <?php } ?>
-                </td>
-            </tr>
-        </table>
-        <button>
-            <i class="fas fa-user-plus"></i>
-            Add competitors and registration
-        </button>    
-    </form>
-</div>
 <?php
 $competitors = db::rows(""
                 . " SELECT "
