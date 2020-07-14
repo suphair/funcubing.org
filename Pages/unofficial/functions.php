@@ -410,26 +410,12 @@ function attempt_to_int($attempt) {
     if (in_array($attempt, ['dnf', 'dns', '-cutoff', '0', false])) {
         return 999999;
     } else {
-        $value = substr("0000000" . str_replace(['.', ':'], '', $attempt), -8, 8);
+        $value = substr("00000" . str_replace(['.', ':'], '', $attempt), -6, 6);
         $minute = substr($value, 0, 2);
-        $second = substr($value, 3, 2);
-        $milisecond = substr($value, 6, 2);
+        $second = substr($value, 2, 2);
+        $milisecond = substr($value, 4, 2);
         return $minute * 100 * 60 + $second * 100 + $milisecond;
     }
-
-    /*
-      $value = DataBaseClass::Escape($value);
-      if ($value == 'DNF' or $value == '-cutoff') {
-      $mili = $mili * 1000000 + 999999;
-      } else {
-      $value_t = substr("0000000" . $value, -8, 8);
-      $minute = substr($value_t, 0, 2);
-      $second = substr($value_t, 3, 2);
-      $milisecond = substr($value_t, 6, 2);
-      $value = str_replace(array("00:0", "00:", "0:0", "0:"), "", $value);
-      $mili = $mili * 1000000 + $minute * 100 * 60 + $second * 100 + $milisecond;
-
-     */
 }
 
 function getCompetitor($competitor_id) {
