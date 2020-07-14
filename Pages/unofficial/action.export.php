@@ -1,10 +1,12 @@
 <?php
 
+header("Content-type:  application/json; charset=utf-8");
+
 $event_code = request(3);
 $round = request(4);
 
 $events = [];
-$event_dict=$comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
+$event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
 $event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
 if ($comp_data->event_rounds[$event]->id ?? FALSE) {
     $events[] = $comp_data->event_rounds[$event];
@@ -14,30 +16,58 @@ if ($comp_data->event_rounds[$event]->id ?? FALSE) {
     $events = $comp_data->event_rounds;
 }
 
-$exports=[];
+$exports = [];
+$exports[$comp->name]['competition'] = [
+    'website' => $comp->website,
+    'name' => $comp->name,
+    'details' => $comp->details,
+    'date' => $comp->date,
+    'owner' => [
+        'name' => $comp->competitor_name,
+        'wcaid' => $comp->competitor_wcaid,
+        'country' => $comp->competitor_country
+    ]
+];
 foreach ($events as $event_round) {
 
     $competitors = unofficial\getCompetitorsByEventround($event_round->id);
     $event = unofficial\getEventByEventround($event_round->id);
-    
-    foreach ($competitors as $c => $competitor) {
-        if (!$competitor->place) {
-            unset($competitors[$c]);
-        }
-    }
     $competitors = array_values($competitors);
-    
-    $export=[];
-    foreach($competitors as $competitor){
-        $results=[];
-        foreach(range(1,$event->attempts) as $i){
-        $results[]=$competitor->{"attempt$i"};
+    $rounds = $event_round->rounds;
+    $export = [];
+    $formats= array_unique(['best',$event->format]); 
+    foreach ($competitors as $competitor) {
+        $results = [];
+        $results['place'] = $competitor->place;
+        foreach($formats as $format){
+            $results[$format] = $competitor->$format;
+        }
+        foreach (range(1, $event->attempts) as $i) {
+            $results['attempts'][$i] = $competitor->{"attempt$i"};
+        }
+        $export[$competitor->name] = $results;
     }
-    $export[$competitor->name]=$results;
-    } 
-    if($export){
-    $exports[$event->name][$event->round]=$export;
+    if ($export) {
+        if ($rounds == $event->round) {
+            $round = 'final';
+        } else {
+            $round = "round $event->round";
+        }
+        $round_event = "$event->name, $round";
+        $exports[$comp->name]['results'][$round_event]['event'] = [
+            'name' => $event->name,
+            'format' => $event->format,
+            'result' => $event->result
+        ];
+
+        $exports[$comp->name]['results'][$round_event]['round'] = [
+            'this' => $event->round,
+            'total' => $rounds,
+            'name' => $round,
+            'comment' => $event->comment
+        ];
+        $exports[$comp->name]['results'][$round_event]['competitors'] = $export;
     }
 }
-echo json_encode($exports,JSON_PRETTY_PRINT);
+echo json_encode($exports, JSON_UNESCAPED_UNICODE + JSON_PRETTY_PRINT);
 exit();

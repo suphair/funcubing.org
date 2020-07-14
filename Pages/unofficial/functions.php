@@ -238,6 +238,7 @@ function getCompetitionData($id) {
                     . " unofficial_events_rounds.id,"
                     . " unofficial_events_rounds.event,"
                     . " unofficial_events_rounds.round,"
+            . " unofficial_events.rounds rounds,"
                     . " unofficial_events_rounds.comment"
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.event = unofficial_events.id"
@@ -332,7 +333,7 @@ function getCompetitorsSession($id, $session) {
 
 function getEventByEventround($eventround) {
     return \db::row("SELECT"
-                    . " unofficial_events_rounds.comment, "
+                    . " COALESCE(unofficial_events_rounds.comment,'') comment, "
                     . " unofficial_events_dict.image, "
                     . " unofficial_events_rounds.round, "
                     . "unofficial_events.rounds, "
