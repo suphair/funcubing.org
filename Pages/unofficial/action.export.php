@@ -61,6 +61,7 @@ foreach ($events as $event_round) {
         $round_event = "$event->name, $round";
         $exports[$comp->name]['results'][$round_event]['event'] = [
             'name' => $event->name,
+            'code' => $event->code,
             'format' => $event->format,
             'result' => $event->result
         ];
