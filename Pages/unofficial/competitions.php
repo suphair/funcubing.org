@@ -56,6 +56,11 @@
                 Show all
             </a>
         <?php } elseif ($me) { ?>
+            <i class="fas fa-crown"></i>
+            <a href="?show=mine">
+                Show only mine
+            </a>
+            <i class="fas fa-user-tie"></i>
             Organizer
             <select data-owner-select>
                 <option value='0' selected>All</option>
@@ -65,10 +70,6 @@
                     </option>    
                 <?php } ?>
             </select>
-            <i class="fas fa-crown"></i>
-            <a href="?show=mine">
-                Show only mine
-            </a>
         <?php } ?>
     </p>
     <table class='table_new'>
