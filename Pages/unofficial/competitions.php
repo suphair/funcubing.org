@@ -57,13 +57,12 @@
             </a>
         <?php } elseif ($me) { ?>
             <i class="fas fa-crown"></i>
-            <a href="?show=mine">
-                Show only mine
-            </a>
+            <a href="?show=mine">Show only mine</a>&nbsp;
+        <?php } ?>
+        <?php if (!$mine) { ?>
             <i class="fas fa-user-tie"></i>
-            Organizer
             <select data-owner-select>
-                <option value='0' selected>All</option>
+                <option value='0' selected>All organizers</option>
                 <?php foreach ($owners as $id => $name) { ?>
                     <option value='<?= $id ?>'>
                         <?= $name ?>
