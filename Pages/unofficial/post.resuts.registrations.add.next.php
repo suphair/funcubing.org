@@ -5,7 +5,7 @@ $competitors = filter_input(INPUT_POST, 'competitors', FILTER_DEFAULT, FILTER_RE
 $code = db::escape(request(3));
 $round = db::escape(request(4));
 $event_dict = $comp_data->event_dict->by_code[$code]->id ?? FALSE;
-$competitors_prev = unofficial\getCompetitorsByEventdictRound($event_dict, $round - 1);
+$competitors_prev = unofficial\getCompetitorsByEventdictRound($comp->id, $event_dict, $round - 1);
 
 if ($code and is_numeric($round)) {
     foreach ($competitors as $competitor => $flag) {
