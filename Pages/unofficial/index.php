@@ -2,7 +2,20 @@
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
-if ($secret == 'competitor') {
+if ($secret == 'rankings') {
+    $organizer_id = request(2);
+    if ($organizer_id) {
+        $events_dict = unofficial\getEventsDict();
+        $organizer = unofficial\getOrganizer($organizer_id);
+        if ($organizer->wid ?? FALSE) {
+            include 'rankings.organizer.php';
+        } else {
+            include 'rankings.organizer.notfound.php';
+        }
+    } else {
+        include 'rankings.organizers.php';
+    }
+} elseif ($secret == 'competitor') {
     $competitor_id = request(2);
     $competitor = unofficial\getCompetitor($competitor_id);
     if ($competitor) {

@@ -68,42 +68,44 @@
             <?php
             $c = 0;
             foreach ($comp_data->competitors as $competitor_id => $competitor) {
-                if ($c++ == 15) {
-                    $c = 0;
-                    ?>
+                if (sizeof($comp_data->competitors[$competitor_id]->events) > 0) {
+                    if ($c++ == 15) {
+                        $c = 0;
+                        ?>
+                        <tr>
+                            <td/>
+                            <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
+                                <td align='center'>
+                                    <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
+                                </td>
+                            <?php } ?>
+                        </tr>       
+                    <?php } ?>
+
                     <tr>
-                        <td/>
-                        <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
-                            <td align='center'>
-                                <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
+                        <td>
+                            <a href="<?= PageIndex() . "unofficial/competitor/$competitor->id" ?>">
+                                <?= $competitor->name ?>
+                            </a>
+                        </td>
+                        <?php
+                        foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
+                            $result = unofficial\getCompetitorsByEventround($event_round_id)[$competitor_id] ?? FALSE;
+                            ?>
+                            <td align="center"  style="border-right: 0px;" >
+                                <?php if ($result) { ?>
+                                    <?php if ($result->place ?? FALSE) { ?>
+                                        <font align="center" class="<?= $result->podium ? 'podium' : '' ?> <?= $result->next_round ? 'next_round' : '' ?>">
+                                        <?= $result->place ?>
+                                        </font>
+                                    <?php } else { ?>
+                                        <i style='color:var(--light_gray)' class="far fa-question-circle"></i>
+                                    <?php } ?>
+                                <?php } ?>
                             </td>
                         <?php } ?>
-                    </tr>       
+                    </tr>
                 <?php } ?>
-
-                <tr>
-                    <td>
-                        <a href="<?= PageIndex() . "unofficial/competitor/$competitor->id" ?>">
-                            <?= $competitor->name ?>
-                        </a>
-                    </td>
-                    <?php
-                    foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
-                        $result = unofficial\getCompetitorsByEventround($event_round_id)[$competitor_id] ?? FALSE;
-                        ?>
-                        <td align="center"  style="border-right: 0px;" >
-                            <?php if ($result) { ?>
-                                <?php if ($result->place ?? FALSE) { ?>
-                                    <font align="center" class="<?= $result->podium ? 'podium' : '' ?> <?= $result->next_round ? 'next_round' : '' ?>">
-                                    <?= $result->place ?>
-                                    </font>
-                                <?php } else { ?>
-                                    <i style='color:var(--light_gray)' class="far fa-question-circle"></i>
-                                <?php } ?>
-                            <?php } ?>
-                        </td>
-                    <?php } ?>
-                </tr>
             <?php } ?>
             </tbody>
             <tfoot>

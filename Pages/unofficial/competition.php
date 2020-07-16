@@ -12,11 +12,7 @@
 
     <i class="far fa-calendar-alt"></i> 
     <?= dateRange($comp->date) ?>    
-    <?php if ($comp->website) { ?>
-        <i class="fas fa-link"></i>
-        <a target="_blank" href="<?= $comp->website ?>">
-            <?= $comp->website ?></a>
-    <?php } ?>
+    <?php unofficial\getFavicon($comp->website) ?>
     <i class="fas fa-user-tie"></i>
     <?php if ($comp->competitor_wcaid) { ?>
         <a target='_blank' 
@@ -39,6 +35,10 @@
         <i class="fas fa-user-plus"></i>
         <a href="<?= PageIndex() . "unofficial/$comp->secret/registration/$comp->secretRegistration" ?>">Self-registration</a>
     <?php } ?>
+        <i class="fas fa-signal fa-rotate-90"></i>
+        <a href="<?= PageIndex() ?>unofficial/rankings/<?= $comp->competitor ?>">
+            Rankings
+        </a>
     <h3>
         <?php foreach ($comp_data->events as $event) { ?>
             <?php if ($events_dict[$event->event_dict]->special) { ?>

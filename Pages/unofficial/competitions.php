@@ -36,24 +36,41 @@
         <?php } else { ?>
             Public Unofficial Competitions
         <?php } ?>
+        /
+        <a href="<?= PageIndex() ?>unofficial/rankings">
+            Rankings
+        </a>
     </h2>
-    <?php if ($mine) { ?>
-        <p>
+    <?php $competitions = unofficial\getCompetitions($me, $mine); ?>
+    <?php
+    $owners = [];
+    foreach ($competitions as $competition) {
+        $owners[$competition->competitor] = $competition->competitor_name;
+    }
+    asort($owners);
+    ?>
+    <p>
+        <?php if ($mine) { ?>
             <i class="far fa-eye"></i>
             <a href="?show=all">
                 Show all
             </a>
-        </p>
-    <?php } elseif ($me) { ?>
-        <p>
+        <?php } elseif ($me) { ?>
+            Organizer
+            <select data-owner-select>
+                <option value='0' selected>All</option>
+                <?php foreach ($owners as $id => $name) { ?>
+                    <option value='<?= $id ?>'>
+                        <?= $name ?>
+                    </option>    
+                <?php } ?>
+            </select>
             <i class="fas fa-crown"></i>
             <a href="?show=mine">
-
                 Show only mine
             </a>
-        </p>
-    <?php } ?>
-    <?php $competitions = unofficial\getCompetitions($me, $mine); ?>
+        <?php } ?>
+    </p>
     <table class='table_new'>
         <thead>
             <tr>
@@ -66,6 +83,7 @@
                 <td>
                     Competition
                 </td>
+                <td/>
                 <td>
                     Date
                 </td>
@@ -76,7 +94,7 @@
         </thead>
         <tbody>
             <?php foreach ($competitions as $competition) { ?>
-                <tr>   
+                <tr data-owner='<?= $competition->competitor ?>'>   
                     <td>
                         <?php if (!$competition->show) { ?>
                             <i class="far fa-eye-slash"></i>
@@ -97,24 +115,24 @@
                         <?= $competition->competitor_name ?>
                     </td>   
                     <td>                    
-                        <a href="<?= PageIndex()?>unofficial/<?= $competition->secret ?>"><?= $competition->name ?> </a>
+                        <a href="<?= PageIndex() ?>unofficial/<?= $competition->secret ?>"><?= $competition->name ?> </a>
+                    </td>
+                    <td>
+                        <?php if ($competition->upcoming) { ?>
+                            <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                        <?php } ?>
                     </td>
                     <td>
                         <?= dateRange($competition->date) ?>
                     </td>
                     <td>
-                        <?php if ($competition->website) { ?>
-                            <?php preg_match('/https?:\/\/(?:www\.|)([\w.-]+).*/', $competition->website, $matches); ?>
-                            <?php if (isset($matches[1])) { ?>
-                                <img src="<?= unofficial\getFavicon($matches[1]) ?>">
-                                <a target="_blank" href="<?= $competition->website ?>">
-                                    <?= $matches[1] ?>
-                                </a> 
-                            <?php } ?>        
-                        <?php } ?>
+                        <?php unofficial\getFavicon($competition->website) ?>
                     </td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>  
 </div>
+<script>
+<?php include 'competitions.js' ?>
+</script>

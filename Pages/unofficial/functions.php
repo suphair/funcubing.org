@@ -18,6 +18,7 @@ function getCompetitions($me, $mine) {
         unofficial_competitions.name,
         unofficial_competitions.details,
         unofficial_competitions.date,
+        date(unofficial_competitions.date) > current_date upcoming ,
         dict_competitors.name competitor_name,
         dict_competitors.country competitor_country,
         unofficial_organizers.id organizer,
@@ -426,6 +427,7 @@ function getCompetitor($competitor_id) {
     return \db::row("SELECT "
                     . " unofficial_competitors.id, "
                     . " unofficial_competitors.name, "
+                    . "  unofficial_competitions.competitor creator_id,"
                     . " dict_competitors.name creator_name,"
                     . " unofficial_competitions.id competition_id,"
                     . " unofficial_competitions.secret competition_secret"
@@ -435,18 +437,68 @@ function getCompetitor($competitor_id) {
                     . " WHERE unofficial_competitors.id = $competitor_id");
 }
 
+function getOrganizer($organizer_id) {
+    if (!is_numeric($organizer_id ?? null)) {
+        return false;
+    }
+    return \db::row("SELECT "
+                    . " dict_competitors.country, dict_competitors.name, dict_competitors.wid, dict_competitors.wcaid "
+                    . " FROM dict_competitors"
+                    . " JOIN unofficial_competitions on unofficial_competitions.competitor = dict_competitors.wid "
+                    . " WHERE  dict_competitors.wid = $organizer_id");
+}
+
+function getOrganizers() {
+    $organizers = [];
+    foreach (\db::rows("select distinct "
+            . " dict_competitors.wid, "
+            . " dict_competitors.name, "
+            . " dict_competitors.country, "
+            . " dict_competitors.wcaid "
+            . " from unofficial_competitions "
+            . " join `dict_competitors` on `dict_competitors`.wid = `unofficial_competitions`.competitor"
+            . " where unofficial_competitions.show = 1 "
+            . " order by dict_competitors.name") as $organizer_row) {
+        $organizers[$organizer_row->wid] = $organizer_row;
+        $short_name = '';
+        foreach (explode(" ", $organizer_row->name) as $word) {
+            $short_name .= $word[0];
+        }
+        $organizers[$organizer_row->wid]->short_name = $short_name;
+    }
+    return $organizers;
+}
+
+function getPartners($organizer_id) {
+    $partners = [];
+    foreach (\db::rows("select "
+            . " unofficial_partners.partner,"
+            . " dict_competitors.name, "
+            . " dict_competitors.country, "
+            . " dict_competitors.wcaid "
+            . " from unofficial_partners "
+            . " join `dict_competitors` on `dict_competitors`.wid = `unofficial_partners`.partner"
+            . " where unofficial_partners.competitor = $organizer_id"
+            . " order by dict_competitors.name") as $partner) {
+        $partners[$partner->partner] = $partner;
+    }
+    return $partners;
+}
+
 function getCompetitionsByCompetitor($competitor_id) {
 
     return \db::rows("SELECT"
                     . " unofficial_competitions.name,"
                     . " unofficial_competitions.date,"
                     . " unofficial_competitions.secret, "
-                    . " unofficial_competitors.id competitor_id "
+                    . " unofficial_competitors.id competitor_id,"
+                    . " unofficial_competitions.competitor competition_competitor_id, "
+                    . " dict_competitors.name competition_competitor_name "
                     . " FROM unofficial_competitions "
                     . " JOIN unofficial_competitors ON unofficial_competitors.competition = unofficial_competitions.id "
                     . " JOIN unofficial_competitors main_competitor ON main_competitor.name = unofficial_competitors.name "
                     . " JOIN unofficial_competitions main_competition ON main_competition.id = main_competitor.competition "
-                    . " AND main_competition.competitor = unofficial_competitions.competitor "
+                    . " JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor "
                     . " WHERE main_competitor.id = $competitor_id"
                     . " ORDER by unofficial_competitions.date DESC");
 }
@@ -460,6 +512,8 @@ function getResutsByCompetitorMain($competitor_id) {
                     . " unofficial_competitors_result.place, "
                     . " unofficial_competitions.name competition_name, "
                     . " unofficial_competitions.date competition_date, "
+                    . " unofficial_competitions.competitor competition_competitor_id, "
+                    . " dict_competitors.name competition_competitor_name, "
                     . " unofficial_competitions.secret,"
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final, "
                     . " CASE WHEN unofficial_events.rounds = unofficial_events_rounds.round AND unofficial_competitors_result.place<=3 THEN 1 ELSE 0 END podium,"
@@ -480,7 +534,7 @@ function getResutsByCompetitorMain($competitor_id) {
                     . " JOIN  unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict "
                     . " JOIN unofficial_competitors main_competitor ON main_competitor.name = unofficial_competitors.name "
                     . " JOIN unofficial_competitions main_competition ON main_competition.id = main_competitor.competition "
-                    . " AND main_competition.competitor = unofficial_competitions.competitor "
+                    . " JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor "
                     . " WHERE main_competitor.id = $competitor_id"
                     . " AND unofficial_events_dict.special = 0"
                     . " ORDER BY "
@@ -518,7 +572,7 @@ function getResutsByCompetitor($competitor_id) {
                     . " JOIN unofficial_competitors_result ON unofficial_competitors_result.competitor_round = unofficial_competitors_round.id"
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
-                    . " JOIN  unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict "
+                    . " JOIN unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict "
                     . " JOIN unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
                     . " WHERE unofficial_competitors.id = $competitor_id"
                     . " ORDER BY "
@@ -526,6 +580,21 @@ function getResutsByCompetitor($competitor_id) {
                     . " unofficial_events_rounds.round DESC");
 }
 
-function getFavicon($url) {
-    return "http://www.google.com/s2/favicons?domain=$url";
+function getFavicon($website) {
+    if ($website) {
+        preg_match('/https?:\/\/(?:www\.|)([\w.-]+).*/', $website, $matches);
+        if (isset($matches[1])) {
+            ?> 
+            <img src="<?= "http://www.google.com/s2/favicons?domain=$matches[1]" ?>">
+            <a target="_blank" href="<?= $website ?>">
+                <?= $matches[1] ?>
+            </a> 
+        <?php } else { ?>
+            <i class="fas fa-link"></i>
+            <a target="_blank" href="<?= $website ?>">
+                <?= $website ?>
+            </a> 
+            <?php
+        }
+    }
 }

@@ -1,5 +1,18 @@
 <?php
 
+$secret = db::escape(request(1));
+if ($secret) {
+    $comp = unofficial\getCompetition($secret);
+    if ($comp->id ?? FALSE) {
+        if (filter_input(INPUT_GET, 'registration_add') !== NULL) {
+            include 'post.registration.add.php';
+        }
+        if (filter_input(INPUT_GET, 'registration_delete') !== NULL) {
+            include 'post.registration.delete.php';
+        }
+    }
+}
+
 $me = wcaoauth::me();
 if ($me->wca_id ?? FALSE) {
     if (filter_input(INPUT_GET, 'create') !== NULL) {
@@ -10,6 +23,7 @@ if ($me->wca_id ?? FALSE) {
     if ($secret) {
         $comp = unofficial\getCompetition($secret, $me);
         if ($comp->my ?? FALSE) {
+
             if (filter_input(INPUT_GET, 'setting') !== NULL) {
                 include 'post.competition.setting.php';
             }
@@ -83,12 +97,15 @@ if ($me->wca_id ?? FALSE) {
                 include 'post.resuts.registrations.add.next.php';
             }
         }
+    }
 
-        if (filter_input(INPUT_GET, 'registration_add') !== NULL) {
-            include 'post.registration.add.php';
-        }
-        if (filter_input(INPUT_GET, 'registration_delete') !== NULL) {
-            include 'post.registration.delete.php';
+    if (request(1) == 'rankings') {
+        $organizer_id = request(2);
+        $organizer = unofficial\getOrganizer($organizer_id);
+        if ($organizer->wid ?? FALSE) {
+            if (filter_input(INPUT_GET, 'rankings_organizers_add') !== NULL) {
+                include 'post.rankings.organizers.add.php';
+            }
         }
     }
 }

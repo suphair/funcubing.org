@@ -52,7 +52,7 @@
         </table>
         <p style="color:var(--green)" id='DescriptionDiscipline'></p>
         <h3><?= $en ? 'Enter your name and surname' : 'Введите ваше имя и фамилию' ?></h3>
-        <input data-register-name required="" placeholder="Name Surname" style="font-size:24px; width:500px">
+        <input data-register-name required="" placeholder="<?= $en ? 'Name Surname' : 'Имя Фамилия' ?>" style="font-size:24px; width:500px">
         <p style="font-size:24px;">
             <span style="color:var(--green);" data-register-name-parse-ok ></span>
             <span style="color:var(--red);" data-register-name-parse-fail ></span>
