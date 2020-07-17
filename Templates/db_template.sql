@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Mon, 13 Jul 2020 14:35:29 +0000
+-- Date: Fri, 17 Jul 2020 04:48:15 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -15,255 +15,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `Competitor`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Competitor` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `WCAID` varchar(255) DEFAULT '',
-  `Country` varchar(255) DEFAULT NULL,
-  `WID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`,`Name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=cp1251 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `Goal`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Goal` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Competitor` int(11) DEFAULT NULL,
-  `Discipline` varchar(255) DEFAULT NULL,
-  `Competition` varchar(255) DEFAULT NULL,
-  `Format` varchar(255) DEFAULT NULL,
-  `Result` varchar(255) DEFAULT NULL,
-  `TimeFixed` datetime DEFAULT NULL,
-  `Record` varchar(255) DEFAULT NULL,
-  `Progress` varchar(255) DEFAULT NULL,
-  `Goal` varchar(255) DEFAULT NULL,
-  `Complete` tinyint(4) DEFAULT '0',
-  PRIMARY KEY (`ID`),
-  KEY `GoalCompetitor` (`Competitor`),
-  KEY `GoalDiscipline` (`Discipline`),
-  KEY `GoalCompetition` (`Competition`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `GoalCompetition`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `GoalCompetition` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255) DEFAULT NULL,
-  `DateStart` date DEFAULT NULL,
-  `DateEnd` date DEFAULT NULL,
-  `WCA` varchar(255) DEFAULT NULL,
-  `Country` varchar(255) DEFAULT NULL,
-  `City` varchar(255) DEFAULT NULL,
-  `TimeUpdate` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Events` varchar(255) DEFAULT NULL,
-  `Result` bit(1) DEFAULT b'0',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `GoalCompetitor`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `GoalCompetitor` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `competitorWid` varchar(255) DEFAULT NULL,
-  `competitionWca` varchar(255) DEFAULT NULL,
-  `timeStamp` timestamp NULL DEFAULT NULL,
-  `eventCode` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `competitorWid` (`competitorWid`,`competitionWca`,`eventCode`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `GoalDiscipline`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `GoalDiscipline` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255) DEFAULT NULL,
-  `Code` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MailUpcomingCompetitions`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MailUpcomingCompetitions` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Competitor` bigint(20) DEFAULT NULL,
-  `Email` varchar(255) DEFAULT NULL,
-  `Status` varchar(255) DEFAULT '0',
-  `announced_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Country` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `Meeting`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Meeting` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Competitor` int(11) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
-  `Details` text,
-  `Secret` varchar(10) DEFAULT NULL,
-  `SecretRegistration` varchar(255) DEFAULT NULL,
-  `Show` tinyint(4) DEFAULT '0',
-  `Website` varchar(255) DEFAULT NULL,
-  `ShareRegistration` smallint(6) DEFAULT '0',
-  `Date` date DEFAULT NULL,
-  `Public` bit(1) DEFAULT b'0',
-  `Organizer` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `Competitor` (`Competitor`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingCompetitor`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingCompetitor` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Meeting` int(11) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
-  `Session` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `Meeting` (`Meeting`),
-  CONSTRAINT `meetingcompetitor_ibfk_1` FOREIGN KEY (`Meeting`) REFERENCES `Meeting` (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingCompetitorDiscipline`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingCompetitorDiscipline` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `MeetingCompetitor` int(11) DEFAULT NULL,
-  `MeetingDiscipline` int(11) DEFAULT NULL,
-  `Attempt1` varchar(255) DEFAULT NULL,
-  `Attempt2` varchar(255) DEFAULT NULL,
-  `Attempt3` varchar(255) DEFAULT NULL,
-  `Attempt4` varchar(255) DEFAULT NULL,
-  `Attempt5` varchar(255) DEFAULT NULL,
-  `Best` varchar(255) DEFAULT NULL,
-  `Average` varchar(255) DEFAULT NULL,
-  `Mean` varchar(255) DEFAULT NULL,
-  `Place` int(11) DEFAULT NULL,
-  `Attempts` varchar(255) DEFAULT NULL,
-  `MilisecondsOrder` double DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `MettingCompetitor` (`MeetingCompetitor`),
-  KEY `MettingDiscipline` (`MeetingDiscipline`),
-  CONSTRAINT `meetingcompetitordiscipline_ibfk_1` FOREIGN KEY (`MeetingCompetitor`) REFERENCES `MeetingCompetitor` (`ID`),
-  CONSTRAINT `meetingcompetitordiscipline_ibfk_2` FOREIGN KEY (`MeetingDiscipline`) REFERENCES `MeetingDiscipline` (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingDiscipline`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingDiscipline` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Meeting` int(11) DEFAULT NULL,
-  `MeetingDisciplineList` int(11) DEFAULT NULL,
-  `Round` int(11) DEFAULT NULL,
-  `MeetingFormat` int(11) DEFAULT NULL,
-  `Comment` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL,
-  `Amount` bit(1) DEFAULT b'0',
-  PRIMARY KEY (`ID`),
-  KEY `Meeting` (`Meeting`),
-  KEY `MeetingDisciplineList` (`MeetingDisciplineList`),
-  KEY `MeetingFormat` (`MeetingFormat`),
-  CONSTRAINT `meetingdiscipline_ibfk_1` FOREIGN KEY (`Meeting`) REFERENCES `Meeting` (`ID`),
-  CONSTRAINT `meetingdiscipline_ibfk_2` FOREIGN KEY (`MeetingDisciplineList`) REFERENCES `MeetingDisciplineList` (`ID`),
-  CONSTRAINT `meetingdiscipline_ibfk_3` FOREIGN KEY (`MeetingFormat`) REFERENCES `MeetingFormat` (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingDisciplineList`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingDisciplineList` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255) DEFAULT NULL,
-  `Image` varchar(255) DEFAULT NULL,
-  `Code` varchar(255) DEFAULT NULL,
-  `Amount` bit(1) DEFAULT b'0',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingFormat`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingFormat` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Format` varchar(255) DEFAULT NULL,
-  `Attempts` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `MeetingOrganizer`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MeetingOrganizer` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Meeting` int(11) DEFAULT NULL,
-  `WCAID` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `announcements`
@@ -554,6 +305,8 @@ CREATE TABLE `unofficial_competitors_result` (
   `attempts` varchar(255) NOT NULL,
   `place` int(11) NOT NULL,
   `order` double NOT NULL,
+  `order_best` double DEFAULT NULL,
+  `order_average` double DEFAULT NULL,
   UNIQUE KEY `competitor_round` (`competitor_round`) USING BTREE,
   CONSTRAINT `fk_unofficial_competitors_result_competitor_round` FOREIGN KEY (`competitor_round`) REFERENCES `unofficial_competitors_round` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -680,6 +433,21 @@ CREATE TABLE `unofficial_organizers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `unofficial_partners`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_partners` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `competitor` int(11) DEFAULT NULL,
+  `partner` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `competitor` (`competitor`,`partner`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `unofficial_results_dict`
 --
 
@@ -768,4 +536,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Mon, 13 Jul 2020 14:35:30 +0000
+-- Dump completed on: Fri, 17 Jul 2020 04:48:15 +0000
