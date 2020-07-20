@@ -24,6 +24,9 @@
             <a target="_blank" href="?action=result">Print the results</a> ▪
             <a target="_blank" href="?action=cards&blank">Print blank competitors cards</a> ▪
             <a target="_blank" href="?action=export">Export results</a>
+            <?php if($event_round_this){ ?>
+             ▪ <a target="_blank" href="?action=export&format=txt">TXT results</a>
+            <?php } ?>
         </p>
     <?php } ?>
     <?php if ($event_round_this !== FALSE) { ?>

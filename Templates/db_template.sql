@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Fri, 17 Jul 2020 04:48:15 +0000
+-- Date: Mon, 20 Jul 2020 15:27:05 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -207,6 +207,156 @@ CREATE TABLE `goals_events` (
   `code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_colors_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_colors_dict` (
+  `name` varchar(255) DEFAULT NULL,
+  `code` varchar(12) NOT NULL,
+  `order` int(11) DEFAULT NULL,
+  `default` bit(1) DEFAULT NULL,
+  `border` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`code`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_displays_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_displays_dict` (
+  `code` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `default` bit(1) DEFAULT NULL,
+  `order` int(11) DEFAULT NULL,
+  PRIMARY KEY (`code`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_images`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_images` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` int(11) DEFAULT NULL,
+  `folder` varchar(12) DEFAULT NULL,
+  `active` bit(1) DEFAULT NULL,
+  `custom` varchar(126) DEFAULT NULL,
+  `custom_full` bit(1) DEFAULT NULL,
+  `custom_use` bit(1) DEFAULT NULL,
+  `choose_complete` bit(1) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  CONSTRAINT `mosaic_images_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `mosaic_session` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_pixels_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_pixels_dict` (
+  `code` varchar(12) DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `default` bit(1) DEFAULT NULL,
+  KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_schemas`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_schemas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `step_id` int(11) DEFAULT NULL,
+  `schema` varchar(255) DEFAULT NULL,
+  `fix` bit(1) DEFAULT NULL,
+  `is_custom` bit(1) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `step_schema` (`step_id`,`schema`) USING BTREE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_schemas_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_schemas_dict` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_session`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_session` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session` varchar(56) NOT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `amount` int(11) DEFAULT '300',
+  `color_dict` varchar(12) DEFAULT NULL,
+  `pixel_dict` varchar(12) DEFAULT NULL,
+  `folder` varchar(12) DEFAULT NULL,
+  `setting_fix` bit(1) DEFAULT NULL,
+  `wide` int(11) DEFAULT '3',
+  `high` int(11) DEFAULT '4',
+  `display_dict` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session` (`session`),
+  KEY `color_dict` (`color_dict`),
+  KEY `pixel_dict` (`pixel_dict`),
+  KEY `display_dict` (`display_dict`),
+  CONSTRAINT `mosaic_session_ibfk_1` FOREIGN KEY (`color_dict`) REFERENCES `mosaic_colors_dict` (`code`),
+  CONSTRAINT `mosaic_session_ibfk_2` FOREIGN KEY (`pixel_dict`) REFERENCES `mosaic_pixels_dict` (`code`),
+  CONSTRAINT `mosaic_session_ibfk_3` FOREIGN KEY (`display_dict`) REFERENCES `mosaic_displays_dict` (`code`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mosaic_steps`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mosaic_steps` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `image_id` int(255) DEFAULT NULL,
+  `step` varchar(255) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `image_step` (`image_id`,`step`) USING BTREE,
+  KEY `image` (`image_id`) USING BTREE,
+  CONSTRAINT `mosaic_steps_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `mosaic_images` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -536,4 +686,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Fri, 17 Jul 2020 04:48:15 +0000
+-- Dump completed on: Mon, 20 Jul 2020 15:27:05 +0000

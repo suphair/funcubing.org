@@ -13,17 +13,24 @@ div.Wrapper{
 }
 
 img.pdf{
-    border: 1px solid rgb(255, 255, 255); 
+    border: 2px solid rgb(255, 255, 255); 
 }
 
 img.choose {
- border: 1px solid rgb(170, 170, 170); 
+ border: 2px solid rgb(170, 170, 170); 
 }         
 
 img.choose:hover a:hover img.pdf {
- border: 1px solid white;
+ border: 2px solid white;
 }
 
+img.choose_images:hover{
+ border: 2px solid green;   
+}
+
+img.pdf_images:hover{
+ border: 2px solid red;   
+}
 
 div.wrapper_img{
     width:200px;
@@ -107,4 +114,14 @@ div.content_border{
     width: 17px;
     padding :0px;
     margin:0px;
+}
+
+.done{
+    color:var(--green)
+}
+.now{
+    color:var(--light_blue)
+}
+.future{
+    color:var(--light_gray)
 }

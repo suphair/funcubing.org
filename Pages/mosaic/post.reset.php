@@ -1,5 +1,4 @@
 <?php
 
-Mosaic::Init();
-Mosaic::Reset();
-
+mosaic\setting_fix(false);
+mosaic\deactivate_images();

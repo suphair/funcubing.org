@@ -1,238 +1,276 @@
 <?php
-Mosaic::Init();
 
-$name = filter_input(INPUT_GET, 'value');
-if (!$name) {
-    echo 'name is not exists';
-    exit();
+mosaic\value::init();
+$scheme_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+$schema = mosaic\get_schema_by_id($scheme_id);
+if (!$schema) {
+    die("Schema with id = [$scheme_id] is lost");
 }
 
-$W_max = Mosaic::$widthCubes_pdf;
-$H_max = Mosaic::$heightCubes_pdf;
+$file = mosaic\value::$folder_image . "/" . $schema->step . "/" . $schema->schema . ".png";
+$image = new Image($file);
+$pixel = mosaic\value::$session->pixel->value;
+$display = mosaic\value::$session->display->value;
 
-$file = Mosaic::$dirName . (strlen($name) - Mosaic::START_LAYER + 1) . "/Image_pixel_" . $name . ".png";
+$image->block = new stdClass();
+$image->cube = new stdClass();
+$image->pixel = new stdClass();
+$blocks = new stdClass();
+$blocks->cubes = new stdClass();
+$blocks->pixel = new stdClass();
+$cubes = new \stdClass();
+$cubes->pixel = new \stdClass();
 
-$Image = new Image($file);
-$Image->GetColors_256();
-
-$heigth = $Image->heigth;
-$width = $Image->width;
-
-if (!$width or ! $heigth) {
-    exit();
-}
-
-$P = Mosaic::$pixels;
-$W = $P * $W_max;
-$H = $P * $H_max;
-$Cube_width = ceil($width / $W);
-$Cube_height = ceil($heigth / $H);
+$image->pixel->width = $image->width;
+$image->pixel->height = $image->height;
 
 
-if ($width > $heigth) {
-    @$pdf = new FPDF('L', 'mm');
-} else {
-    @$pdf = new FPDF('P', 'mm');
-}
+$blocks->cubes->width = mosaic\value::$session->wide;
+$blocks->cubes->height = mosaic\value::$session->high;
 
+$cubes->pixel->width = $pixel;
+$cubes->pixel->height = $pixel;
 
-$dx = 30;
-$dy = 10;
+$blocks->pixel->width = $cubes->pixel->width * $blocks->cubes->width;
+$blocks->pixel->height = $cubes->pixel->height * $blocks->cubes->height;
 
-$pdf_w = $pdf->GetPageWidth();
-$pdf_h = $pdf->GetPageHeight();
+$image->block->width = ceil($image->pixel->width / $blocks->pixel->width);
+$image->block->height = ceil($image->pixel->height / $blocks->pixel->height);
 
-$w_total = $Cube_width * $W;
-$h_total = $Cube_height * $H;
+$image->cube->width = ceil($image->pixel->width / $pixel);
+$image->cube->height = ceil($image->pixel->height / $pixel);
 
-$cell_w = ($pdf_w - 2 * $dx) / $Image->width;
-$cell_h = ($pdf_h - 2 * $dy) / $Image->heigth;
-
-$cell_s = min(array($cell_w, $cell_h));
-$cell_w = $cell_s;
-$cell_h = $cell_s;
-
-$dx = ($pdf_w - $cell_w * $Image->width) / 2;
-$dy = ($pdf_h - $cell_h * $Image->heigth) / 2;
-
-if ($dy < $dx)
-    $dy = $dx;
-
-
-$pdf->SetFont('Arial', '', 24);
-
-$pdf->AddPage();
-
-for ($h = 0; $h < $heigth; $h ++) {
-    for ($w = 0; $w < $width; $w ++) {
-        $color_pix = $Image->colors_img_256[$w][$h];
-        $pdf->SetFillColor(Mosaic::$colors[$color_pix][0], Mosaic::$colors[$color_pix][1], Mosaic::$colors[$color_pix][2]);
-        $pdf->Rect($w * $cell_w + $dx, $h * $cell_h + $dy, $cell_w, $cell_h, "F");
-    }
-}
-
-$pdf->SetLineWidth(0.2);
-if (Mosaic::$color == 'W') {
-    $pdf->SetDrawColor(200, 200, 200);
-} else {
-    $pdf->SetDrawColor(0, 0, 0);
-}
-for ($h = 0; $h < $heigth; $h ++) {
-    for ($w = 0; $w < $width; $w ++) {
-        $pdf->Rect(($w) * $cell_w + $dx, ($h) * $cell_h + $dy, $cell_w, $cell_h);
-    }
-}
-
-if ($P > 1) {
-    $pdf->SetLineWidth(0.4);
-    if (Mosaic::$color == 'W') {
-        $pdf->SetDrawColor(200, 200, 200);
+function center($page_width, $page_height, $count_width, $count_height) {
+    if ($page_width > $page_height) {
+        $padding_width_defaut = 30;
+        $padding_height_defaut = 20;
     } else {
-        $pdf->SetDrawColor(0, 0, 0);
+        $padding_width_defaut = 20;
+        $padding_height_defaut = 30;
     }
-    for ($h = 0; $h < $heigth; $h += $P) {
-        for ($w = 0; $w < $width; $w += $P) {
-            $pdf->Rect(($w) * $cell_w + $dx, ($h) * $cell_h + $dy, $cell_w * $P, $cell_h * $P);
-        }
-    }
+
+    $width_free = $page_width - 2 * $padding_width_defaut;
+    $height_free = $page_height - 2 * $padding_height_defaut;
+
+    $size = min([$width_free / $count_width, $height_free / $count_height]);
+    $padding_width = ($page_width - $size * $count_width) / 2;
+    $padding_height = ($page_height - $size * $count_height) / 2;
+
+    return (object) ['padding_width' => $padding_width, 'padding_height' => $padding_height, 'size' => $size];
 }
-$pdf->SetDrawColor(0, 0, 0);
-$pdf->Text($dx, $dy / 2, ($width / $P) . ' * ' . ($heigth / $P) . " = " . ($width * $heigth / ($P * $P)));
+
+$image->GetColors_256();
+
+if ($image->pixel->width > $image->pixel->height) {
+    $pdf = new FPDF('L', 'mm');
+} else {
+    $pdf = new FPDF('P', 'mm');
+}
+
 
 
 $pdf->AddPage();
+$center = center($pdf->GetPageWidth()
+        , $pdf->GetPageHeight()
+        , $image->pixel->width
+        , $image->pixel->height);
+
+for ($h = 0; $h < $image->pixel->height; $h++) {
+    for ($w = 0; $w < $image->pixel->width; $w++) {
+        $color_pix = $image->colors_img_256[$w][$h];
+        $pdf->SetFillColor(mosaic\value::$colors[$color_pix][0], mosaic\value::$colors[$color_pix][1], mosaic\value::$colors[$color_pix][2]);
+        $pdf->Rect($w * $center->size + $center->padding_width
+                , $h * $center->size + $center->padding_height
+                , $center->size
+                , $center->size
+                , "F");
+    }
+}
+
+$pdf->SetDrawColor(...json_decode(mosaic\value::$session->color->border));
+$pdf->SetLineWidth(0.2);
+for ($h = 0; $h < $image->cube->height; $h++) {
+    for ($w = 0; $w < $image->cube->width; $w++) {
+        $pdf->Rect($w * $center->size * $cubes->pixel->width + $center->padding_width
+                , $h * $center->size * $cubes->pixel->height + $center->padding_height
+                , $center->size * $cubes->pixel->width
+                , $center->size * $cubes->pixel->height);
+    }
+}
+
+$pdf->SetDrawColor(0, 0, 0);
+$pdf->SetFont('Arial', '', 18);
+$pdf->Text($center->padding_width, $center->padding_height - 5, "{$image->cube->width} x {$image->cube->height} = " . ($image->cube->width * $image->cube->height) . ' / cubes ' . mosaic\value::$session->pixel->name);
 
 
-$dx = ($pdf_w - $cell_w * ceil($Image->width / $W) * $W) / 2;
-$dy = ($pdf_h - $cell_h * ceil($Image->heigth / $H) * $H) / 2;
-if ($dy < $dx)
-    $dy = $dx;
-for ($h = 0; $h < $heigth; $h ++) {
-    for ($w = 0; $w < $width; $w ++) {
-        $color_name = $Image->colors_img_256[$w][$h];
-        $Imagename = "Pages/mosaic/image/$color_name" . "_" . Mosaic::$pdfImages . ".png";
-        if (file_exists($Imagename)) {
-            $pdf->Image($Imagename, $w * $cell_w + $dx, $h * $cell_h + $dy, $cell_w, $cell_h);
-        } else {
-            $color_pix = $color_name;
-            $pdf->SetFillColor(Mosaic::$colors[$color_pix][0], Mosaic::$colors[$color_pix][1], Mosaic::$colors[$color_pix][2]);
-            $pdf->Rect($w * $cell_w + $dx, $h * $cell_h + $dy, $cell_w, $cell_h, "F");
-        }
+
+$pdf->AddPage();
+$center = center($pdf->GetPageWidth()
+        , $pdf->GetPageHeight()
+        , $image->block->width * $blocks->cubes->width * $cubes->pixel->width
+        , $image->block->height * $blocks->cubes->height * $cubes->pixel->height);
+
+
+for ($h = 0; $h < $image->pixel->height; $h++) {
+    for ($w = 0; $w < $image->pixel->width; $w++) {
+        $color_name = $image->colors_img_256[$w][$h];
+        $imagename = "Pages/mosaic/image/$color_name" . "_$display.png";
+        $pdf->Image(
+                $imagename
+                , $w * $center->size + $center->padding_width
+                , $h * $center->size + $center->padding_height
+                , $center->size
+                , $center->size
+        );
     }
 }
 
 $pdf->SetLineWidth(0.2);
 $pdf->SetDrawColor(215, 215, 215);
-for ($h = 0; $h < $heigth; $h ++) {
-    for ($w = 0; $w < $width; $w ++) {
-        $pdf->Rect(($w) * $cell_w + $dx, ($h) * $cell_h + $dy, $cell_w, $cell_h);
+for ($h = 0; $h < $image->block->height * $blocks->cubes->height; $h++) {
+    for ($w = 0; $w < $image->block->width * $blocks->cubes->width; $w++) {
+        $pdf->Rect(
+                $w * $center->size * $cubes->pixel->width + $center->padding_width
+                , $h * $center->size * $cubes->pixel->height + $center->padding_height
+                , $center->size * $cubes->pixel->width
+                , $center->size * $cubes->pixel->height);
     }
-}
+};
+$pdf->SetLineWidth(0.5);
+$pdf->SetDrawColor(0, 0, 0);
 
-
-if ($P > 1) {
-    $pdf->SetLineWidth(0.5);
-    $pdf->SetDrawColor(0, 0, 0);
-    for ($h = 0; $h < $heigth; $h += $H) {
-        for ($w = 0; $w < $width; $w += $W) {
-            $pdf->Rect(($w) * $cell_w + $dx, ($h) * $cell_h + $dy, $cell_w * $W, $cell_h * $H);
+if ($pixel > 1) {
+    for ($h = 0; $h < $image->block->height; $h++) {
+        for ($w = 0; $w < $image->block->width; $w++) {
+            $pdf->Rect(
+                    $w * $center->size * $blocks->cubes->width * $cubes->pixel->width + $center->padding_width
+                    , $h * $center->size * $blocks->cubes->height * $cubes->pixel->height + $center->padding_height
+                    , $center->size * $blocks->cubes->width * $cubes->pixel->width
+                    , $center->size * $blocks->cubes->height * $cubes->pixel->height);
         }
     }
 }
 
-$pdf->SetLineWidth(0.2);
-$pdf->SetDrawColor(0, 0, 0);
-for ($h = 0; $h < $heigth; $h += $H) {
-    $pdf->Text($dx - 6, $h * $cell_h + $dy + $cell_h * 3 * 4 / 2 + 4, $Cube_height - $h / $H);
-    $pdf->Text($pdf->GetPageWidth() - $dx + 2, $h * $cell_h + $dy + $cell_h * $H / 2 + 4, $Cube_height - $h / $H);
-    $pdf->Line($dx / 2, $h * $cell_h + $dy + $cell_h * $H, $dx * 3 / 2 + $Cube_width * $W * $cell_w, $h * $cell_h + $dy + $cell_h * $H);
+
+for ($h = 0; $h < $image->block->height; $h++) {
+    $pdf->Text($center->padding_width - 6
+            , ($h + 1 / 2) * $center->size * $blocks->cubes->height * $cubes->pixel->height + $center->padding_height + 3
+            , $image->block->height - $h);
+    $pdf->Text($pdf->GetPageWidth() - $center->padding_width + 2
+            , ($h + 1 / 2) * $center->size * $blocks->cubes->height * $cubes->pixel->height + $center->padding_height + 3
+            , $image->block->height - $h);
+    $pdf->Line($center->padding_width / 2
+            , ($h + 1) * $center->size * $blocks->cubes->height * $cubes->pixel->height + $center->padding_height
+            , $pdf->GetPageWidth() - $center->padding_width / 2
+            , ($h + 1) * $center->size * $blocks->cubes->height * $cubes->pixel->height + $center->padding_height);
 }
-$pdf->Line($dx / 2, $dy, $dx * 3 / 2 + $Cube_width * $W * $cell_w, $dy);
 
-$i_name = array(1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N',
-    15 => 'O', 16 => 'P', 17 => 'R', 18 => 'S', 19 => 'T', 20 => 'U', 21 => 'V', 22 => 'W', 23 => 'X', 24 => 'Y', 25 => 'Z');
-for ($k = 26; $k < 100; $k++) {
-    $i_name[$k] = $k;
+$pdf->Line($center->padding_width / 2
+        , $center->padding_height
+        , $pdf->GetPageWidth() - $center->padding_width / 2
+        , $center->padding_height);
+
+
+
+$i_name = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J',
+    11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O', 16 => 'P', 17 => 'R', 18 => 'S', 19 => 'T', 20 => 'U',
+    21 => 'V', 22 => 'W', 23 => 'X', 24 => 'Y', 25 => 'Z'];
+
+for ($w = 0; $w < $image->block->width; $w++) {
+    $pdf->Text(($w + 1 / 2) * $center->size * $blocks->cubes->width * $cubes->pixel->width + $center->padding_width
+            , $center->padding_height - 3
+            , $i_name[$w + 1] ?? ($w + 1));
+    $pdf->Text(($w + 1 / 2) * $center->size * $blocks->cubes->width * $cubes->pixel->width + $center->padding_width
+            , $pdf->GetPageHeight() - $center->padding_height + 8
+            , $i_name[$w + 1] ?? ($w + 1));
+    $pdf->Line(
+            ($w + 1 ) * $center->size * $blocks->cubes->width * $cubes->pixel->width + $center->padding_width
+            , $center->padding_height / 2
+            , ($w + 1 ) * $center->size * $blocks->cubes->width * $cubes->pixel->width + $center->padding_width
+            , $pdf->GetPageHeight() - $center->padding_height / 2);
 }
-$pdf->SetLineWidth(0.2);
-$pdf->SetDrawColor(0, 0, 0);
-for ($w = 0; $w < $width; $w += $W) {
-    $pdf->Text($w * $cell_w + $dx + $cell_w, $dy / 2 + 8, $i_name[$w / $W + 1]);
-    $pdf->Text($w * $cell_w + $dx + $cell_w, $Cube_height * $H * $cell_h + $dy * 3 / 2 - 4, $i_name[$w / $W + 1]);
-    $pdf->Line($w * $cell_w + $dx + $cell_w * $W, $dy / 2, $w * $cell_w + $dx + $cell_w * $W, $dy * 3 / 2 + $Cube_height * $H * $cell_h);
-}
-$pdf->Line($dx, $dy / 2, $dx, $dy * 3 / 2 + $Cube_height * $P * 4 * $cell_h);
+$pdf->Line(
+        $center->padding_width
+        , $center->padding_height / 2
+        , $center->padding_width
+        , $pdf->GetPageHeight() - $center->padding_height / 2);
 
 
-$ddx = 15;
-$ddy = 30;
 
-for ($j = $Cube_height; $j >= 1; $j--) {
-    for ($i = 1; $i <= $Cube_width; $i++) {
-        $pdf->SetFillColor(200, 200, 200);
-        $pdf->addPage("P");
-        $pdf_w = $pdf->GetPageWidth();
-        $pdf_h = $pdf->GetPageHeight();
-        $kk = min(($pdf_w - 2 * $ddx) / $W_max, ($pdf_h - 2 * $ddy) / $H_max);
-
-
-        $pdf->SetFont('Arial', '', 24);
-        $pdf->SetLineWidth(0.2);
-
-        $ty = $kk * $W_max / $Cube_width;
-        for ($t = 1; $t <= $Cube_width; $t++) {
-            $pdf->Rect($ddx + $ty * ($t - 1), $ddy - 10, $ty, 10);
+for ($hp = $image->block->height - 1; $hp > 0; $hp--) {
+    for ($wp = 0; $wp < $image->block->width; $wp++) {
+        if ($blocks->cubes->width > $blocks->cubes->height) {
+            $pdf->AddPage("L");
+        } else {
+            $pdf->AddPage("P");
         }
-        $pdf->Rect($ddx + $ty * ($i - 1), $ddy - 10, $ty, 10, "F");
-        $pdf->Text($ddx + $ty * ($i - 1) + 3, $ddy - 2, $i_name[$i] . ($Cube_height - $j + 1));
+        $center = center($pdf->GetPageWidth()
+                , $pdf->GetPageHeight()
+                , $blocks->cubes->width * $cubes->pixel->width
+                , $blocks->cubes->height * $cubes->pixel->height);
 
+        $pdf->SetFont('Arial', '', 18);
+        $pdf->Text($center->padding_width, $center->padding_height / 2, ($i_name[$wp + 1] ?? ($wp + 1)) . ($image->block->height - $hp));
 
-        for ($ii = 1; $ii <= $W; $ii++) {
-            for ($jj = 1; $jj <= $H; $jj++) {
-                $xx = $ddx + $kk / $P * ($ii - 1);
-                $yy = $ddy + 5 + $kk / $P * ($jj - 1);
-                if (isset($Image->colors_img_256[$ii + $W * ($i - 1) - 1][$jj + $H * ($j - 1) - 1])) {
-                    $color_name = $Image->colors_img_256[$ii + $W * ($i - 1) - 1][$jj + $H * ($j - 1) - 1];
-                    $Imagename = "Pages/mosaic/image/$color_name" . "_" . Mosaic::$pdfImages . ".png";
-                    if (file_exists($Imagename)) {
-                        $pdf->Image($Imagename, $xx, $yy, $kk / $P, $kk / $P);
-                    } else {
-                        $color_pix = $color_name;
-                        $pdf->SetFillColor(Mosaic::$colors[$color_pix][0], Mosaic::$colors[$color_pix][1], Mosaic::$colors[$color_pix][2]);
-                        $pdf->Rect($xx, $yy, $kk / $P, $kk / $P, "F");
-                    }
+        $pdf->SetDrawColor(220, 220, 220);
+
+        for ($h = 0; $h < $blocks->pixel->height; $h++) {
+            for ($w = 0; $w < $blocks->pixel->width; $w++) {
+                $wi = $wp * $blocks->pixel->width + $w;
+                $hi = $hp * $blocks->pixel->height + $h;
+
+                $color_name = $image->colors_img_256[$wi][$hi] ?? FALSE;
+                if ($color_name) {
+                    $imagename = "Pages/mosaic/image/$color_name" . "_$display.png";
+                    $pdf->Image(
+                            $imagename
+                            , $w * $center->size + $center->padding_width
+                            , $h * $center->size + $center->padding_height
+                            , $center->size
+                            , $center->size
+                    );
                 } else {
-                    $pdf->SetFillColor(215, 215, 215);
-                    $pdf->Rect($xx, $yy, $kk / $P, $kk / $P, "F");
+                    $pdf->SetFillColor(220, 220, 220);
+                    $pdf->Rect($w * $center->size + $center->padding_width
+                            , $h * $center->size + $center->padding_height
+                            , $center->size
+                            , $center->size
+                            , "F");
                 }
             }
         }
 
+        $pdf->SetLineWidth(0.2);
+        $pdf->SetDrawColor(0, 0, 0);
 
-        $pdf->SetLineWidth(1);
-        $pdf->SetDrawColor(215, 215, 215);
-        for ($ii = 1; $ii <= $W; $ii++) {
-            for ($jj = 1; $jj <= $H; $jj++) {
-                $xx = $ddx + $kk / $P * ($ii - 1);
-                $yy = $ddy + 5 + $kk / $P * ($jj - 1);
-                $pdf->Rect($xx, $yy, $kk / $P, $kk / $P);
+        for ($h = 0; $h < $blocks->pixel->height; $h++) {
+            for ($w = 0; $w < $blocks->pixel->width; $w++) {
+                $pdf->Rect($w * $center->size + $center->padding_width
+                        , $h * $center->size + $center->padding_height
+                        , $center->size
+                        , $center->size);
             }
         }
 
-        if ($P > 1) {
-            $pdf->SetLineWidth(1.5);
-            $pdf->SetDrawColor(0, 0, 0);
-            for ($ii = 1; $ii <= $W_max; $ii++) {
-                for ($jj = 1; $jj <= $H_max; $jj++) {
-                    $xx = $ddx + $kk * ($ii - 1);
-                    $yy = $ddy + 5 + $kk * ($jj - 1);
-                    $pdf->Rect($xx, $yy, $kk, $kk);
-                }
+        $pdf->SetLineWidth(1.2);
+        $pdf->SetDrawColor(220, 220, 220);
+        for ($h = 0; $h < $blocks->cubes->height; $h++) {
+            for ($w = 0; $w < $blocks->cubes->width; $w++) {
+                $pdf->Rect(
+                        $w * $center->size * $cubes->pixel->width + $center->padding_width
+                        , $h * $center->size * $cubes->pixel->height + $center->padding_height
+                        , $center->size * $cubes->pixel->width
+                        , $center->size * $cubes->pixel->height);
             }
         }
+        $pdf->Rect(
+                $center->padding_width
+                , $center->padding_height
+                , $pdf->GetPageWidth() - $center->padding_width * 2
+                , $pdf->GetPageHeight() - $center->padding_height * 2);
     }
 }
 
-$pdf->Output(date("dMY") . '_mosaic.pdf', 'I');
+$pdf->Output('mosaic_' . $scheme_id . '.pdf', 'I');
 $pdf->Close();
-exit();

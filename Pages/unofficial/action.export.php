@@ -1,7 +1,4 @@
 <?php
-
-header("Content-type:  application/json; charset=utf-8");
-
 $event_code = request(3);
 $round = request(4);
 
@@ -75,5 +72,17 @@ foreach ($events as $event_round) {
         $exports[$comp->name]['results'][$round_event]['competitors'] = $export;
     }
 }
+if(filter_input(INPUT_GET, 'format') == 'txt' and sizeof($events)==1){
+    header("Content-type:  text/plain; charset=utf-8");
+    foreach($export as $competitor => $row){
+        echo $competitor;
+        foreach($row['attempts'] as $attempt){
+            echo " $attempt";
+        }
+        echo "\n";
+    }
+    exit();
+}
+header("Content-type:  application/json; charset=utf-8");
 echo json_encode($exports, JSON_UNESCAPED_UNICODE + JSON_PRETTY_PRINT);
 exit();

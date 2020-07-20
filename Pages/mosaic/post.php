@@ -1,4 +1,6 @@
 <?php
+
+mosaic\value::init();
 if (filter_input(INPUT_GET, 'setting') !== NULL) {
     include 'post.setting.php';
 }
