@@ -1,5 +1,4 @@
 <?php
-
 $registrations = filter_input(INPUT_POST, 'registrations', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 if (!is_array($registrations)) {
@@ -14,10 +13,10 @@ foreach ($registrations as $competitorId => $registration) {
         $registration = [];
     }
 
+    db::exec("UPDATE IGNORE unofficial_competitors SET name = '$name' WHERE id = $competitorId ");
+    
     foreach ($registration as $event_dict => $flag) {
-        
-        db::exec("UPDATE IGNORE unofficial_competitors SET name = '$name' WHERE id = $competitorId ");
-
+       
         $round = db::row("SELECT unofficial_events_rounds.id FROM unofficial_events_rounds "
                         . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event "
                         . " WHERE unofficial_events.event_dict = $event_dict"
