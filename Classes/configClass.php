@@ -2,7 +2,7 @@
 
 class config {
 
-    const VERSION = '2.0.1';
+    const VERSION = '2.0.2';
 
     protected static $dir;
     protected static $server;
@@ -31,7 +31,7 @@ class config {
 
     static function init($dir) {
         self::$dir = $dir;
-        self::$server = strtolower(filter_input(INPUT_SERVER, 'SERVER_NAME'));
+        self::$server = str_replace("www.","",strtolower(filter_input(INPUT_SERVER, 'SERVER_NAME')));
 
         if (!file_exists($dir)) {
             trigger_error("config: direcory [$dir] is not exists", E_USER_ERROR);
