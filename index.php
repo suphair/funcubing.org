@@ -19,6 +19,75 @@ db::set($get('host'), $get('username'), $get('password'), $get('schema'), $get('
 
 wcaapi::setConnection(db::connection());
 
+
+if (FALSE and ( wcaoauth::me()->wca_id ?? FALSE) == config::get('Admin', 'wcaid')) {
+
+    db::exec("UPDATE unofficial_competitors_result set average = null WHERE average=''");
+    db::exec("UPDATE unofficial_competitors_result set mean = null WHERE mean=''");
+    db::exec("UPDATE unofficial_competitors_result set average='dnf' WHERE average='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set best='dnf' WHERE best='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set mean='dnf' WHERE mean='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set average='dns' WHERE average='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set best='dns' WHERE best='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set attempt1='dnf' WHERE attempt1='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set attempt2='dnf' WHERE attempt2='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set attempt3='dnf' WHERE attempt3='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set attempt4='dnf' WHERE attempt4='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set attempt5='dnf' WHERE attempt5='DNF'");
+    db::exec("UPDATE unofficial_competitors_result set attempt1='dns' WHERE attempt1='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set attempt2='dns' WHERE attempt2='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set attempt3='dns' WHERE attempt3='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set attempt4='dns' WHERE attempt4='DNS'");
+    db::exec("UPDATE unofficial_competitors_result set attempt5='dns' WHERE attempt5='DNS'");
+    foreach (db::rows("SELECT competitor_round,average,mean,best FROM unofficial_competitors_result") as $result) {
+        $order = 0;
+        $order_best = 0;
+        $order_average = 0;
+        $order = 0;
+        $order += (10000000 * unofficial\attempt_to_int($result->average ?? 0));
+        $order += (10000000 * unofficial\attempt_to_int($result->mean ?? 0));
+        $order += unofficial\attempt_to_int($result->best ?? 0);
+        $order_best = unofficial\attempt_to_int($result->best ?? 0);
+        $order_average += unofficial\attempt_to_int($result->average ?? 0);
+        $order_average += unofficial\attempt_to_int($result->mean ?? 0);
+        db::exec("UPDATE unofficial_competitors_result "
+                . "SET `order` = '$order', order_best='$order_best', order_average='$order_average' "
+                . "WHERE competitor_round = $result->competitor_round");
+    }
+    echo 'order updated';
+
+    $results = db::rows("SELECT unofficial_competitors_result.`order`,"
+                    . " unofficial_competitors_result.competitor_round,"
+                    . "unofficial_events_rounds.id "
+                    . " FROM unofficial_competitors_round"
+                    . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
+                    . " JOIN unofficial_competitors_result on unofficial_competitors_result.competitor_round = unofficial_competitors_round.id"
+                    . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
+                    . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
+                    . " ORDER BY unofficial_events_rounds.id, `order`");
+
+
+
+    $prev_id = 0;
+    foreach ($results as $result) {
+        if ($prev_id != $result->id) {
+            $order_current = 0;
+            $place_current = 0;
+            $prev_id = $result->id;
+        }
+
+        if ($result->order > $order_current) {
+            $order_current = $result->order;
+            $place_current++;
+        }
+        db::exec("UPDATE unofficial_competitors_result "
+                . "SET `place` = '$place_current'"
+                . "WHERE competitor_round = $result->competitor_round");
+    }
+    echo 'place updated';
+}
+
+
 $request_0 = request();
 $request_1 = request(1);
 
@@ -128,15 +197,15 @@ $title = [
                 </div>
             <?php } ?>
         <?php } ?>
-        <p style="padding:10px 0px">
-            <a style="padding:0px 0px 10px 0px" href="mailto:suphair@gmail.com?subject=funcubung.org">
+        <p align='center'>
+            <a href="mailto:<?= config::get('Support', 'email') ?>?subject=funcubung.org">
                 <i class="far fa-envelope"></i>
-                suphair@gmail.com
-            </a>
-            <a style="padding:0px 0px 10px 0px"  target="_blank" href="https://github.com/suphair/funcubing.org">
+                <?= config::get('Support', 'email') ?></a>
+            <a target="_blank" href="https://github.com/suphair/funcubing.org">
                 <i class="fab fa-github"></i>
-                GitHub
-            </a>
+                GitHub</a>
+            <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
+                <i class="fas fa-laptop-code"></i> Solovyov Konstantin</a>
         </p>
     </body>
 </html>
