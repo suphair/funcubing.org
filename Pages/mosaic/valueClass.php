@@ -52,14 +52,16 @@ class value {
             trigger_error($folder_session);
         }
 
-        self::$filename_load = "$folder_session/load.jpg";
-        self::$filename_cut = "$folder_session/cut.png";
 
         self::$folder_session = $folder_session;
         $image = \db::row("Select * FROM mosaic_images WHERE session_id = {$session->id} AND active = 1 ");
         self::$image = $image;
+        self::$filename_load = "$folder_session/load.jpg";
+        self::$filename_cut = "$folder_session/cut.png";
         if ($image) {
             $folder_image = $folder_session . '/' . $image->folder;
+            self::$filename_load = "$folder_image/load.jpg";
+            self::$filename_cut = "$folder_image/cut.png";
             if (!file_exists($folder_image)) {
                 trigger_error($folder_image);
             }
