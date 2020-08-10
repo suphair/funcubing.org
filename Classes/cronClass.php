@@ -1,9 +1,9 @@
 <?php
 
-const COMMAND_FUNCTION = 'function';
-const VERSION = '2.0.0';
-
 class cron {
+
+    const COMMAND_FUNCTION = 'function';
+    const VERSION = '2.0.1';
 
     protected $connection;
     protected $id;
@@ -13,7 +13,7 @@ class cron {
     }
 
     public function run() {
-        $id = $this->logBegin("cron " . VERSION);
+        $id = $this->logBegin("cron " . self::VERSION);
 
         $querySelect = "
             SELECT name, command, type, argument
@@ -49,7 +49,7 @@ class cron {
     private function execCommand($name, $command, $type, $argument) {
         $id = $this->logBegin($name);
         switch ($type) {
-            case COMMAND_FUNCTION:
+            case self::COMMAND_FUNCTION:
                 if (!function_exists($command)) {
                     $details = "ERROR: $type $command not found";
                 } else {
