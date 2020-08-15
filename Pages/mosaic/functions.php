@@ -358,14 +358,17 @@ function get_schema_by_id($scheme_id) {
 }
 
 function get_schemas_by_step() {
+    if (value::$step->id ?? FALSE) {
+        return FALSE;
+    }
     if (value::$image->custom_full and value::$step->step == 1) {
         return \db::rows("SELECT mosaic_schemas.`schema`"
-                        . " FROM mosaic_schemas WHERE step_id = " . value::$step->id
+                        . " FROM mosaic_schemas WHERE step_id = '" . value::$step->id . "'"
                         . " AND mosaic_schemas.is_custom"
                         . " ORDER BY mosaic_schemas.`schema`");
     } else {
         return \db::rows("SELECT mosaic_schemas.`schema`"
-                        . " FROM mosaic_schemas WHERE step_id = " . value::$step->id
+                        . " FROM mosaic_schemas WHERE step_id = '" . value::$step->id . "'"
                         . " ORDER BY mosaic_schemas.`schema`");
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-$folder = mosaic\set_image_folder();
-$filename_load = mosaic\value::$filename_load;
-
 if (!$_FILES['uploadfile']['error']) {
+    $folder = mosaic\set_image_folder();
+    $filename_load = mosaic\value::$filename_load;
+
 
     if ($_FILES['uploadfile']['type'] == 'image/jpeg') {
         if (exif_imagetype($_FILES['uploadfile']['tmp_name']) != IMAGETYPE_JPEG) {
