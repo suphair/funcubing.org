@@ -359,7 +359,7 @@ function get_schema_by_id($scheme_id) {
 
 function get_schemas_by_step() {
     if (value::$step->id ?? FALSE) {
-        return FALSE;
+        value::$step->step = 1;
     }
     if (value::$image->custom_full and value::$step->step == 1) {
         return \db::rows("SELECT mosaic_schemas.`schema`"
