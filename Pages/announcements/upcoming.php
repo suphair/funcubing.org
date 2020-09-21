@@ -35,7 +35,9 @@ if (sizeof($upcomings)) {
                         </td>
                         <td>
                             <span class='flag-icon flag-icon-<?= strtolower($upcoming->country_iso2) ?>'></span>
-                            <?= $upcoming->name ?>
+                            <a target="_blank" href="https://www.worldcubeassociation.org/competitions/<?= $upcoming->id ?>">
+                                <?= $upcoming->name ?>
+                            </a>
                         <td>
                             <b><?= countyName($upcoming->country_iso2) ?></b>,
                             <?= $upcoming->city ?>
