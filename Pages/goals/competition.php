@@ -10,7 +10,7 @@ $rowsCompetitors = goals\getCompetitors($comp);
 $competitors = [];
 if ($upcoming) {
     $competitors[$me->id] = (object) [
-                'name' => short_Name($me->name),
+                'name' => $me->name,
                 'country' => strtolower($me->country_iso2),
                 'wcaid' => $me->wca_id,
                 'timeStamp' => ''
