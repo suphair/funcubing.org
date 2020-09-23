@@ -266,10 +266,21 @@ function cron() {
 }
 
 function getCompetitionRegistration($wca) {
-    $persons = Suphair \ Wca \ Api::getCompetitionRegistrations($wca, __FILE__ . ': ' . __LINE__, [], false);
+    $persons = \wcaapi::getCompetitionRegistrations($wca, __FILE__ . ': ' . __LINE__, [], false);
     $registrations = [];
     foreach ($persons as $person) {
         $registrations[$person->user_id] = $person->event_ids;
     }
     return $registrations;
+}
+
+function getPersonRecords($wca) {
+    $person = \wcaapi::getPerson($wca, __FILE__ . ': ' . __LINE__, [], false);
+    $records = [];
+    foreach ($person->personal_records ?? [] as $event => $record_types) {
+        foreach ($record_types as $record_type => $record) {
+            $records[$event][$record_type] = $record->best;
+        }
+    }
+    return $records;
 }

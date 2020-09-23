@@ -60,8 +60,8 @@ foreach ($rowsGoal as $row) {
     ];
 }
 if ($upcoming) {
-    $competitorRecord = getPersonRecords($me->wca_id);
-    $registrations = getCompetitionRegistration($competition->wca);
+    $competitorRecord = goals\getPersonRecords($me->wca_id);
+    $registrations = goals\getCompetitionRegistration($competition->wca);
     if (isset($registrations[$me->id])) {
         $competitorEvents = $registrations[$me->id];
     } else {
