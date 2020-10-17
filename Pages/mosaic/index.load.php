@@ -4,5 +4,8 @@
         <button>
             <i class="far fa-caret-square-right"></i>
         </button>
+        <span class="error">
+            <?= postGet('post.image') ?>
+        </span>
     </form>          
 </div>

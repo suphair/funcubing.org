@@ -4,4 +4,7 @@
     <button>
         <i class="fas fa-sync"></i>
     </button>
+    <span class="error">
+        <?= postGet('post.image') ?>
+    </span>
 </form> 
