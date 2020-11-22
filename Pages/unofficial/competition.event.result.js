@@ -18,6 +18,7 @@ $('[data-competitor]').click(function () {
 
 function click_competitor(el) {
     $('[data-results]').data('result-competitor-id', el.data('competitor-id'));
+    $('[data-save-competitor-id]').val(el.data('competitor-id'));
     $('[data-results-name]').html(el.data('competitor-name'));
     $('[data-results-attempts]').val(el.data('competitor-attempts'));
     $('[data-results-attempts]').prop('disabled', false);
