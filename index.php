@@ -1,5 +1,6 @@
 <?php
 session_start();
+ob_start();
 
 foreach (['Classes', 'Functions'] as $dir) {
     foreach (scandir($dir) as $file) {

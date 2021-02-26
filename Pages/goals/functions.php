@@ -229,7 +229,7 @@ function cron() {
     foreach ($competitionsResult as $wca) {
         $results = \wcaapi::getCompetitionResults($wca, __FILE__ . ': ' . __LINE__, [], FALSE);
 
-        if (!sizeof($results)) {
+        if ($results ?? FALSE) {
             continue;
         }
 

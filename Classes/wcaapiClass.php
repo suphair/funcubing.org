@@ -4,7 +4,7 @@ class wcaapi {
 
     protected static $connection;
 
-    const VERSION = '2.0.1';
+    const VERSION = '2.1.0';
     const URL = 'https://www.worldcubeassociation.org/api/v0/';
     const MINUTES = 60;
 
@@ -130,7 +130,7 @@ class wcaapi {
     private static function log($request, $response, $status, $context) {
 
         $request_escape = mysqli_real_escape_string(self::$connection, $request);
-        $response_escape = mysqli_real_escape_string(self::$connection, $response);
+        $response_escape = false;#mysqli_real_escape_string(self::$connection, $response);
         $context_escape = mysqli_real_escape_string(self::$connection, $context);
         $status_escape = mysqli_real_escape_string(self::$connection, $status);
 
