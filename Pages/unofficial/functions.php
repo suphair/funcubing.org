@@ -213,6 +213,7 @@ function getCompetitionData($id) {
 
     $events = \db::rows("SELECT "
                     . " unofficial_events_dict.id event_dict,"
+                    . " unofficial_events_dict.code event_code,"
                     . " unofficial_events.rounds,"
                     . " unofficial_events.result_dict,"
                     . " unofficial_events.format_dict, "

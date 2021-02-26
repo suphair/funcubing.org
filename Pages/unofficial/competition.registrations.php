@@ -20,7 +20,7 @@
                               [comPETitor epSiLon] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Epsilon<br>
                               <font style='color:rgb(0,182,67)'>▪</font> When you create a competitor, you can register it for the discipline by adding a tag<br>
                               (also you can click on the discipline on the right)<br>
-                              [Competitor Dseta 2 3] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Dseta +2x2x2 Cube +3x3x3 Cube<br>
+                              [Competitor Dseta 222 333] <font style='color:rgb(0,182,67)'>&#8658;</font> Competitor Dseta +2x2x2 Cube +3x3x3 Cube<br>
                               <br>
                               <font style='color:rgb(0,182,67)'>▪</font> You can register a competitor in the disciplines later
                               <br>

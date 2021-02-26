@@ -1,21 +1,10 @@
+
+
 <link href="<?= PageIndex() ?>Styles/unofficial.css" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
-if ($secret == 'rankings') {
-    $organizer_id = request(2);
-    if ($organizer_id) {
-        $events_dict = unofficial\getEventsDict();
-        $organizer = unofficial\getOrganizer($organizer_id);
-        if ($organizer->wid ?? FALSE) {
-            include 'rankings.organizer.php';
-        } else {
-            include 'rankings.organizer.notfound.php';
-        }
-    } else {
-        include 'rankings.organizers.php';
-    }
-} elseif ($secret == 'competitor') {
+if ($secret == 'competitor') {
     $competitor_id = request(2);
     $competitor = unofficial\getCompetitor($competitor_id);
     if ($competitor) {
@@ -36,7 +25,10 @@ if ($secret == 'rankings') {
         $section = db::escape(request(2));
         switch ($section) {
             case 'registrations':
-                if ($comp->my or $comp->organizer) {
+                if(db::escape(request(3))=='api'){
+                    $include = 'competition.registrations.api.php';
+                }
+                elseif ($comp->my or $comp->organizer) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';

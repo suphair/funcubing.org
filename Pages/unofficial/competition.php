@@ -35,10 +35,6 @@
         <i class="fas fa-user-plus"></i>
         <a href="<?= PageIndex() . "unofficial/$comp->secret/registration/$comp->secretRegistration" ?>">Self-registration</a>
     <?php } ?>
-        <i class="fas fa-signal fa-rotate-90"></i>
-        <a href="<?= PageIndex() ?>unofficial/rankings/<?= $comp->competitor ?>">
-            Rankings
-        </a>
     <h3>
         <?php foreach ($comp_data->events as $event) { ?>
             <?php if ($events_dict[$event->event_dict]->special) { ?>
