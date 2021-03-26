@@ -1,9 +1,10 @@
 <?php
 
-if ($competitor_id ?? FALSE and ! $competitor) {
+if ($competitor_id ?? FALSE and!$competitor) {
     die("competitor [$competitor_id] not found");
 }
 
+$competitors = [];
 if (!isset($comp)) {
     $comp = unofficial\getCompetition($competitor->competition_secret);
     $competitors[$competitor->id] = unofficial\getResutsByCompetitor($competitor->id);

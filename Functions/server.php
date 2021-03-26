@@ -20,9 +20,11 @@ function request($n = 0) {
         }
     }
     $result = array_values($request);
-    if($n == -1){
-        return $result;    
+    if ($n == -1) {
+        return $result;
     }
-    
-    return strtolower($result[$n] ?? false);
+
+    $return = str_replace('favicon.ico', false, $result[$n] ?? false);
+
+    return strtolower($return);
 }

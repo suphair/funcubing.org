@@ -62,6 +62,7 @@ class cron {
     }
 
     private function logBegin($name) {
+        $name = db::escape($name);
         $query = " INSERT INTO cron_logs (`name`) VALUES ('$name')";
 
         mysqli_query($this->connection, $query);

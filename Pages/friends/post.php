@@ -1,6 +1,6 @@
 <?php
 
-$me = Suphair\Wca\Oauth::me();
+$me = wcaoauth::me();
 $friend = db::escape(filter_input(INPUT_POST, 'friend'));
 if ($me->wca_id ?? FALSE and $friend) {
     if (filter_input(INPUT_GET, 'Add') !== NULL) {

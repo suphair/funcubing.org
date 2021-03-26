@@ -45,7 +45,7 @@ class errors {
                 unset($backtrace[$key]);
             }
             if (isset($value['class'])
-                    and $value['class'] == 'Suphair\Error') {
+                    and $value['class'] == 'errors') {
                 unset($backtrace[$key]);
             }
         }
