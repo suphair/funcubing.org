@@ -1,6 +1,6 @@
 <?php
 
-if (!$_FILES['uploadfile']['error']) {
+if (($_FILES['uploadfile'] ?? false) and!$_FILES['uploadfile']['error']) {
 
     $IMAGETYPES = [
         IMAGETYPE_JPEG => 'imagecreatefromjpeg',
