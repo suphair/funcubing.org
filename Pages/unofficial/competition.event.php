@@ -14,7 +14,7 @@ $formats = array_unique([$event->format, 'best']);
     <?php } ?>    
     <?php if ($comp->my or $comp->organizer) { ?>
         <a href="<?= PageIndex() . "unofficial/$secret/result/{$events_dict[$event->event_dict]->code}/$event->round" ?> ">
-            <i class="far fa-keyboard"></i> Enter results
+            <i class="far fa-keyboard"></i> Enter results and add competitors
         </a>
     <?php } ?>
 </h2> 

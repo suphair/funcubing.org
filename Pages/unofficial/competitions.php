@@ -1,8 +1,8 @@
 <div class="shadow2" >
-    <?php if (!$me) { ?>    
+    <?php if (!($me->wca_id ?? FALSE)) { ?>    
         <h3>
             <i class="error far fa-hand-paper"></i> 
-            To create unofficial competition you need to sign in with WCA.
+            To create unofficial competition you need to sign in with WCA and have a WCA ID.
         </h3>
     <?php } else { ?>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">

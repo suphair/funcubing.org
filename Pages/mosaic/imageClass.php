@@ -44,7 +44,7 @@ class Image {
 
     private function checkFile($file) {
         if (!file_exists($file)) {
-            trigger_error($file,E_USER_ERROR);
+            trigger_error($file,E_USER_WARNING);
         }
     }
 

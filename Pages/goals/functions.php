@@ -206,6 +206,9 @@ function cron() {
             , 'wca');
     foreach ($competitionsDetails as $wca) {
         $competitionData = \wcaapi::getCompetition($wca, __FILE__ . ': ' . __LINE__, [], FALSE);
+        if (!$competitionData) {
+            continue;
+        }
         $error = $competitionData->error ?? FALSE;
         if (!$error and!($competitionData->cancelled_at ?? FALSE)) {
             updateCompetition($competitionData);

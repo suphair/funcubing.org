@@ -60,6 +60,10 @@ class wcaoauth {
         if (filter_input(INPUT_GET, 'error') == 'access_denied') {
             self::location();
         }
+        
+        if (filter_input(INPUT_GET, 'error') == 'invalid_grant') {
+            self::location();
+        }
 
         $code = filter_input(INPUT_GET, 'code');
         if ($code) {
