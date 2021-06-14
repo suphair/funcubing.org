@@ -36,10 +36,6 @@
         <?php } else { ?>
             Public Unofficial Competitions
         <?php } ?>
-        /
-        <a href="<?= PageIndex() ?>unofficial/rankings">
-            Rankings
-        </a>
     </h2>
     <?php $competitions = unofficial\getCompetitions($me, $mine); ?>
     <?php
