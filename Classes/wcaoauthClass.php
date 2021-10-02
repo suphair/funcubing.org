@@ -60,7 +60,7 @@ class wcaoauth {
         if (filter_input(INPUT_GET, 'error') == 'access_denied') {
             self::location();
         }
-        
+
         if (filter_input(INPUT_GET, 'error') == 'invalid_grant') {
             self::location();
         }
@@ -81,6 +81,8 @@ class wcaoauth {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             $result = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -104,6 +106,8 @@ class wcaoauth {
             $authorization = "Authorization: Bearer $accessToken";
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', $authorization));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             $result = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -196,12 +200,12 @@ class wcaoauth {
             trigger_error("wcaoauth.createTables: " . json_encode($errors), E_USER_ERROR);
         }
     }
-    
-    static function out(){
+
+    static function out() {
         $_SESSION[self::ME] = FALSE;
     }
-    
-    static function me(){
+
+    static function me() {
         return $_SESSION[self::ME] ??= FALSE;
     }
 
