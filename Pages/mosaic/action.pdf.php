@@ -198,7 +198,7 @@ $pdf->Line(
 
 
 
-for ($hp = $image->block->height - 1; $hp > 0; $hp--) {
+for ($hp = $image->block->height - 1; $hp > -1; $hp--) {
     for ($wp = 0; $wp < $image->block->width; $wp++) {
         if ($blocks->cubes->width > $blocks->cubes->height) {
             $pdf->AddPage("L");
