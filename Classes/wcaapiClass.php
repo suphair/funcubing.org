@@ -91,6 +91,8 @@ class wcaapi {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             $data = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $dataJson = json_decode($data);
@@ -104,14 +106,14 @@ class wcaapi {
                 break;
             }
             if (isset($options['page'])) {
-                $options['page'] ++;
+                $options['page']++;
             } else {
                 break;
             }
         }
 
         if (isset($options['page'])) {
-            $returnData = str_replace("][",",",$returnData);
+            $returnData = str_replace("][", ",", $returnData);
         }
 
         self::setCash($key, $returnData);
@@ -123,14 +125,14 @@ class wcaapi {
                 return false;
             }
         }
-        
+
         return json_decode($returnData, $assoc);
     }
 
     private static function log($request, $response, $status, $context) {
 
         $request_escape = mysqli_real_escape_string(self::$connection, $request);
-        $response_escape = false;#mysqli_real_escape_string(self::$connection, $response);
+        $response_escape = false; #mysqli_real_escape_string(self::$connection, $response);
         $context_escape = mysqli_real_escape_string(self::$connection, $context);
         $status_escape = mysqli_real_escape_string(self::$connection, $status);
 
