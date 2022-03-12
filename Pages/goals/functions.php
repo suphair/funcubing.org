@@ -194,6 +194,7 @@ function updateCompetition($competition) {
 }
 
 function cron() {
+    return -1;
     $details = [
         'competitions' => ['update' => 0, 'delete' => 0],
         'results' => ['all' => 0, 'load' => 0, 'update' => 0]

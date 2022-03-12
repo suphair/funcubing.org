@@ -3,6 +3,7 @@
 namespace friends;
 
 function cron() {
+    return -1;
     $friends = \db::rows("SELECT DISTINCT friend FROM friends");
     foreach ($friends as $friend) {
         $user = \wcaapi::getUserCompetitionsUpcoming($friend->friend, __FILE__ . ': ' . __LINE__, FALSE);

@@ -3,6 +3,7 @@
 namespace announcements;
 
 function cron() {
+    return -1;
     $_details['message'] = 0;
     $_details['subscribe'] = 0;
 

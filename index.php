@@ -142,8 +142,9 @@ $title = [
             <a target="_blank" href="https://github.com/suphair/funcubing.org">
                 <i class="fab fa-github"></i>
                 GitHub</a>
-            <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
-                <i class="fas fa-laptop-code"></i> Solovyov Konstantin <i class="flag-icon flag-icon-ru"></i></a>
+            <a  target="_blank" href="https://vk.com/suphair">
+                <i class="fas fa-laptop-code"></i> 
+                Соловьёв Константин <i class="flag-icon flag-icon-ru"></i></a>
         </p>
     </body>
 </html>
