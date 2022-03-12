@@ -49,6 +49,7 @@ if ($code and is_numeric($round)) {
 
 
         $results = db::rows("SELECT unofficial_competitors_result.`order`,"
+                        . " unofficial_competitors_result.`best`, "
                         . " unofficial_competitors_result.competitor_round "
                         . " FROM unofficial_competitors_round"
                         . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
@@ -68,8 +69,9 @@ if ($code and is_numeric($round)) {
                 $order_current = $result->order;
                 $place_current++;
             }
+            $place_query = $result->best == 'dnf' ? max($place_current, 4) : $place_current;
             db::exec("UPDATE unofficial_competitors_result "
-                    . "SET `place` = '$place_current'"
+                    . "SET `place` = '$place_query'  "
                     . "WHERE competitor_round = $result->competitor_round");
         }
     }

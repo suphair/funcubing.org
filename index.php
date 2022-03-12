@@ -56,7 +56,7 @@ if ($request_0 == 'template') {
 
 
 $title = [
-    'unofficial' => 'Unofficial Competitions',
+    'unofficial' => 'Competitions',
     'goals' => 'Competition Goals',
     'mosaic' => 'Mosaic Building',
     'friends' => 'Friends\' Competitions',
@@ -117,6 +117,12 @@ $title = [
         <?php
         if (!$request_0) {
             include 'Pages/index.php';
+        } elseif (in_array($request_0, ['friends', 'goals', 'announcements'])) {
+            ?>
+            <h1 style="color: red">
+                The <b><?= $title ?></b> section disabled until the WCA returns the events to Russia.
+            </h1>
+            <?php
         } else {
             $file = "Pages/$request_0/index";
             if (file_exists("$file.php")) {
@@ -137,7 +143,7 @@ $title = [
                 <i class="fab fa-github"></i>
                 GitHub</a>
             <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
-                <i class="fas fa-laptop-code"></i> Solovyov Konstantin</a>
+                <i class="fas fa-laptop-code"></i> Solovyov Konstantin <i class="flag-icon flag-icon-ru"></i></a>
         </p>
     </body>
 </html>

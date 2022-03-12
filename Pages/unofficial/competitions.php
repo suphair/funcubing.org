@@ -1,8 +1,10 @@
 <div class="shadow2" >
-    <?php if (!($me->wca_id ?? FALSE)) { ?>    
+    <?php
+    if (!($me->wca_id ?? FALSE)) {
+        ?>    
         <h3>
             <i class="error far fa-hand-paper"></i> 
-            To create unofficial competition you need to sign in with WCA and have a WCA ID.
+            To create competition you need to sign in with WCA and have a WCA ID.
         </h3>
     <?php } else { ?>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -14,7 +16,7 @@
         </script>
 
         <form method="POST" action="?create">
-            <b>Create unofficial competition</b> 
+            <b>Create competition</b> 
             <input required placeholder="RamenskoeMeeting #1" type="text" name="name" value="" />
             <input style="width:140px" placeholder="Select date" required type="text" id="datepicker" name="date">
             <button>
@@ -32,9 +34,9 @@
     <?php $mine = ($me and filter_input(INPUT_GET, 'show') == 'mine'); ?>
     <h2>
         <?php if ($mine) { ?>
-            My Unofficial Competitions
+            Organized by me
         <?php } else { ?>
-            Public Unofficial Competitions
+            Public Competitions
         <?php } ?>
     </h2>
     <?php $competitions = unofficial\getCompetitions($me, $mine); ?>

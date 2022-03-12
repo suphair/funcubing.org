@@ -20,17 +20,21 @@ $formats = array_unique([$event->format, 'best']);
 <h2>
     <i class="<?= $event->image ?>"></i>
     <?= $event->name ?>
-    <?php if($event->final and $event->rounds > 1){ ?>    
+    <?php if ($event->final and $event->rounds > 1) { ?>    
         , final
     <?php } ?>
-    <?php if(!$event->final and $event->rounds > 1){ ?>   
+    <?php if (!$event->final and $event->rounds > 1) { ?>   
         , round <?= $event->round ?>
     <?php } ?>    
 </h2> 
+
 <span data-event-attempts='<?= $event->attempts ?>' data-event-result='<?= $event->result ?>'></span>
 <p>
     <?= $event->comment ?>
-        <span class="data_tooltip" 
+    <?= $event->cutoff ? ('<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?>
+    <?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?>
+    <?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?>
+    <span class="data_tooltip" 
           data-tooltip="
           <font style='var(--green)'>▪</font> Click on competitor row in table to enter attempts<br>
           <font style='var(--green)'>▪</font> Entered attempt without delimiters<font style='color:var(--green)'>:</font> [11122] <font style='color:var(--green)'>&#8658;</font> 1:11.22<br>
@@ -51,7 +55,7 @@ $formats = array_unique([$event->format, 'best']);
                 <?php foreach ($competitors as $competitor) { ?>
                 <option value="<?= $competitor->competitor_round ?>">
                     <?= $competitor->name ?>
-                    <?= $competitor->place?'':' ?'?>
+                    <?= $competitor->place ? '' : ' ?' ?>
                 </option>
             <?php } ?>
         </select>
@@ -108,7 +112,7 @@ $formats = array_unique([$event->format, 'best']);
                 data-competitor-id='<?= $competitor->competitor_round ?>' 
                 data-competitor-name='<?= $competitor->name ?>' 
                 data-competitor-attempts='<?= $competitor->attempts ?>'>
-                <td class="<?= $competitor->podium  ? 'podium' : '' ?> <?= $competitor->next_round  ? 'next_round' : '' ?>">
+                <td class="<?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
                     <?= $competitor->place ?>
                 </td>
                 <td >
@@ -203,7 +207,7 @@ $formats = array_unique([$event->format, 'best']);
 
     <?php } else { ?>
         <?php
-        $competitors_prev = unofficial\getCompetitorsByEventdictRound($comp->id,$event_dict, $round - 1);
+        $competitors_prev = unofficial\getCompetitorsByEventdictRound($comp->id, $event_dict, $round - 1);
         foreach ($competitors_prev as $competitor_id => $competitor_first) {
             if ($competitors[$competitor_id] ?? FALSE) {
                 $competitors_prev[$competitor_id]->this_register = TRUE;

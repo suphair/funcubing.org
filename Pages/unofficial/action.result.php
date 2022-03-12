@@ -84,29 +84,27 @@ foreach ($events as $event_round) {
 
             if ($event->format == 'average') {
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNF", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
                 $dX++;
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNF", "", $competitor->average)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "dnf", $competitor->average)));
                 $dX++;
             } elseif ($event->format == 'mean') {
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNF", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
                 $dX++;
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNF", "", $competitor->mean)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "dnf", $competitor->mean)));
                 $dX++;
             } else {
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNF", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
                 $dX++;
             }
 
-
-
             $pdf->SetFont('Arial', '', 10);
             for ($i = $event->attempts; $i > 0; $i--) {
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("DNS", "", $competitor->{"attempt$i"})));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dns", "", $competitor->{"attempt$i"})));
                 $dX++;
             }
         }

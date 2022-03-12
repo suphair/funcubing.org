@@ -46,7 +46,7 @@ $('[data-results-attempts]').on('keyup', function () {
 });
 
 function replaceAttempts(results) {
-    results= results.toLowerCase();
+    results = results.toLowerCase();
     results = results.replace(/dnf/gim, '-');
     results = results.replace(/dns/gim, '0');
     results = results.replace(/dn/gim, '0');
@@ -78,8 +78,8 @@ function parseAttempts(results, pos) {
         attemps[i].css("color", "var(--black)");
         attemps[i].css("border", "2px solid var(--white)");
     }
-    
-    
+
+
 
     results = replaceAttempts(results);
     var res_cut = replaceAttempts((result_in.substr(0, pos)));
@@ -239,16 +239,15 @@ function parseAttempts(results, pos) {
     } else {
         results_mean.css("color", "var(--red)");
         results_mean.html('dnf');
+
+        if (att_correct == 1 && attemps[2].html() == 'dns' && attemps[3].html() == 'dns') {
+            results_mean.html('-cutoff');
+        }
     }
 
     if (att_correct < 4) {
         results_average.css("color", "var(--red)");
         results_average.html('dnf');
-    }
-
-    if (att_correct <= 2 && attemps[3].html() == 'dns' && attemps[4].html() == 'dns' && attemps[5].html() == 'dns') {
-        results_average.css("color", "var(--red)");
-        results_average.html('-cutoff');
     }
 
     if (att_correct >= 1) {
@@ -274,6 +273,10 @@ function parseAttempts(results, pos) {
         results_best.html('dnf');
     }
 
+    if (att_correct <= 2 && attemps[3].html() == 'dns' && attemps[4].html() == 'dns' && attemps[5].html() == 'dns') {
+        results_average.css("color", "var(--red)");
+        results_average.html('-cutoff');
+    }
 }
 
 $('[data-competitor-chosen]').change(function () {
@@ -298,22 +301,23 @@ if (posts[1] !== undefined) {
 $('[data-results]').submit(function () {
     var attempts_count = $('[data-event-attempts]').data('event-attempts');
     for (var i = 1; i <= attempts_count; i++) {
-        var attempt = $('[data-event-attempt-' + i + ']').html();;
+        var attempt = $('[data-event-attempt-' + i + ']').html();
+        ;
         $('#attempt_' + i).val(attempt);
     }
-    var competitor=$('[data-results]').data('result-competitor-id');
+    var competitor = $('[data-results]').data('result-competitor-id');
     $('[data-save-competitor-id]').val(competitor);
-    
+
     var average;
-    average=$('[data-results-attempts-average]').html();
+    average = $('[data-results-attempts-average]').html();
     $('#attempt_average').val(average);
-    
+
     var mean;
-    mean=$('[data-results-attempts-mean]').html();
+    mean = $('[data-results-attempts-mean]').html();
     $('#attempt_mean').val(mean);
-    
+
     var best;
-    best=$('[data-results-attempts-best]').html();
+    best = $('[data-results-attempts-best]').html();
     $('#attempt_best').val(best);
 });
 

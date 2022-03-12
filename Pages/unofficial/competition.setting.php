@@ -101,7 +101,7 @@ $eventsRounds = unofficial\getEventsRounds($comp->id);
 if ($comp_data->competition->events) {
     ?> 
     <div class="shadow2">
-        <h2>Comments for competitors cards</h2>
+        <h2>Round settings</h2>
         <form method="POST" action="?comments">
             <table class="table_new">
                 <thead>
@@ -111,39 +111,78 @@ if ($comp_data->competition->events) {
                             Event
                         </td>  
                         <td>
+                            Round
+                        </td>  
+                        <td>
                             Format
                         </td>
-                        <?php foreach (range(1, $comp_data->competition->rounds_max) as $round) { ?>
-                            <td align="center">
-                                Round <?= $round ?>
-                            </td>
-                        <?php } ?>    
+                        <td>
+                            Text on competitor card
+                        </td>
+                        <td>
+                            Cutoff
+                        </td>
+                        <td>
+                            Time limit<br>
+                            (check if cumulative)
+                        </td>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($events as $event) { ?>
-                        <tr>
-                            <td>
-                                <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
-                            </td>
-                            <td>
-                                <?= $event->name ?>
-                            </td>
-                            <td>
-                                <?= $formats_dict[$event->format_dict]->name ?>
-                            </td>
-                            <?php foreach (range(1, $event->rounds) as $round) { ?>
-                                <td align="center">
-                                    <input name="comments[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $eventsRounds[$event->id][$round]->comment ?>">
+                        <?php foreach (range(1, $event->rounds) as $round) { ?>
+                            <tr>
+                                <td>
+                                    <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
                                 </td>
-                            <?php } ?>        
-                        </tr>    
+                                <td>
+                                    <?= $event->name ?>
+                                </td>
+                                <td>
+                                    <?= $round ?>: 
+                                    <?php if ($round == $event->rounds) { ?>
+                                        Final
+                                    <?php } else { ?>
+                                        <?= $round == 1 ? 'First' : 'Second' ?>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <?= $formats_dict[$event->format_dict]->name ?>
+                                </td>
+                                <td align="left">
+                                    <?php $comment = $eventsRounds[$event->id][$round]->comment; ?>
+                                    <input style="width: 200px"  name="comments[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $comment ?>">
+                                    <?= $comment ? '<i class="fas fa-comment-dots"></i>' : '' ?>
+                                </td>
+                                <td align="left">
+                                    <?php $cutoff = $eventsRounds[$event->id][$round]->cutoff; ?>
+                                    <?php if (in_array($formats_dict[$event->format_dict]->code, ['Ao5', 'Mo3'])) { ?>
+                                        <input style="width: 50px" name="cutoff[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $cutoff ?>">
+                                        <?= $cutoff ? '<i class="fas fa-cut"></i>' : '' ?>
+                                    <?php } ?>
+                                </td>
+                                <td align="left">
+                                    <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
+                                    <?php $cumulative = $eventsRounds[$event->id][$round]->cumulative; ?>
+                                    <input style="width: 50px" name="time_limit[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $time_limit ?>">
+                                    <input type="checkbox" <?= $cumulative ? 'checked' : '' ?> name="cumulative[<?= $event->event_dict ?>][<?= $round ?>]">
+                                    </input>
+                                    <?= ($time_limit and!$cumulative) ? '<i class="fas fa-stop-circle"></i>' : '' ?>
+                                    <?= ($time_limit and $cumulative) ? '<i class="fas fa-plus-circle"></i>' : '' ?>
+                                </td>
+                                <td>
+                                    <a target="_blank" href="<?= PageIndex() ?>unofficial/<?= $comp->secret ?>/event/<?= $events_dict[$event->event_dict]->code ?>/<?= $round ?>?action=cards&blank">
+                                        Competitor card example
+                                    </a>
+                                </td>
+                            </tr>    
+                        <?php } ?>   
                     <?php } ?>   
                 <tbody>
             </table>
             <button>
                 <i class="far fa-save"></i>
-                Set comments
+                Seve settings
             </button>
         </form>
     <?php } ?>

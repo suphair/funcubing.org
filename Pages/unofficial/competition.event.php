@@ -20,6 +20,9 @@ $formats = array_unique([$event->format, 'best']);
 </h2> 
 <p>
     <?= $event->comment ?>
+    <?= $event->cutoff ? ('<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?>
+    <?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?>
+    <?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?>
 </p>
 <table class="table_new">
     <thead>
@@ -54,7 +57,7 @@ $formats = array_unique([$event->format, 'best']);
                 <?php foreach ($formats as $format) { ?>
                     <td  class="attempt">
                         <b>
-                            <?= str_replace(["dnf", "dns", "-cutoff"], "", $competitor->$format) ?>
+                            <?= str_replace(["dns", "-cutoff"], "dnf", $competitor->$format) ?>
                         </b>
                     </td>
                 <?php } ?>    

@@ -5,7 +5,7 @@ $event_code = request(3);
 $round = request(4);
 
 $events = [];
-$event_dict=$comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
+$event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
 $event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
 if ($comp_data->event_rounds[$event]->id ?? FALSE) {
     $events[] = $comp_data->event_rounds[$event];
@@ -32,8 +32,8 @@ foreach ($events as $event) {
         $competitors = [];
     } else {
         $competitors = unofficial\getCompetitorsByEventround($event->id);
-        foreach($competitors as $c=>$competitor){
-            if($competitor->place){
+        foreach ($competitors as $c => $competitor) {
+            if ($competitor->place) {
                 unset($competitors[$c]);
             }
         }
@@ -92,13 +92,27 @@ foreach ($events as $event) {
                 $pdf->Rect($point[0] + 64, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
                 $pdf->Rect($point[0] + 80, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
                 $pdf->Rect($point[0] + 10, $point[1] + $Ry + 2 + ($k - 1) * 16, 15, 13);
-            }
 
-            $pdf->SetFont('Arial', '', 14);
-            $pdf->Text($point[0] - 1, $point[1] + 40 + 5 * 17 + 5, "Ex");
-            $pdf->Rect($point[0] + 10, $point[1] + 32 + 5 * 17 + 5, 53, 13);
-            $pdf->Rect($point[0] + 64, $point[1] + 32 + 5 * 17 + 5, 15, 13);
-            $pdf->Rect($point[0] + 80, $point[1] + 32 + 5 * 17 + 5, 15, 13);
+                if ($event->cutoff and (
+                        ($k == 2 and $format->attempts == 5)or
+                        ($k == 1 and $format->attempts == 3))) {
+                    $pdf->SetFont('msserif', '', 8);
+                    $lat = "$k attempt" . ($k > 1 ? 's' : '' ) . " to get < $event->cutoff";
+                    $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, $lat);
+                    $pdf->Line($point[0], $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 25, $point[1] + $Ry + 0.8 + $k * 16);
+                    $pdf->Line($point[0] + 63, $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 99, $point[1] + $Ry + 0.8 + $k * 16);
+                }
+                $pdf->SetFont('Arial', '', 14);
+                $pdf->Text($point[0] - 1, $point[1] + 40 + 5 * 17 + 5, "Ex");
+                $pdf->Rect($point[0] + 10, $point[1] + 32 + 5 * 17 + 5, 53, 13);
+                $pdf->Rect($point[0] + 64, $point[1] + 32 + 5 * 17 + 5, 15, 13);
+                $pdf->Rect($point[0] + 80, $point[1] + 32 + 5 * 17 + 5, 15, 13);
+            }
+            if ($event->time_limit) {
+                $pdf->SetFont('msserif', '', 8);
+                $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');
+                $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, $lat);
+            }
         }
     }
 }
