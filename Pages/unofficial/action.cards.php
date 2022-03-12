@@ -102,17 +102,18 @@ foreach ($events as $event) {
                     $pdf->Line($point[0], $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 25, $point[1] + $Ry + 0.8 + $k * 16);
                     $pdf->Line($point[0] + 63, $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 99, $point[1] + $Ry + 0.8 + $k * 16);
                 }
-                $pdf->SetFont('Arial', '', 14);
-                $pdf->Text($point[0] - 1, $point[1] + 40 + 5 * 17 + 5, "Ex");
-                $pdf->Rect($point[0] + 10, $point[1] + 32 + 5 * 17 + 5, 53, 13);
-                $pdf->Rect($point[0] + 64, $point[1] + 32 + 5 * 17 + 5, 15, 13);
-                $pdf->Rect($point[0] + 80, $point[1] + 32 + 5 * 17 + 5, 15, 13);
             }
             if ($event->time_limit) {
                 $pdf->SetFont('msserif', '', 8);
                 $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');
                 $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, $lat);
             }
+            $pdf->SetFont('Arial', '', 14);
+            $pdf->Text($point[0] - 1, $point[1] + 40 + 5 * 16 + 10, "Ex");
+            $pdf->Rect($point[0] + 26, $point[1] + 32 + 5 * 16 + 10, 37, 13);
+            $pdf->Rect($point[0] + 64, $point[1] + 32 + 5 * 16 + 10, 15, 13);
+            $pdf->Rect($point[0] + 80, $point[1] + 32 + 5 * 16 + 10, 15, 13);
+            $pdf->Rect($point[0] + 10, $point[1] + 32 + 5 * 16 + 10, 15, 13);
         }
     }
 }

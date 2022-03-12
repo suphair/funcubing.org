@@ -5,6 +5,7 @@ $name = db::escape(filter_input(INPUT_POST, 'name'));
 $details = db::escape(filter_input(INPUT_POST, 'details'));
 $secret = db::escape(filter_input(INPUT_POST, 'secret'));
 $date = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date'))));
+$date_to = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date_to'))));
 $show = db::escape(filter_input(INPUT_POST, 'show')) ? 1 : 0;
 $shareRegistration = filter_input(INPUT_POST, 'shareRegistration') ? 1 : 0;
 
@@ -17,6 +18,7 @@ db::exec("  UPDATE  unofficial_competitions
                 name = '$name',
                 details = '$details',
                 date = '$date',
+                " . ($date_to ? "date_to='$date_to'," : '') . "    
                 secretRegistration = $secretRegistration,
                 shareRegistration = $shareRegistration,
                 website = '$website',

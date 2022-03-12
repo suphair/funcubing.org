@@ -2,7 +2,8 @@
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script>
     $(function () {
-        $("#datepicker").datepicker({dateFormat: "dd.mm.yy"});
+        $("#datepicker_from").datepicker({dateFormat: "dd.mm.yy"});
+        $("#datepicker_to").datepicker({dateFormat: "dd.mm.yy"});
     });
 </script>
 <div class="shadow2" >
@@ -31,7 +32,9 @@
         <input type="text" name="details" value="<?= $comp->details ?>" />
         <br>
         Date            
-        <input required  style="width:140px" required type="text" id="datepicker" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
+        <input required  style="width:140px" required type="text" id="datepicker_from" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
+        -
+        <input  style="width:140px" required type="text" id="datepicker_to" name="date_to" value="<?= ($comp->date_to ?? false) ? date('d.m.Y', strtotime($comp->date_to)) : false ?>">
         <br>
         Website
         <input type="url" placeholder="https://example.com" pattern="http[s]?://.*" name="website" value="<?= $comp->website ?>">

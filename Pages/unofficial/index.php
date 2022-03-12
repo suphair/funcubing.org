@@ -21,14 +21,14 @@ if ($secret == 'competitor') {
         $formats_dict = unofficial\getFormatsDict();
         $rounds_dict = unofficial\getRoundsDict();
         $results_dict = unofficial\getResultsDict();
+        $events_list = false;
 
         $section = db::escape(request(2));
         switch ($section) {
             case 'registrations':
-                if(db::escape(request(3))=='api'){
+                if (db::escape(request(3)) == 'api') {
                     $include = 'competition.registrations.api.php';
-                }
-                elseif ($comp->my or $comp->organizer) {
+                } elseif ($comp->my or $comp->organizer) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';
@@ -60,6 +60,11 @@ if ($secret == 'competitor') {
                     $round = 1;
                 }
                 $event_round_this = $comp_data->rounds[$event_dict][$round]->round->id ?? null;
+                $include = 'competition.index.php';
+                break;
+            case 'events':
+                $event_round_this = false;
+                $events_list = true;
                 $include = 'competition.index.php';
                 break;
             case false:

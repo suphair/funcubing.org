@@ -121,7 +121,7 @@
                         <?php } ?>
                     </td>
                     <td>
-                        <?= dateRange($competition->date) ?>
+                        <?= dateRange($competition->date, $competition->date_to) ?>
                     </td>
                     <td>
                         <?php unofficial\getFavicon($competition->website) ?>

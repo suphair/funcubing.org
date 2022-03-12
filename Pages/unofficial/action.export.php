@@ -1,4 +1,5 @@
 <?php
+
 $event_code = request(3);
 $round = request(4);
 
@@ -18,7 +19,8 @@ $exports[$comp->name]['competition'] = [
     'website' => $comp->website,
     'name' => $comp->name,
     'details' => $comp->details,
-    'date' => $comp->date,
+    'date_from' => $comp->date,
+    'date_to' => $comp->date_to,
     'owner' => [
         'name' => $comp->competitor_name,
         'wcaid' => $comp->competitor_wcaid,
@@ -72,11 +74,11 @@ foreach ($events as $event_round) {
         $exports[$comp->name]['results'][$round_event]['competitors'] = $export;
     }
 }
-if(filter_input(INPUT_GET, 'format') == 'txt' and sizeof($events)==1){
+if (filter_input(INPUT_GET, 'format') == 'txt' and sizeof($events) == 1) {
     header("Content-type:  text/plain; charset=utf-8");
-    foreach($export as $competitor => $row){
+    foreach ($export as $competitor => $row) {
         echo $competitor;
-        foreach($row['attempts'] as $attempt){
+        foreach ($row['attempts'] as $attempt) {
             echo " $attempt";
         }
         echo "\n";

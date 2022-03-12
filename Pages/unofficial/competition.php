@@ -11,7 +11,7 @@
     <h2><?= $comp->details ?></h2>
 
     <i class="far fa-calendar-alt"></i> 
-    <?= dateRange($comp->date) ?>    
+    <?= dateRange($comp->date, $comp->date_to) ?>    
     <?php unofficial\getFavicon($comp->website) ?>
     <i class="fas fa-user-tie"></i>
     <?php if ($comp->competitor_wcaid) { ?>

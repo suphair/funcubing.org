@@ -97,7 +97,7 @@ foreach ($competitors as $results) {
 
 
         $pdf->SetFont('msserif', '', 18);
-        $lat = iconv('utf-8', 'windows-1251', $comp->name . ', ' . dateRange($comp->date));
+        $lat = iconv('utf-8', 'windows-1251', $comp->name . ', ' . dateRange($comp->date, $comp->date_to));
         $pdf->Text(5, 23, $lat);
 
         $lat = iconv('utf-8', 'windows-1251', $result->competitor_name);

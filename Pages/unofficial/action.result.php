@@ -110,7 +110,7 @@ foreach ($events as $event_round) {
         }
 
         $pdf->SetFont('msserif', '', 18);
-        $lat = iconv('utf-8', 'windows-1251', $comp->name . ', ' . date('j F Y', strtotime($comp->date)));
+        $lat = iconv('utf-8', 'windows-1251', $comp->name . ', ' . dateRange($comp->date, $comp->date_to));
         $pdf->Text(5, 23, $lat);
 
         $lat = iconv('utf-8', 'windows-1251', $event->name);

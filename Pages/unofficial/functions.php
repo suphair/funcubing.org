@@ -18,6 +18,7 @@ function getCompetitions($me, $mine) {
         unofficial_competitions.name,
         unofficial_competitions.details,
         unofficial_competitions.date,
+        unofficial_competitions.date_to,
         date(unofficial_competitions.date) > current_date upcoming ,
         dict_competitors.name competitor_name,
         dict_competitors.country competitor_country,
@@ -56,6 +57,7 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.name,
         unofficial_competitions.details,
         unofficial_competitions.date,
+        unofficial_competitions.date_to,
         dict_competitors.name competitor_name,
         dict_competitors.wcaid competitor_wcaid,
         dict_competitors.country competitor_country,
@@ -500,6 +502,7 @@ function getCompetitionsByCompetitor($competitor_id) {
     return \db::rows("SELECT"
                     . " unofficial_competitions.name,"
                     . " unofficial_competitions.date,"
+            . " unofficial_competitions.date_to,"
                     . " unofficial_competitions.secret, "
                     . " unofficial_competitors.id competitor_id,"
                     . " unofficial_competitions.competitor competition_competitor_id, "
@@ -522,6 +525,7 @@ function getResutsByCompetitorMain($competitor_id) {
                     . " unofficial_competitors_result.place, "
                     . " unofficial_competitions.name competition_name, "
                     . " unofficial_competitions.date competition_date, "
+            . " unofficial_competitions.date_to competition_date_to, "
                     . " unofficial_competitions.competitor competition_competitor_id, "
                     . " dict_competitors.name competition_competitor_name, "
                     . " unofficial_competitions.secret,"
