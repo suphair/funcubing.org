@@ -13,12 +13,13 @@ $secretRegistration = 'null';
 if (filter_input(INPUT_POST, 'registration') or $shareRegistration) {
     $secretRegistration = "'" . substr(md5($secret), 0, 10) . "'";
 }
+
 db::exec("  UPDATE  unofficial_competitions
             SET 
                 name = '$name',
                 details = '$details',
                 date = '$date',
-                " . ($date_to ? "date_to='$date_to'," : '') . "    
+                date_to = " . ($date_to == '1970-01-01' ? 'null' : "'$date_to'" ) . ",
                 secretRegistration = $secretRegistration,
                 shareRegistration = $shareRegistration,
                 website = '$website',

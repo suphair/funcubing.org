@@ -18,6 +18,8 @@ if ($comp_data->event_rounds[$event]->id ?? FALSE) {
 $pdf = new FPDF('P', 'mm');
 
 foreach ($events as $event) {
+    
+    $event->final=($event->round==$event->rounds);
 
     $points = array();
     $points[] = array(5, 5);
@@ -33,7 +35,7 @@ foreach ($events as $event) {
     } else {
         $competitors = unofficial\getCompetitorsByEventround($event->id);
         foreach ($competitors as $c => $competitor) {
-            if ($competitor->place) {
+            if ($competitor->place and!$comp->ranked) {
                 unset($competitors[$c]);
             }
         }
@@ -50,26 +52,35 @@ foreach ($events as $event) {
             $competitor = $competitors[$i + $l * 4] ?? FALSE;
 
             $pdf->SetLineWidth(0.2);
-            $pdf->SetFont('msserif', '', 14);
+            $pdf->SetFont('msserif', '', 12);
             $lat = iconv('utf-8', 'windows-1251', $comp->name);
             $pdf->Text($point[0] + 10, $point[1] + 10, $lat);
 
             $pdf->SetFont('msserif', '', 12);
             $lat = iconv('utf-8', 'windows-1251', $comp_data->events[$event->event_dict]->name);
-            $pdf->Text($point[0] + 10, $point[1] + 5, $lat . ' / ' . 'round ' . $event->round);
-
+            $round = $rounds_dict[$event->final ? 0 : $event->round]->fullName;
+            $pdf->Text($point[0] + 10, $point[1] + 5, "$lat / $round");
 
             $pdf->SetFont('Arial', '', 10);
 
             $Ry = 20;
-            $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);
 
             $pdf->SetFont('msserif', '', 16);
             if ($competitor) {
-                $lat = iconv('utf-8', 'windows-1251', $comp_data->competitors[$competitor->id]->name);
-                $pdf->Text($point[0] + 15, $point[1] + $Ry + 2, $lat);
+                if ($comp->ranked and $comp_data->competitors[$competitor->id]->FCID) {
+                    $pdf->Rect($point[0] + 15, $point[1] + $Ry - 6, 80, 13);
+                    $lat = iconv('utf-8', 'windows-1251', $comp_data->competitors[$competitor->id]->name);
+                    $pdf->Text($point[0] + 20, $point[1] + $Ry + 2, $lat);
+                    $pdf->SetFont('msserif', '', 14);
+                    $pdf->Text($point[0], $point[1] + $Ry + 2, $comp_data->competitors[$competitor->id]->FCID);
+                } else {
+                    $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);
+                    $lat = iconv('utf-8', 'windows-1251', $comp_data->competitors[$competitor->id]->name);
+                    $pdf->Text($point[0] + 15, $point[1] + $Ry + 2, $lat);
+                }
+            } else {
+                $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);
             }
-
             $Ry += 12;
             if ($event->comment) {
                 $pdf->SetFont('msserif', '', 10);

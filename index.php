@@ -22,6 +22,7 @@ wcaapi::setConnection(db::connection());
 
 $request_0 = request();
 $request_1 = request(1);
+$request_0 = str_replace('unofficial', 'competitions', $request_0);
 
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'POST') {
     $file = "Pages/$request_0/post.php";
@@ -56,7 +57,7 @@ if ($request_0 == 'template') {
 
 
 $title = [
-    'unofficial' => 'Competitions',
+    'competitions' => 'Competitions',
     'goals' => 'Competition Goals',
     'mosaic' => 'Mosaic Building',
     'friends' => 'Friends\' Competitions',
@@ -142,9 +143,9 @@ $title = [
             <a target="_blank" href="https://github.com/suphair/funcubing.org">
                 <i class="fab fa-github"></i>
                 GitHub</a>
-            <a  target="_blank" href="https://vk.com/suphair">
+            <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
                 <i class="fas fa-laptop-code"></i> 
-                Соловьёв Константин <i class="flag-icon flag-icon-ru"></i></a>
+                Konstantin Solovev (Константин Соловьёв) <i class="flag-icon flag-icon-ru"></i></a>
         </p>
     </body>
 </html>

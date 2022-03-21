@@ -1,6 +1,6 @@
 <?php
 $sectionData = (object) [
-            'unofficial' => (object) [
+            'competitions' => (object) [
                 'title' => 'Competitions',
                 'description' => 'To organize competitions. Any speedcuber can register a competition.'
             ],

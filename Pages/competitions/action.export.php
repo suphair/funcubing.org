@@ -43,20 +43,21 @@ foreach ($events as $event_round) {
     foreach ($competitors as $competitor) {
         $results = [];
         $results['place'] = $competitor->place;
+        if ($comp->ranked and $competitor->FCID) {
+            $results['FCID'] = $competitor->FCID;
+        }
         foreach ($formats as $format) {
-            $results[$format] = $competitor->$format;
+            $results[$format] = str_replace('-cutoff', '', $competitor->$format);
         }
         foreach (range(1, $event->attempts) as $i) {
-            $results['attempts'][$i] = $competitor->{"attempt$i"};
+            if ($competitor->$format != '-cutoff' or $competitor->{"attempt$i"} != 'dns') {
+                $results['attempts'][$i] = $competitor->{"attempt$i"};
+            }
         }
         $export[$competitor->name] = $results;
     }
     if ($export) {
-        if ($rounds == $event->round) {
-            $round = 'final';
-        } else {
-            $round = "round $event->round";
-        }
+        $round = $rounds_dict[$event->final ? 0 : $event->round]->fullName;
         $round_event = "$event->name, $round";
         $exports[$comp->name]['results'][$round_event]['event'] = [
             'name' => $event->name,

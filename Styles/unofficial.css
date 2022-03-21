@@ -12,12 +12,16 @@
 }
 
 .next_round{
-    color: var(--red);
-    font-weight:bold;
+    color: var(--green);
 }
 
 .podium{
     color: var(--red);
+    font-weight:bold;
+}
+
+.record{
+    color: var(--green);
     font-weight:bold;
 }
 
@@ -30,4 +34,8 @@ span.checked{
 
 .select{
     color: var(--red); 
+}
+
+.border_right{
+    border-right: 1px solid var(--light_gray);
 }

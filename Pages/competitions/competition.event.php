@@ -5,15 +5,10 @@ $formats = array_unique([$event->format, 'best']);
 ?>
 <h2>
     <i class="<?= $event->image ?>"></i>
-    <?= $event->name ?>
-    <?php if ($event->final and $event->rounds > 1) { ?>    
-        , final
-    <?php } ?>
-    <?php if (!$event->final and $event->rounds > 1) { ?>   
-        , round <?= $event->round ?>
-    <?php } ?>    
+    <?= $event->name ?>,
+    <?= $rounds_dict[$event->final ? 0 : $event->round]->fullName; ?>    
     <?php if ($comp->my or $comp->organizer) { ?>
-        <a href="<?= PageIndex() . "unofficial/$secret/result/{$events_dict[$event->event_dict]->code}/$event->round" ?> ">
+        <a href="<?= PageIndex() . "competitions/$secret/result/{$events_dict[$event->event_dict]->code}/$event->round" ?> ">
             <i class="far fa-keyboard"></i> Enter results and add competitors
         </a>
     <?php } ?>
@@ -44,9 +39,18 @@ $formats = array_unique([$event->format, 'best']);
                     <?= $competitor->place ?> 
                 </td>
                 <td >
-                    <a href="<?= PageIndex() . "unofficial/competitor/$competitor->id" ?>">
+                    <?php
+                    if ($comp->ranked) {
+                        $link = $competitor->FCID ? "rankings/competitor/$competitor->FCID" : false;
+                    } else {
+                        $link = "competitor/$competitor->id";
+                    }
+                    if ($link) {
+                        ?>
+                        <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $competitor->name ?></a>
+                    <?php } else { ?>
                         <?= $competitor->name ?>
-                    </a>
+                    <?php } ?>
                 </td>
                 <?php foreach (range(1, $event->attempts) as $i) { ?>
                     <td class="<?= $i == $event->attempts ? 'border-right-solid' : '' ?> attempt">
@@ -57,7 +61,7 @@ $formats = array_unique([$event->format, 'best']);
                 <?php foreach ($formats as $format) { ?>
                     <td  class="attempt">
                         <b>
-                            <?= str_replace(["dns", "-cutoff"], "dnf", $competitor->$format) ?>
+                            <?= str_replace(["dns", "-cutoff"], ["dnf", ""], $competitor->$format) ?>
                         </b>
                     </td>
                 <?php } ?>    

@@ -65,11 +65,8 @@ foreach ($competitors as $results) {
             $pdf->SetFont('Arial', '', 12);
 
             $pdf->Text(28, 35 + $n * 8, $result->event_name);
-            if ($result->final) {
-                $pdf->Text(16, 35 + $n * 8, 'final');
-            } else {
-                $pdf->Text(16, 35 + $n * 8, $result->round_name);
-            }
+
+            $pdf->Text(16, 35 + $n * 8, $rounds_dict[$result->final ? 0 : $result->round]->smallName);
 
             $dX = 1;
 
@@ -77,13 +74,15 @@ foreach ($competitors as $results) {
             $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $result->best));
             $dX++;
             $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace('-cutoff', '', $result->average)));
-            $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $result->mean));
+            $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace('-cutoff', '', $result->mean)));
             $dX++;
 
 
             $pdf->SetFont('Arial', '', 10);
             for ($i = 5; $i > 0; $i--) {
-                if ($result->average != "-cutoff" or $i <= 3) {
+                if ($result->average == "-cutoff" and $result->{"attempt$i"} == 'dns') {
+                    
+                } else {
                     $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $result->{"attempt$i"}));
                 }
                 $dX++;

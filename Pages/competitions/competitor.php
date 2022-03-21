@@ -11,6 +11,18 @@ asort($organizers);
         <i class="fas fa-user"></i> 
         <?= $competitor->name ?>
     </h1>
+    <?php
+    $FCIDlist = unofficial\getFCIDlistbyName($competitor->name);
+    if (sizeof($FCIDlist)) {
+        ?>
+        <div class="shadow2" >
+            <?= $ranked_icon ?>
+            View in FunCubing Rankings: 
+            <?php foreach ($FCIDlist as $FCID) { ?>
+                <a href="<?= PageIndex() . "competitions/rankings/competitor/$FCID" ?>"><?= $FCID ?></a>
+            <?php } ?>
+        </div>
+    <?php } ?>
     <?php if (sizeof($organizers) > 1) { ?>
         <h3>Organizers:
             <?php foreach ($organizers as $organizer_id => $organizer_name) { ?>
@@ -24,8 +36,8 @@ asort($organizers);
                     </label>
                 <?php } ?>    
             <?php } ?>
-        <?php } ?>
-    </h3>    
+        </h3>   
+    <?php } ?>
     <div class="shadow2" >
         <h2>
             Competitions
@@ -42,7 +54,7 @@ asort($organizers);
                             <?= dateRange($competition->date); ?>
                         </td>
                         <td>
-                            <a href="<?= PageIndex() . "unofficial/$competition->secret" ?>">
+                            <a href="<?= PageIndex() . "competitions/$competition->secret" ?>">
                                 <?= $competition->name ?>
                             </a>
                         </td>
@@ -50,7 +62,7 @@ asort($organizers);
                             <?= $competition->competition_competitor_name ?>
                         </td>
                         <td>
-                            <a target="_blank" href="<?= PageIndex() . "unofficial/competitor/$competition->competitor_id?action=certificate" ?>">
+                            <a target="_blank" href="<?= PageIndex() . "competitions/competitor/$competition->competitor_id?action=certificate" ?>">
                                 <i class="fas fa-print"></i>
                                 certificate
                             </a>
@@ -59,15 +71,15 @@ asort($organizers);
                 <?php } ?>
             <tbody> 
         </table>
-        <?php
-        $results = unofficial\getResutsByCompetitorMain($competitor->id);
-        $results_events = [];
-        foreach ($results as $result) {
-            $results_events[$result->event_dict][] = $result;
-        }
-        ?>
     </div>
 
+    <?php
+    $results = unofficial\getResutsByCompetitorMain($competitor->id);
+    $results_events = [];
+    foreach ($results as $result) {
+        $results_events[$result->event_dict][] = $result;
+    }
+    ?>
     <div class="shadow2" >
         <h2>Results</h2>
         <table class="table_new" data-showing>
@@ -91,17 +103,19 @@ asort($organizers);
                 <tr>
             </thead>
             <tbody>
-                <?php foreach ($results_events as $results_event) { ?>
-                    <tr>
-                        <td colspan='10' >
-                            &nbsp;
-                        </td>
-                    </tr>    
-                    <?php foreach ($results_event as $result) { ?>
+                <?php
+                $i = 0;
+                foreach ($results_events as $results_event) {
+                    $event_result_show = true;
+                    foreach ($results_event as $result) {
+                        ?>
                         <tr  
                         <?php if ($result->competition_competitor_id != $competitor->creator_id) { ?>
                                 data-row-organizer='<?= $result->competition_competitor_id ?>' hidden
-                            <?php } ?>
+                                <?php
+                                $event_result_show = false;
+                            }
+                            ?>
                             >
                             <td align='center' class="<?= $result->podium ? 'podium' : '' ?>">
                                 <?= $result->place ?> 
@@ -119,7 +133,7 @@ asort($organizers);
                                 <?= dateRange($result->competition_date); ?>
                             </td>
                             <td>
-                                <a href="<?= PageIndex() . "unofficial/$result->secret" ?>">
+                                <a href="<?= PageIndex() . "competitions/$result->secret" ?>">
                                     <?= $result->competition_name ?>
                                 </a> 
                             </td>
@@ -129,11 +143,19 @@ asort($organizers);
                                 </td>
                             <?php } ?>
                             <td class='attempt' style="font-weight: bold">
-                                <?= str_replace(['dns', 'dnf', '-cutoff'], '', $result->average); ?>
-                                <?= str_replace(['dns', 'dnf'], '', $result->mean); ?>
+                                <?= str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->average); ?>
+                                <?= str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean); ?>
                             </td>    
                             <td class='attempt' style="font-weight: bold">
-                                <?= str_replace(array('dns', 'dnf'), '', $result->best); ?>
+                                <?= $result->best; ?>
+                            </td>
+                        </tr>    
+                    <?php } ?>
+                    <?php if ($i > 1 and $event_result_show) {
+                        ?>
+                        <tr>
+                            <td colspan='11' >
+                                &nbsp;
                             </td>
                         </tr>    
                     <?php } ?>

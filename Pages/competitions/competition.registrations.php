@@ -73,7 +73,11 @@
                             <td>
                                 <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>    
                             </td>
-                        <?php } ?>                           
+                        <?php } ?>    
+
+                        <?php if ($comp->ranked) { ?>
+                            <td>FC ID</td>
+                        <?php } ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,7 +92,9 @@
                                 <?php } ?>    
                             </td>
                             <td data-competitor-name>
-                                <input name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
+                                <?php if (!$competitor->FCID) { ?>
+                                    <input name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
+                                <?php } ?>
                                 <?= $competitor->name ?>
                             </td>
                             <?php foreach ($comp_data->events as $event) { ?>
@@ -106,6 +112,17 @@
                                         <input name='registrations[<?= $competitor->id ?>][<?= $event->event_dict ?>]' type='checkbox'>
                                     <?php } ?>    
                                 </td>    
+                            <?php } ?>
+                            <?php if ($comp->ranked) { ?>
+                                <td>
+                                    <?php if (unofficial\admin()) { ?>
+                                        <input name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID ?>'>
+                                        <?php if (!empty($competitor->FCID_candidates)) { ?>
+                                            {<?= implode(",", $competitor->FCID_candidates) ?>} 
+                                        <?php } ?>
+                                    <?php } ?>
+                                    <?= $competitor->FCID ? $competitor->FCID : '-' ?>
+                                </td>
                             <?php } ?>
                         </tr>
                     <?php } ?>
@@ -130,10 +147,16 @@
                     </tr>
                 </tfoot>
             </table>
-            <button> 
+            <button name="button" value="registrations"> 
                 <i class="far fa-save"></i>
                 Save registrations
             </button>
+            <?php if (unofficial\admin()) { ?>
+                <button name="button" value="FCID"> 
+                    <i class="far fa-save"></i>
+                    Save FC ID
+                </button>
+            <?php } ?>
 
         </form>
         <form action="?competitors_delete" method="POST"

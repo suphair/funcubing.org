@@ -1,18 +1,18 @@
 <h1>
     <a 
         class="<?= (!$event_round_this and!$events_list) ? 'select' : '' ?>"
-        href="<?= PageIndex() . "unofficial/$secret" ?>">
+        href="<?= PageIndex() . "competitions/$secret" ?>">
         <i title='Competitors' class="fas fa-users"></i>
     </a>
     <a 
         class="<?= ($events_list) ? 'select' : '' ?>"
-        href="<?= PageIndex() . "unofficial/$secret/events" ?>">
-        <i title='Events' class="fas fa-list"></i>
+        href="<?= PageIndex() . "competitions/$secret/events" ?>">
+        <i title='Events' class="fas fa-newspaper"></i>
     </a>    
     <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
         <a class="<?= $event_round_this == $event_round_id ? 'select' : '' ?>"
            title="<?= $comp_data->events[$event_round->event_dict]->name ?> / round <?= $event_round->round ?>"
-           href="<?= PageIndex() . "unofficial/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
+           href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
             <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
         </a>
     <?php } ?>
@@ -67,11 +67,7 @@
                                     <?= $event->name ?>
                                 </td>
                                 <td>
-                                    <?php if ($round == $event->rounds) { ?>
-                                        Final
-                                    <?php } else { ?>
-                                        <?= $round == 1 ? 'First' : 'Second' ?>
-                                    <?php } ?>
+                                    <?= $rounds_dict[$event->rounds == $round ? 0 : $round]->smallName; ?>
                                 </td>
                                 <td>
                                     <?= $formats_dict[$event->format_dict]->name ?>
@@ -93,7 +89,7 @@
 
                                 <?php
                                 if ($comp->my or $comp->organizer) {
-                                    $base_url = PageIndex() . "unofficial/{$comp->secret}/event/{$events_dict[$event->event_dict]->code}/$round";
+                                    $base_url = PageIndex() . "competitions/{$comp->secret}/event/{$events_dict[$event->event_dict]->code}/$round";
                                     ?>
                                     <td>
                                         <?php if (sizeof($comp_data->competitors)) { ?>
@@ -142,20 +138,22 @@
                 <thead>
                     <tr>
                         <td>
-                            Total <?= sizeof($comp_data->competitors) ?>
+                            Competitor
                         </td>
-                        <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
-                            <td class="table_new_center" style='vertical-align: bottom'>
+                        <?php
+                        foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
+                            $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
+                            ?>
+                            <td class="table_new_center <?= ($event_round->round == $rounds) ? 'border_right' : '' ?>" style='vertical-align: bottom'>
                                 <font size='1'>
-                                <?php $rounds = $comp_data->events[$event_round->event_dict]->event_rounds; ?>
                                 <?php if ($event_round->round == $rounds) { ?>
-                                    <i class='far fa-star'></i>
+                                    <i class="<?= $rounds_dict[3]->image ?>"></i>
                                 <?php } else { ?>
                                     <i class="<?= $rounds_dict[$event_round->round]->image ?>"></i>
                                 <?php } ?>
                                 </font>
                                 <br>
-                                <a  href="<?= PageIndex() . "unofficial/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
+                                <a  href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
                                     <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
                                 </a>
                             </td>
@@ -173,7 +171,7 @@
                             <tr>
                                 <td/>
                                 <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
-                                    <td align='center'>
+                                    <td align='center' class="<?= ($event_round->round == $event_round->rounds) ? 'border_right' : '' ?>">
                                         <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
                                     </td>
                                 <?php } ?>
@@ -182,15 +180,25 @@
 
                         <tr>
                             <td>
-                                <a href="<?= PageIndex() . "unofficial/competitor/$competitor->id" ?>">
+                                <?php
+                                if ($comp->ranked) {
+                                    $link = $competitor->FCID ? "rankings/competitor/$competitor->FCID" : false;
+                                } else {
+                                    $link = "competitor/$competitor->id";
+                                }
+                                if ($link) {
+                                    ?>
+                                    <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $competitor->name ?></a>
+                                <?php } else { ?>
                                     <?= $competitor->name ?>
-                                </a>
+                                <?php } ?>
                             </td>
                             <?php
                             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                                 $result = unofficial\getCompetitorsByEventround($event_round_id)[$competitor_id] ?? FALSE;
+                                $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
                                 ?>
-                                <td align="center"  style="border-right: 0px;" >
+                                <td align="center" class="<?= ($event_round->round == $rounds) ? 'border_right' : '' ?>" >
                                     <?php if ($result) { ?>
                                         <?php if ($result->place ?? FALSE) { ?>
                                             <font align="center" class="<?= $result->podium ? 'podium' : '' ?> <?= $result->next_round ? 'next_round' : '' ?>">
@@ -209,9 +217,13 @@
                 <tfoot>
                     <tr>
                         <td>
+                            Total <?= sizeof($comp_data->competitors) ?>
                         </td>
-                        <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
-                            <td align='center' style="vertical-align:bottom;">
+                        <?php
+                        foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
+                            $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
+                            ?>
+                            <td align='center' style="vertical-align:bottom;" class="<?= ($event_round->round == $rounds) ? 'border_right' : '' ?>">
                                 <?php $competitors_count = sizeof($comp_data->rounds[$event_round->event_dict][$event_round->round]->competitors ?? []) ?>
                                 <?php
                                 $results_count = 0;

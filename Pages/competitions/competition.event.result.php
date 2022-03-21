@@ -19,13 +19,8 @@ $formats = array_unique([$event->format, 'best']);
 
 <h2>
     <i class="<?= $event->image ?>"></i>
-    <?= $event->name ?>
-    <?php if ($event->final and $event->rounds > 1) { ?>    
-        , final
-    <?php } ?>
-    <?php if (!$event->final and $event->rounds > 1) { ?>   
-        , round <?= $event->round ?>
-    <?php } ?>    
+    <?= $event->name ?>,
+    <?= $rounds_dict[$event->final ? 0 : $event->round]->fullName; ?>    
 </h2> 
 
 <span data-event-attempts='<?= $event->attempts ?>' data-event-result='<?= $event->result ?>'></span>
@@ -54,7 +49,7 @@ $formats = array_unique([$event->format, 'best']);
             class="chosen-select" multiple>
                 <?php foreach ($competitors as $competitor) { ?>
                 <option value="<?= $competitor->competitor_round ?>">
-                    <?= $competitor->name ?>
+                    <?= $competitor->FCID ?> <?= $competitor->name ?>
                     <?= $competitor->place ? '' : ' ?' ?>
                 </option>
             <?php } ?>
@@ -92,6 +87,9 @@ $formats = array_unique([$event->format, 'best']);
                 #
             </td>
             <td>
+                FC ID
+            </td>
+            <td>
                 Competitor [<?= sizeof($competitors) ?>]
             </td>
             <td></td>
@@ -115,7 +113,10 @@ $formats = array_unique([$event->format, 'best']);
                 <td class="<?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
                     <?= $competitor->place ?>
                 </td>
-                <td >
+                <td>
+                    <?= $competitor->FCID ?> 
+                </td>
+                <td>
                     <?= $competitor->name ?>
                 </td>
                 <td>
@@ -131,7 +132,13 @@ $formats = array_unique([$event->format, 'best']);
                 </td>
                 <?php foreach (range(1, $event->attempts) as $i) { ?>
                     <td class="attempt">
-                        <?= $competitor->{"attempt$i"} ?>
+                        <?php if ((($competitor->average ?? false) == '-cutoff') and $i > 2) { ?>
+                            .
+                        <?php } elseif ((($competitor->mean ?? false) == '-cutoff') and $i > 1) { ?>
+                            .
+                        <?php } else { ?>
+                            <?= $competitor->{"attempt$i"} ?>
+                        <?php } ?>
                     </td>
                 <?php } ?>
                 <?php foreach ($formats as $format) { ?>  

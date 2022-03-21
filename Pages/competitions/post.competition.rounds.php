@@ -1,7 +1,7 @@
 <?php
 
 $events = filter_input(INPUT_POST, 'events', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-
+unset($rounds_dict[0]);
 foreach ($events as $event_dict => $event) {
     if (!($events_dict[$event_dict] ?? FALSE)) {
         continue;

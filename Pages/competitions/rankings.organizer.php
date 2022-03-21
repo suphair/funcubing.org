@@ -69,8 +69,8 @@ foreach ($rows as $row) {
 
 <div class="shadow" >
     <h1>
-        <i class="fas fa-signal fa-rotate-90"></i>
-        <a href="<?= PageIndex() ?>unofficial/rankings">
+        <?= $ranked_icon ?>
+        <a href="<?= PageIndex() ?>competitions/rankings">
             Rankings
         </a>
         / <?= $organizer->name ?>
@@ -82,7 +82,7 @@ foreach ($rows as $row) {
         <?php foreach ($partners as $wid => $partner) { ?>
             <nobr>
                 <b><?= $organizers[$wid]->short_name ?></b>
-                <a href="<?= PageIndex() ?>unofficial/rankings/<?= $wid ?>"><?= $partner->name ?></a>,
+                <a href="<?= PageIndex() ?>competitions/rankings/<?= $wid ?>"><?= $partner->name ?></a>,
             </nobr>
         <?php } ?>
     <?php } ?>
@@ -168,7 +168,7 @@ foreach ($rows as $row) {
                                 <td data-event-place="<?= $result->average ?>">
                                 </td>
                                 <td>
-                                    <a href='<?= PageIndex() ?>unofficial/competitor/<?= $result->id ?>'>
+                                    <a href='<?= PageIndex() ?>competitions/competitor/<?= $result->id ?>'>
                                         <?= $competitor ?>
                                     </a>
                                 </td>
@@ -181,7 +181,7 @@ foreach ($rows as $row) {
                                     </td>
                                 <?php } ?>
                                 <td>
-                                    <a href='<?= PageIndex() ?>unofficial/<?= $result->secret ?>/event/<?= $events_dict[$event]->code ?>/<?= $result->round ?>'>
+                                    <a href='<?= PageIndex() ?>competitions/<?= $result->secret ?>/event/<?= $events_dict[$event]->code ?>/<?= $result->round ?>'>
                                         <?= $result->competition_name ?>
                                     </a>
                                 </td>
@@ -231,7 +231,7 @@ foreach ($rows as $row) {
                                 <td data-event-place="<?= $result->single ?>">
                                 </td>
                                 <td>
-                                    <a href='<?= PageIndex() ?>unofficial/competitor/<?= $result->id ?>'>
+                                    <a href='<?= PageIndex() ?>competitions/competitor/<?= $result->id ?>'>
                                         <?= $competitor ?>
                                     </a>
                                 </td>
@@ -239,7 +239,7 @@ foreach ($rows as $row) {
                                     <b><?= $result->single ?></b>
                                 </td>
                                 <td>
-                                    <a href='<?= PageIndex() ?>unofficial/<?= $result->secret ?>/event/<?= $events_dict[$event]->code ?>/<?= $result->round ?>'>
+                                    <a href='<?= PageIndex() ?>competitions/<?= $result->secret ?>/event/<?= $events_dict[$event]->code ?>/<?= $result->round ?>'>
                                         <?= $result->competition_name ?>
                                     </a>
                                 </td>

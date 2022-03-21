@@ -30,6 +30,12 @@
     <?php } ?>
 </div>
 
+<div class="shadow2">
+    <a href="<?= PageIndex() ?>competitions/rankings" title="Rankings"> 
+        <?= $ranked_icon ?>
+        FunCubing Rankings
+    </a> 
+</div>
 <div class="shadow" >
     <?php $mine = ($me and filter_input(INPUT_GET, 'show') == 'mine'); ?>
     <h2>
@@ -79,6 +85,8 @@
                     Organizer
                 </td>
                 <td>
+                </td>
+                <td>
                     Competition
                 </td>
                 <td/>
@@ -109,15 +117,24 @@
                     <td>
                         <span class='flag-icon flag-icon-<?= strtolower($competition->competitor_country) ?>'></span>
                     </td>
+
                     <td>
                         <?= $competition->competitor_name ?>
                     </td>   
+                    <td>
+                        <?php if ($competition->ranked) { ?>
+                            <?= $ranked_icon ?>
+                        <?php } ?>
+                    </td>   
                     <td>                    
-                        <a href="<?= PageIndex() ?>unofficial/<?= $competition->secret ?>"><?= $competition->name ?> </a>
+                        <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
                     </td>
                     <td>
                         <?php if ($competition->upcoming) { ?>
                             <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                        <?php } ?>
+                        <?php if ($competition->run) { ?>
+                            <i style='color:var(--green)' class="fas fa-running"></i>
                         <?php } ?>
                     </td>
                     <td>

@@ -84,21 +84,21 @@ foreach ($events as $event_round) {
 
             if ($event->format == 'average') {
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $competitor->best));
                 $dX++;
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "dnf", $competitor->average)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "", $competitor->average)));
                 $dX++;
             } elseif ($event->format == 'mean') {
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $competitor->best));
                 $dX++;
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "dnf", $competitor->mean)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("-cutoff", "", $competitor->mean)));
                 $dX++;
             } else {
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace("dnf", "", $competitor->best)));
+                $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $competitor->best));
                 $dX++;
             }
 
@@ -114,17 +114,8 @@ foreach ($events as $event_round) {
         $pdf->Text(5, 23, $lat);
 
         $lat = iconv('utf-8', 'windows-1251', $event->name);
-
-
-        if ($event->final and $event->rounds > 1) {
-            $pdf->Text(5, 13, $lat . ', final');
-        }
-        if (!$event->final) {
-            $pdf->Text(5, 13, $lat . ', round ' . $event->round);
-        }
-        if ($event->final and $event->rounds == 1) {
-            $pdf->Text(5, 13, $lat);
-        }
+        $round = $rounds_dict[$event->final ? 0 : $event->round]->fullName;
+        $pdf->Text(5, 13, "$lat, $round");
 
         $pdf->SetFont('Arial', '', 20);
         $pdf->SetLineWidth(0.3);

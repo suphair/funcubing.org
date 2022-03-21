@@ -32,9 +32,9 @@
         <input type="text" name="details" value="<?= $comp->details ?>" />
         <br>
         Date            
-        <input required  style="width:140px" required type="text" id="datepicker_from" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
+        <input required  style="width:140px" type="text" id="datepicker_from" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
         -
-        <input  style="width:140px" required type="text" id="datepicker_to" name="date_to" value="<?= ($comp->date_to ?? false) ? date('d.m.Y', strtotime($comp->date_to)) : false ?>">
+        <input  style="width:140px" type="text" id="datepicker_to" name="date_to" value="<?= ($comp->date_to ?? false) ? date('d.m.Y', strtotime($comp->date_to)) : false ?>">
         <br>
         Website
         <input type="url" placeholder="https://example.com" pattern="http[s]?://.*" name="website" value="<?= $comp->website ?>">
@@ -43,7 +43,7 @@
         <i class="fas fa-user-plus"></i> Open self-registration (competitors can register themselves)
         <?php
         if ($comp->secretRegistration) {
-            $link = PageIndex() . "unofficial/$comp->secret/registration/$comp->secretRegistration";
+            $link = PageIndex() . "competitions/$comp->secret/registration/$comp->secretRegistration";
             ?>
             <br>      
             <a target='_blank' href="<?= $link ?>">link for self-registration</a>
@@ -120,7 +120,7 @@ if ($comp_data->competition->events) {
                             Format
                         </td>
                         <td>
-                            Text on competitor card
+                            Comment on competitor card
                         </td>
                         <td>
                             Cutoff
@@ -174,7 +174,7 @@ if ($comp_data->competition->events) {
                                     <?= ($time_limit and $cumulative) ? '<i class="fas fa-plus-circle"></i>' : '' ?>
                                 </td>
                                 <td>
-                                    <a target="_blank" href="<?= PageIndex() ?>unofficial/<?= $comp->secret ?>/event/<?= $events_dict[$event->event_dict]->code ?>/<?= $round ?>?action=cards&blank">
+                                    <a target="_blank" href="<?= PageIndex() ?>competitions/<?= $comp->secret ?>/event/<?= $events_dict[$event->event_dict]->code ?>/<?= $round ?>?action=cards&blank">
                                         Competitor card example
                                     </a>
                                 </td>
@@ -185,7 +185,7 @@ if ($comp_data->competition->events) {
             </table>
             <button>
                 <i class="far fa-save"></i>
-                Seve settings
+                Save settings
             </button>
         </form>
     <?php } ?>
@@ -210,7 +210,10 @@ if ($comp_data->competition->events) {
                     <td>
                         <i class="fas fa-times"></i>
                     </td>
-                    <?php foreach ($rounds_dict as $round) { ?>
+                    <?php
+                    unset($rounds_dict[0]);
+                    foreach ($rounds_dict as $round) {
+                        ?>
                         <td><?= $round->name ?></td>
                     <?php } ?>
                     <td/>

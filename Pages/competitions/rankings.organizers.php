@@ -1,7 +1,7 @@
 <?php $organizers = unofficial\getOrganizers() ?>
 <div class="shadow" >
     <h1>
-        <i class="fas fa-signal fa-rotate-90"></i>
+        <?= $ranked_icon ?>
         List of rankings
     </h1>   
     <table class="table_new">
@@ -19,7 +19,7 @@
             <?php foreach ($organizers as $organizer) { ?>
                 <tr>
                     <td>
-                        <a href="<?= PageIndex() ?>unofficial/rankings/<?= $organizer->wid ?>">
+                        <a href="<?= PageIndex() ?>competitions/rankings/<?= $organizer->wid ?>">
                             <?= $organizer->name ?>
                         </a>
                     </td>

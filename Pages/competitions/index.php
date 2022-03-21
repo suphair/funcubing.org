@@ -4,6 +4,7 @@
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
+$ranked_icon = '<i title="FunCubing Rankings Competition" class="fas fa-mountain"></i>';
 if ($secret == 'competitor') {
     $competitor_id = request(2);
     $competitor = unofficial\getCompetitor($competitor_id);
@@ -12,9 +13,12 @@ if ($secret == 'competitor') {
     } else {
         include 'competitor.notfound.php';
     }
+} elseif ($secret == 'rankings') {
+    $rounds_dict = unofficial\getRoundsDict();
+    include 'rankings.php';
 } elseif ($secret) {
     $comp = unofficial\getCompetition($secret, $me);
-
+    $secret = $comp->secret;
     if ($comp->id ?? FALSE) {
         $comp_data = unofficial\getCompetitionData($comp->id);
         $events_dict = unofficial\getEventsDict();
