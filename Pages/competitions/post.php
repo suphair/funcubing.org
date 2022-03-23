@@ -1,6 +1,7 @@
 <?php
 
 $secret = db::escape(request(1));
+
 if ($secret) {
     $comp = unofficial\getCompetition($secret);
     if ($comp->id ?? FALSE) {
@@ -98,14 +99,11 @@ if ($me->wca_id ?? FALSE) {
             }
         }
     }
-
-    if (request(1) == 'rankings') {
-        $organizer_id = request(2);
-        $organizer = unofficial\getOrganizer($organizer_id);
-        if ($organizer->wid ?? FALSE) {
-            if (filter_input(INPUT_GET, 'rankings_organizers_add') !== NULL) {
-                include 'post.rankings.organizers.add.php';
-            }
-        }
-    }
 }
+
+$return_refer=filter_input(INPUT_POST, 'return_refer');
+if($return_refer){
+   header("Location: ".$_SERVER['HTTP_REFERER']);
+   exit();
+}
+    

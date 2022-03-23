@@ -1,6 +1,4 @@
-
-
-<link href="<?= PageIndex() ?>Styles/unofficial.css" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?2" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
@@ -18,8 +16,8 @@ if ($secret == 'competitor') {
     include 'rankings.php';
 } elseif ($secret) {
     $comp = unofficial\getCompetition($secret, $me);
-    $secret = $comp->secret;
     if ($comp->id ?? FALSE) {
+        $secret = $comp->secret;
         $comp_data = unofficial\getCompetitionData($comp->id);
         $events_dict = unofficial\getEventsDict();
         $formats_dict = unofficial\getFormatsDict();
@@ -28,6 +26,7 @@ if ($secret == 'competitor') {
         $events_list = false;
 
         $section = db::escape(request(2));
+
         switch ($section) {
             case 'registrations':
                 if (db::escape(request(3)) == 'api') {
@@ -57,21 +56,15 @@ if ($secret == 'competitor') {
                 break;
             case 'event':
             case 'result':
-                $code = request(3);
-                $round = request(4);
-                $event_dict = $comp_data->event_dict->by_code[$code]->id ?? FALSE;
-                if (!$round) {
-                    $round = 1;
-                }
-                $event_round_this = $comp_data->rounds[$event_dict][$round]->round->id ?? null;
-                $include = 'competition.index.php';
-                break;
-            case 'events':
-                $event_round_this = false;
-                $events_list = true;
+            case 'event_competitors':
+                $event_round_this = true;
                 $include = 'competition.index.php';
                 break;
             case false:
+                $section = 'events';
+            case 'competitors':
+            case 'records':
+            case 'events':
                 $event_round_this = false;
                 $include = 'competition.index.php';
                 break;

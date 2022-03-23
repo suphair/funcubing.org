@@ -1,24 +1,3 @@
-<?php
-$event = unofficial\getEventByEventround($event_round_this);
-$competitors = unofficial\getCompetitorsByEventround($event_round_this);
-$formats = array_unique([$event->format, 'best']);
-?>
-<h2>
-    <i class="<?= $event->image ?>"></i>
-    <?= $event->name ?>,
-    <?= $rounds_dict[$event->final ? 0 : $event->round]->fullName; ?>    
-    <?php if ($comp->my or $comp->organizer) { ?>
-        <a href="<?= PageIndex() . "competitions/$secret/result/{$events_dict[$event->event_dict]->code}/$event->round" ?> ">
-            <i class="far fa-keyboard"></i> Enter results and add competitors
-        </a>
-    <?php } ?>
-</h2> 
-<p>
-    <?= $event->comment ?>
-    <?= $event->cutoff ? ('<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?>
-    <?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?>
-    <?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?>
-</p>
 <table class="table_new">
     <thead>
         <tr>

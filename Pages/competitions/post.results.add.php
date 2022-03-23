@@ -6,6 +6,7 @@ $attempts = db::escape(filter_input(INPUT_POST, 'attempts'));
 $code = db::escape(request(3));
 $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
 if ($code and is_numeric($round)) {
     if (db::row("SELECT 1 FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"

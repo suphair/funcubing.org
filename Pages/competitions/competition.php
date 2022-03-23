@@ -50,20 +50,15 @@
         <?php } ?>
     <?php } ?>
     <h3>
-        <?php foreach ($comp_data->events as $event) { ?>
-            <?php if ($events_dict[$event->event_dict]->special) { ?>
+        <?php foreach ($comp_data->events as $event_att) { ?>
+            <?php if ($events_dict[$event_att->event_dict]->special) { ?>
                 <p>
-                    <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
-                    <?= $event->name ?>
+                    <i class="<?= $events_dict[$event_att->event_dict]->image ?>"></i>
+                    <?= $event_att->name ?>
                 </p>
             <?php } ?>
         <?php } ?>
     </h3>
     <br>
     <?php ($include ?? FALSE) ? include $include : false; ?>
-    <?php
-    if ($comp->ranked) {
-        include 'competition.records.php';
-    }
-    ?>
 </div>

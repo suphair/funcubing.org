@@ -298,6 +298,7 @@ function getCompetitionData($id) {
                     . " unofficial_competitors.id competitor,"
                     . " unofficial_competitors.name,"
                     . " unofficial_competitors.FCID,"
+                    . " unofficial_competitors.card, "
                     . " unofficial_competitors.id"
                     . " FROM unofficial_competitors"
                     . " LEFT OUTER JOIN unofficial_competitors_round ON unofficial_competitors_round.competitor = unofficial_competitors.id"
@@ -395,6 +396,7 @@ function getCompetitorsByEventround($eventround) {
             . " unofficial_competitors.name, "
             . " unofficial_competitors.FCID, "
             . " unofficial_competitors.id, "
+            . " unofficial_competitors.card, "
             . " unofficial_competitors_result.place, "
             . " unofficial_competitors_round.id competitor_round, "
             . " unofficial_competitors_result.attempts, "
@@ -639,3 +641,23 @@ function getFavicon($website) {
     }
 }
 
+function updateCompetitionCard($competition_id) {
+    $competitors = \db::rows("select `unofficial_competitors`.id, `unofficial_competitors`.card 
+        from `unofficial_competitions` 
+        join `unofficial_competitors` 
+            on unofficial_competitors.competition=unofficial_competitions.id
+        where `unofficial_competitions`.id = $competition_id 
+            order by case when `unofficial_competitors`.card is null then 1 else 0 end,
+                `unofficial_competitors`.card,
+                `unofficial_competitors`.id
+        ");
+    $card = 0;
+    foreach ($competitors as $competitor) {
+        if ($competitor->card) {
+            $card = $competitor->card;
+        } else {
+            $card++;
+            \db::exec("update `unofficial_competitors` set card = $card where id = $competitor->id");
+        }
+    }
+}

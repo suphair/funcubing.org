@@ -11,6 +11,7 @@ if ($name) {
     $competitor_id = db::row("SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name' and session = '$session'")->id ?? FALSE;
 
     if ($competitor_id) {
+        unofficial\updateCompetitionCard($comp->id);
         foreach ($events as $event_id => $flag) {
 
             $round = db::row("SELECT unofficial_events_rounds.id FROM unofficial_events_rounds "

@@ -9,6 +9,7 @@ if ($code and is_numeric($round)) {
 
     $competitor = db::row(" SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name'")->id ?? FALSE;
     if ($competitor) {
+        unofficial\updateCompetitionCard($comp->id);
         db::exec("INSERT IGNORE INTO unofficial_competitors_round (competitor,round) "
                 . " SELECT $competitor, unofficial_events_rounds.id  "
                 . " FROM unofficial_events_rounds"

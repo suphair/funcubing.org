@@ -6,7 +6,7 @@ $action = filter_input(INPUT_GET, 'action');
 
 if (!$secret) {
     include 'action.wrong.php';
-} elseif ($secret == 'competitor') {
+} elseif ($secret == 'competitor') {    
     if ($action == 'certificate') {
         $competitor_id = db::escape(request(2));
         $competitor = unofficial\getCompetitor($competitor_id);
@@ -40,6 +40,9 @@ if (!$secret) {
                 break;
             case 'export':
                 include 'action.export.php';
+                break;
+            case 'scoketaker':
+                include 'action.scoketaker.php';
                 break;
             default:
                 include 'action.wrong.php';

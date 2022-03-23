@@ -25,6 +25,7 @@ foreach ($competitors as $competitor) {
 
     if ($name) {
         db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
+        unofficial\updateCompetitionCard($comp->id);
     }
 
     $competitor_id = db::row("SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name'")->id ?? FALSE;

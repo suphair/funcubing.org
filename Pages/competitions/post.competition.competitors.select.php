@@ -9,5 +9,6 @@ foreach ($competitors as $competitor) {
     $name = strip_tags(db::escape($competitor));
     if ($name) {
         db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
+        unofficial\updateCompetitionCard($comp->id);
     }
 }
