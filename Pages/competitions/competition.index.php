@@ -20,30 +20,26 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
 ?>
 <h1>
     <a 
-        class="<?= $section == 'competitors' ? 'select' : '' ?>"
-        href="<?= PageIndex() . "competitions/$secret/competitors" ?>">
-        <i title='Competitors' class="fas fa-users"></i>
-    </a>
-    <a 
         class="<?= $section == 'events' ? 'select' : '' ?>"
-        href="<?= PageIndex() . "competitions/$secret/events" ?>">
-        <i title='Events' class="fas fa-newspaper"></i>
-    </a>
-    <?php if (sizeof($records)) { ?>
+        href="<?= PageIndex() . "competitions/$secret/events" ?>"
+        ><i title='Events' class="fas fa-newspaper"></i></a>
+    <a 
+        class="<?= $section == 'competitors' ? 'select' : '' ?>"
+        href="<?= PageIndex() . "competitions/$secret/competitors" ?>"
+        ><i title='Competitors' class="fas fa-users"></i></a>
+        <?php if (sizeof($records)) { ?>
         <a 
             class="<?= $section == 'records' ? 'select' : '' ?>"
-            href="<?= PageIndex() . "competitions/$secret/records" ?>">
-            <i title='Records' class="fas fa-trophy"></i> 
-        </a>    
-    <?php } ?>
+            href="<?= PageIndex() . "competitions/$secret/records" ?>"
+            ><i title='Records' class="fas fa-trophy"></i></a>    
+        <?php } ?>
 
     <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
         <a class="<?= $event_round_this == $event_round_id ? 'select' : '' ?>"
-           title="<?= $comp_data->events[$event_round->event_dict]->name ?> / round <?= $event_round->round ?>"
-           href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
-            <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
-        </a>
-    <?php } ?>
+           title="<?= $comp_data->events[$event_round->event_dict]->name ?>, <?= $rounds_dict[$event_round->round == $event_round->rounds ? 0 : $event_round->round]->fullName ?>"
+           href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> "
+           ><i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i></a>
+       <?php } ?>
 </h1>   
 
 <div class="shadow2" >
@@ -62,7 +58,7 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 <?php if (sizeof($comp_data->competitors)) { ?>
                     <a target="_blank" href="?action=cards">Print competitors cards</a> ▪
                 <?php } ?>     
-                    <a target="_blank" href="?action=result">Print the results</a> ▪
+                <a target="_blank" href="?action=result">Print the results</a> ▪
                 <a target="_blank" href="?action=cards&blank">Print blank competitors cards</a> ▪
                 <a target="_blank" href="?action=export">Export results</a>
                 <?php if ($event_round_this) { ?>

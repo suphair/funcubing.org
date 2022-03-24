@@ -38,7 +38,10 @@ if ($comp_data->competition->events) {
         </thead>
         <tbody>
             <?php foreach ($events as $event) { ?>
-                <?php foreach (range(1, $event->rounds) as $round) { ?>
+                <?php
+                foreach (range(1, $event->rounds) as $round) {
+                    $cutoff = $eventsRounds[$event->id][$round]->cutoff;
+                    ?>
                     <tr>
                         <td>
                             <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
@@ -49,15 +52,15 @@ if ($comp_data->competition->events) {
                         <td>
                             <?= $rounds_dict[$event->rounds == $round ? 0 : $round]->smallName; ?>
                         </td>
-                        <td>
-                            <?= $formats_dict[$event->format_dict]->name ?>
+                        <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
+                            <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
+                            <?= $format_dict->name ?>
                         </td>
                         <td align="left">
                             <?php $comment = $eventsRounds[$event->id][$round]->comment; ?>
                             <?= $comment ? ('<i class="fas fa-comment-dots"></i> ' . $comment) : '' ?>
                         </td>
                         <td align="left">
-                            <?php $cutoff = $eventsRounds[$event->id][$round]->cutoff; ?>
                             <?= $cutoff ? ('<i class="fas fa-cut"></i> ' . $cutoff) : '' ?>
                         </td>
                         <td align="left">

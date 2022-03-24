@@ -4,7 +4,6 @@
         <?php if (!$comp->show) { ?>
             <i class="far fa-eye-slash"></i>
         <?php } ?>
-        <span class='flag-icon flag-icon-<?= strtolower($comp->competitor_country) ?>'></span>
         <a href="<?= PageIndex() . "competitions/$secret" ?>"><?= $comp->name ?></a>
     </h1>
     <h2><?= $comp->details ?></h2>
@@ -49,16 +48,6 @@
             </nobr>
         <?php } ?>
     <?php } ?>
-    <h3>
-        <?php foreach ($comp_data->events as $event_att) { ?>
-            <?php if ($events_dict[$event_att->event_dict]->special) { ?>
-                <p>
-                    <i class="<?= $events_dict[$event_att->event_dict]->image ?>"></i>
-                    <?= $event_att->name ?>
-                </p>
-            <?php } ?>
-        <?php } ?>
-    </h3>
-    <br>
+    <p style='padding: 5px'></p>
     <?php ($include ?? FALSE) ? include $include : false; ?>
 </div>

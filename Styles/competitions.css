@@ -21,8 +21,20 @@
 }
 
 .record{
-    color: var(--green);
+    color: rgb(0,100,0);
     font-weight:bold;
+}
+
+td.record{
+    width: 70px;
+    text-align:center;
+}
+
+.record:after {
+    content: 'R';
+}
+.record:before {
+    content: '\A0\A0';
 }
 
 span.checked{

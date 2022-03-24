@@ -20,7 +20,7 @@ function getRankedRatings() {
         unofficial_competitors_result.attempt3,
         unofficial_competitors_result.attempt4,
         unofficial_competitors_result.attempt5,
-        unofficial_competitors_round.id result_id
+        unofficial_competitors_round.id round_id
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -56,7 +56,7 @@ function getRankedRatings() {
         unofficial_events_dict.id event_id,
         unofficial_competitors_result.best result,
         unofficial_competitors_result.order,
-        unofficial_competitors_round.id result_id
+        unofficial_competitors_round.id round_id
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -107,12 +107,14 @@ function getRankedRatings() {
 
     $result_history = [];
     $result_record_competition = [];
+    $result_record_attempt = [];
 
     foreach ($average as $row) {
         if (!isset($result_history[$row->event_id]['average'][$row->date])) {
             $result_history[$row->event_id]['average'][$row->date] = $row;
             $row->type = 'average';
             $result_record_competition[$row->competition_id][$row->event_id][] = $row;
+            $result_record_attempt['best'][] = $row->round_id;
         }
     }
     foreach ($best as $row) {
@@ -126,7 +128,7 @@ function getRankedRatings() {
     return[
         'current' => $result_current,
         'history' => $result_history,
-        'record_competition' => $result_record_competition,
+        'record_competition' => $result_record_competition
     ];
 }
 

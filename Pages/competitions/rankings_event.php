@@ -20,7 +20,7 @@
         <tr>
             <td>#</td>
             <td>Name</td>
-            <td>Result</td>
+            <td class="attempt">Result</td>
             <td>Competition</td>
             <?php if ($type == 'average') { ?>
                 <td colspan='5' align='center'>Solves</td>
@@ -42,7 +42,7 @@
                         <?= $rating->competitor_name ?>
                     <?php } ?>
                 </td>
-                <td align='right' class="<?= $rating->order == 1 ? 'record' : '' ?>">
+                <td class="<?= $rating->order == 1 ? 'record' : 'attempt' ?>">
                     <b><?= $rating->result ?></b>
                 </td>
                 <td>
@@ -52,7 +52,7 @@
                 </td>
                 <?php if ($type == 'average') { ?>
                     <?php foreach (range(1, 5) as $i) { ?>
-                        <td align='right'>
+                        <td class='attempt'>
                             <?= $rating->{"attempt$i"} ?? false ?>
                         </td>
                     <?php } ?>

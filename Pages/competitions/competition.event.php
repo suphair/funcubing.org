@@ -1,3 +1,10 @@
+<?php
+$record_attempts = [];
+foreach ($records[$event->event_dict] ?? [] as $record) {
+    $record_attempts[$record->type][] = $record->round_id;
+}
+?>
+
 <table class="table_new">
     <thead>
         <tr>
@@ -14,7 +21,7 @@
     <tbody>
         <?php foreach ($competitors as $competitor) { ?>
             <tr>
-                <td align="center" class="<?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
+                <td class=" table_new_center<?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
                     <?= $competitor->place ?> 
                 </td>
                 <td >
@@ -33,14 +40,17 @@
                 </td>
                 <?php foreach (range(1, $event->attempts) as $i) { ?>
                     <td class="<?= $i == $event->attempts ? 'border-right-solid' : '' ?> attempt">
-                        <?= str_replace("dns", "", $competitor->{"attempt$i"}) ?>
+                        <?= strtoupper(str_replace("dns", "", $competitor->{"attempt$i"})) ?>
                     </td>
                 <?php } ?>
 
-                <?php foreach ($formats as $format) { ?>
-                    <td  class="attempt">
+                <?php
+                foreach ($formats as $format) {
+                    $record = in_array($competitor->competitor_round, $record_attempts[$format] ?? []);
+                    ?>
+                    <td class="<?= $record ? 'record' : 'attempt' ?>">
                         <b>
-                            <?= str_replace(["dns", "-cutoff"], ["dnf", ""], $competitor->$format) ?>
+                            <?= strtoupper(str_replace(["dns", "-cutoff"], ["dnf", ""], $competitor->$format)) ?>
                         </b>
                     </td>
                 <?php } ?>    

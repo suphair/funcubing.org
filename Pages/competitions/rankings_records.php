@@ -9,7 +9,7 @@
             <td>Event</td>
             <td>Type</td>
             <td>Name</td>
-            <td>Result</td>
+            <td class="attempt">Result</td>
             <td>Competition</td>
             <td colspan='5' align='center'>Solves</td>
         </tr>
@@ -36,8 +36,8 @@
                                 <?= $record->competitor_name ?>
                             </a>
                         </td>
-                        <td align='right'>
-                            <b><?= $record->result ?></b>
+                        <td class='record'>
+                            <?= $record->result ?>
                         </td>
                         <td>
                             <a href="<?= PageIndex() ?>competitions/<?= $record->competition_secret ?>">
@@ -45,7 +45,7 @@
                             </a>
                         </td>
                         <?php foreach (range(1, 5) as $i) { ?>
-                            <td align='right'>
+                            <td class='attempt'>
                                 <?= $record->{"attempt$i"} ?? false ?>
                             </td>
                         <?php } ?>
@@ -66,8 +66,8 @@
     <thead>
         <tr>
             <td>Event</td>
-            <td>Single</td>
-            <td>Average</td>            
+            <td  class="attempt">Single</td>
+            <td  class="attempt">Average</td>            
             <td>Name</td>
             <td>Competition</td>
             <td colspan='5' align='center'>Solves</td>
@@ -84,8 +84,12 @@
                             <i class='<?= $event->image ?>'></i>
                             <?= $event->name ?>
                         </td>
-                        <td class="<?= !$r ? 'record' : '' ?>"><?= $type_att == 'best' ? $row->result : '' ?></td>
-                        <td class="<?= !$r ? 'record' : '' ?>"><?= $type_att == 'average' ? $row->result : '' ?></td>
+                        <td class="<?= (!$r and$type_att == 'best' ) ? 'record' : 'attempt' ?>">
+                            <?= $type_att == 'best' ? $row->result : '' ?>
+                        </td>
+                        <td class="<?= (!$r and$type_att == 'average' ) ? 'record' : 'attempt' ?>">
+                            <?= $type_att == 'average' ? $row->result : '' ?>
+                        </td>
                         <td>
                             <a href="<?= PageIndex() . "competitions/rankings/competitor/$row->FCID" ?>">
                                 <?= $row->competitor_name ?>
@@ -97,7 +101,7 @@
                             </a>
                         </td>
                         <?php foreach (range(1, 5) as $i) { ?>
-                            <td align='right'>
+                            <td class='attempt'>
                                 <?= $row->{"attempt$i"} ?? false ?>
                             </td>
                         <?php } ?>

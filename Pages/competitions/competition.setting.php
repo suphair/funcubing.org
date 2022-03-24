@@ -133,7 +133,13 @@ if ($comp_data->competition->events) {
                 </thead>
                 <tbody>
                     <?php foreach ($events as $event) { ?>
-                        <?php foreach (range(1, $event->rounds) as $round) { ?>
+                        <?php
+                        foreach (range(1, $event->rounds) as $round) {
+                            $cutoff = $eventsRounds[$event->id][$round]->cutoff;
+                            $time_limit = $eventsRounds[$event->id][$round]->time_limit;
+                            $cumulative = $eventsRounds[$event->id][$round]->cumulative;
+                            $format_dict = $formats_dict[$event->format_dict];
+                            ?>
                             <tr>
                                 <td>
                                     <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
@@ -150,7 +156,8 @@ if ($comp_data->competition->events) {
                                     <?php } ?>
                                 </td>
                                 <td>
-                                    <?= $formats_dict[$event->format_dict]->name ?>
+                                    <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
+                                    <?= $format_dict->name ?>
                                 </td>
                                 <td align="left">
                                     <?php $comment = $eventsRounds[$event->id][$round]->comment; ?>
@@ -158,15 +165,12 @@ if ($comp_data->competition->events) {
                                     <?= $comment ? '<i class="fas fa-comment-dots"></i>' : '' ?>
                                 </td>
                                 <td align="left">
-                                    <?php $cutoff = $eventsRounds[$event->id][$round]->cutoff; ?>
-                                    <?php if (in_array($formats_dict[$event->format_dict]->code, ['Ao5', 'Mo3'])) { ?>
+                                    <?php if ($format_dict->cutoff_attempts) { ?>
                                         <input style="width: 50px" name="cutoff[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $cutoff ?>">
                                         <?= $cutoff ? '<i class="fas fa-cut"></i>' : '' ?>
                                     <?php } ?>
                                 </td>
                                 <td align="left">
-                                    <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
-                                    <?php $cumulative = $eventsRounds[$event->id][$round]->cumulative; ?>
                                     <input style="width: 50px" name="time_limit[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $time_limit ?>">
                                     <input type="checkbox" <?= $cumulative ? 'checked' : '' ?> name="cumulative[<?= $event->event_dict ?>][<?= $round ?>]">
                                     </input>

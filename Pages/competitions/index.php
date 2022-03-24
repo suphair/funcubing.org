@@ -1,4 +1,4 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?2" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?1" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
@@ -17,6 +17,7 @@ if ($secret == 'competitor') {
 } elseif ($secret) {
     $comp = unofficial\getCompetition($secret, $me);
     if ($comp->id ?? FALSE) {
+        change_title($comp->name);
         $secret = $comp->secret;
         $comp_data = unofficial\getCompetitionData($comp->id);
         $events_dict = unofficial\getEventsDict();

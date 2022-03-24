@@ -80,7 +80,6 @@
             <tr>
                 <td/>
                 <td/>
-                <td/>
                 <td>
                     Organizer
                 </td>
@@ -113,11 +112,6 @@
                             <i class="fas fa-user-tie"></i>
                         <?php } ?>
                     </td>
-
-                    <td>
-                        <span class='flag-icon flag-icon-<?= strtolower($competition->competitor_country) ?>'></span>
-                    </td>
-
                     <td>
                         <?= $competition->competitor_name ?>
                     </td>   

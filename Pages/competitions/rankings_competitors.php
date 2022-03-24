@@ -36,7 +36,7 @@
                 <td align="center">
                     <?= $competitor->competitions ?>
                 </td>
-                <td align="center" class="record">
+                <td align="center">
                     <?= $current_records ? $current_records : '' ?>
                 </td>
                 <td align="center">

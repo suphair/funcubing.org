@@ -73,7 +73,7 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
                             <?= $result->place ?>
                             </font>
                         <?php } else { ?>
-                            <i style='color:var(--light_gray)' class="far fa-question-circle"></i>
+                            <i style='color:var(--light_gray)' class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
                         <?php } ?>
                     <?php } ?>
                 </td>

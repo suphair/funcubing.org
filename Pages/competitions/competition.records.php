@@ -7,7 +7,7 @@
             <td></td>
             <td>Event</td>
             <td>Type</td>
-            <td>Result</td>
+            <td class='attempt'>Result</td>
             <td>Competitor</td>
         </tr>
     </thead>
@@ -27,7 +27,7 @@
                         <td>
                             <?= ['best' => 'Single', 'average' => 'Average'][$record->type] ?>
                         </td>
-                        <td align="center">
+                        <td class='record'>
                             <?= $record->result ?>
                         </td>
                         <td>

@@ -109,7 +109,9 @@ function getFormatsDict() {
                     . " unofficial_formats_dict.format, "
                     . " unofficial_formats_dict.attempts,"
                     . " unofficial_formats_dict.name,"
-                    . " unofficial_formats_dict.code"
+                    . " unofficial_formats_dict.code,"
+                    . " unofficial_formats_dict.cutoff_attempts,"
+                    . " unofficial_formats_dict.cutoff_name"
                     . " FROM unofficial_formats_dict "
                     . " ORDER BY code");
     $formats_dict = [];

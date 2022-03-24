@@ -70,14 +70,12 @@ foreach ($results as $result) {
                 <td>Competition</td>
                 <td>Round</td>
                 <td>Place</td>
-                <td class="table_new_center">
+                <td class="attempt">
                     Single
                 </td>
-                <td style="padding:0"></td>
-                <td class="table_new_center">
+                <td class="attempt">
                     Average
                 </td>
-                <td style="padding:0"></td>
                 <td class="table_new_center" colspan="5">
                     Solves
                 </td>
@@ -109,15 +107,9 @@ foreach ($results as $result) {
                         <td class='attempt <?= $record_best ? 'record' : '' ?>' style="font-weight: bold">
                             <?= $result->best; ?>
                         </td>
-                        <td style="padding:0">
-                            <?= $record_best ? 'R' : '' ?>
-                        </td>
                         <td class='attempt <?= $record_average ? 'record' : '' ?>' style="font-weight: bold">
                             <?= str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->average); ?>
                             <?= str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean); ?>
-                        </td>
-                        <td style="padding:0">
-                            <?= $record_average ? 'R' : '' ?>
                         </td>
                         <?php foreach (range(1, 5) as $i) { ?>
                             <td class='attempt'>

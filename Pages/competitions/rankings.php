@@ -28,7 +28,7 @@ foreach (['average', 'best'] as $type_att) {
         $current = current($a[$type_att] ?? []) ?? false;
         if ($current) {
             $competitor_current_record[$current->FCID][$type_att] ??= [];
-            $competitor_current_record[$current->FCID][$type_att][] = $current->result_id;
+            $competitor_current_record[$current->FCID][$type_att][] = $current->round_id;
         }
     }
 }
@@ -53,7 +53,7 @@ foreach (['average', 'best'] as $type_att) {
             } else {
                 $best = $result_int;
                 $competitor_history_record[$row->FCID][$type_att] ??= [];
-                $competitor_history_record[$row->FCID][$type_att][] = $row->result_id;
+                $competitor_history_record[$row->FCID][$type_att][] = $row->round_id;
             }
         }
     }
@@ -87,7 +87,11 @@ foreach (['average', 'best'] as $type_att) {
         <?php
         switch ($select) {
             case 'event':
-                include'rankings_event.php';
+                if ($event_select ?? false) {
+                    include'rankings_event.php';
+                } else {
+                    include'rankings_event_notfound.php';
+                }
                 break;
             case 'records':
                 include'rankings_records.php';
