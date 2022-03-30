@@ -68,6 +68,32 @@
         </form>    
     <?php } ?>
 </div>
+<?php if (unofficial\admin()) { ?>
+    <div class="shadow2" >
+        <?php
+        $JudgeSenior_name = db::row("SELECT name FROM dict_competitors where dict_competitors.wcaid = '$comp->rankedJudgeSenior' and dict_competitors.wcaid<>''")->name ?? false;
+        $JudgeJunior_name = db::row("SELECT name FROM dict_competitors where dict_competitors.wcaid = '$comp->rankedJudgeJunior' and dict_competitors.wcaid<>''")->name ?? false;
+        ?>
+        <h3> <i class="fas fa-mountain"></i> FunCubing Rankings</h3> 
+        <form method="POST" action="?rankings_settings">
+            Ranked
+            <input name="ranked" type="checkbox" <?= $comp->ranked ? 'checked' : '' ?>><br>
+            ID
+            <input name="rankedID" value="<?= $comp->rankedID ?>"><br>
+            Judge Senior
+            <input name="rankedJudgeSenior" value="<?= $comp->rankedJudgeSenior ?>">
+            <b><?= $JudgeSenior_name ?></b><br>
+            Judge Junior
+            <input name="rankedJudgeJunior" value="<?= $comp->rankedJudgeJunior ?>"> 
+            <b><?= $JudgeJunior_name ?></b><br>
+            <input hidden name="return_refer" value="<?= PageIndex() ?>competitions/<?= $comp->secret_base ?>/setting">
+            <button>
+                <i class="fas fa-mountain"></i>
+                Save
+            </button>
+        </form>
+    </div>
+<?php } ?>
 <div class="shadow2" >
     <h3> <i class="fas fa-user-secret"></i> Additional organizers (all action except the settings)</h3>
     <?php

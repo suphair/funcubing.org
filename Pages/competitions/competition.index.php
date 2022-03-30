@@ -58,7 +58,6 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 <?php if (sizeof($comp_data->competitors)) { ?>
                     <a target="_blank" href="?action=cards">Print competitors cards</a> ▪
                 <?php } ?>     
-                <a target="_blank" href="?action=result">Print the results</a> ▪
                 <a target="_blank" href="?action=cards&blank">Print blank competitors cards</a> ▪
                 <a target="_blank" href="?action=export">Export results</a>
                 <?php if ($event_round_this) { ?>

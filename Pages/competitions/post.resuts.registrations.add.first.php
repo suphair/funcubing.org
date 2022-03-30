@@ -1,5 +1,4 @@
 <?php
-
 $competitors = filter_input(INPUT_POST, 'competitors', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 $code = db::escape(request(3));

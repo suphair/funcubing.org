@@ -28,7 +28,7 @@ foreach (['average', 'best'] as $type_att) {
         $current = current($a[$type_att] ?? []) ?? false;
         if ($current) {
             $competitor_current_record[$current->FCID][$type_att] ??= [];
-            $competitor_current_record[$current->FCID][$type_att][] = $current->round_id;
+            $competitor_current_record[$current->FCID][$type_att][] = $current;
         }
     }
 }

@@ -51,3 +51,10 @@ span.checked{
 .border_right{
     border-right: 1px solid var(--light_gray);
 }
+
+.exclude::before{
+    content: '(';
+}
+.exclude::after{
+    content: ')';
+}

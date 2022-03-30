@@ -1,5 +1,4 @@
 <?php
-
 $competitors = explode(",", str_replace("\n", ",", filter_input(INPUT_POST, 'competitors')));
 
 foreach ($competitors as $competitor) {

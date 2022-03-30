@@ -9,6 +9,7 @@
             <td>Type</td>
             <td class='attempt'>Result</td>
             <td>Competitor</td>
+            <td colspan='5' align='center'>Solves</td>
         </tr>
     </thead>
     <tbody>
@@ -40,6 +41,11 @@
                                 <?= $record->competitor_name ?>
                             <?php } ?>
                         </td>
+                        <?php foreach (range(1, 5) as $i) { ?>
+                            <td class='attempt'>
+                                <?= $record->{"attempt$i"} ?? false ?>
+                            </td>
+                        <?php } ?>
                     </tr>
                 <?php } ?>
             <?php } ?>

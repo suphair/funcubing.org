@@ -2,18 +2,14 @@ $('[data-competitor-chosen]').change(function () {
     var val = $(this).val().toString();
     click_competitor($('[data-competitor-id=' + val + ']'));
 });
-
 $(".chosen-select").chosen({max_selected_options: 1});
 $(".chosen-search-input").focus();
-
 $('[data-results-attempt]').on('input', function () {
     enter_result($(this));
 });
 $('[data-results-attempt]').on('click', function () {
     enter_result($(this));
 });
-
-
 function enter_result(el) {
     el.val(result_format(el.val()));
     var attempts = $("[data-event-attempts]").data('event-attempts');
@@ -27,7 +23,6 @@ function enter_result(el) {
         results = results + result;
     }
     $('[data-results-attempts]').val(results);
-
 }
 
 function zip_result(result) {
@@ -66,22 +61,39 @@ $('[data-results]').submit(function () {
     var wrong = 0;
     var worst = 0;
     var sum = 0;
-
+    var worst_i = 0;
+    var best_i = 0;
+    var wrong_i = 0;
+    var empty = 0;
     for (var i = 1; i <= attempts_count; i++) {
         var attempt = $('#attempt_' + i).val();
         var centisecond = input_to_centisecond(attempt);
         if ((centisecond < best || best == -1) && centisecond > 0) {
             best = centisecond;
+            best_i = i;
         }
+
         if (centisecond > 0) {
             complete++;
             sum += centisecond;
         }
         if (centisecond < 0) {
+            if (wrong_i === 0) {
+                wrong_i = i;
+            }
             wrong++;
         }
-        if (centisecond > worst) {
+        if (centisecond === 0) {
+            empty++;
+        }
+    }
+
+    for (var i = 1; i <= attempts_count; i++) {
+        var attempt = $('#attempt_' + i).val();
+        var centisecond = input_to_centisecond(attempt);
+        if (centisecond > worst && best_i !== i) {
             worst = centisecond;
+            worst_i = i;
         }
     }
 
@@ -96,6 +108,20 @@ $('[data-results]').submit(function () {
         mean = Math.round((sum) / 3, 2);
     }
 
+    var exclude = 0;
+    if (attempts_count === 5 && empty === 0) {
+        if (complete === 5) {
+            exclude = worst_i + best_i * 10;
+        }
+        if (complete >= 1 && complete < 5) {
+            exclude = wrong_i + best_i * 10;
+        }
+        if (complete === 0) {
+            exclude = 12;
+        }
+        $('[data-results-exclude]').val(exclude);
+    }
+
     if (wrong == 0 && complete == 0) {
         average = 0;
         mean = 0;
@@ -106,23 +132,18 @@ $('[data-results]').submit(function () {
     $('[data-results-attempts-best]').val(public_result(result_format_enter(best)));
     $('[data-results-attempts-average]').val(public_result(result_format_enter(average)));
     $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
-
     var competitor = $('[data-results]').data('result-competitor-id');
     $('[data-save-competitor-id]').val(competitor);
-
     var average;
     average = $('[data-results-attempts-average]').html();
     $('#attempt_average').val(average);
-
     var mean;
     mean = $('[data-results-attempts-mean]').html();
     $('#attempt_mean').val(mean);
-
     var best;
     best = $('[data-results-attempts-best]').html();
     $('#attempt_best').val(best);
 });
-
 
 function result_format(value) {
     return result_format_enter(input_to_centisecond(value));
@@ -168,7 +189,6 @@ function result_format_enter(result) {
     var second = Math.floor(result / 100);
     result = result - second * 100;
     var centisecond = result;
-
     if (minute < 10) {
         minute_format = '0' + minute;
     } else {
@@ -188,7 +208,6 @@ function result_format_enter(result) {
     }
 
     return  minute_format + ':' + second_format + '.' + centisecond_format;
-
 }
 
 function click_competitor(el) {
@@ -201,7 +220,6 @@ function click_competitor(el) {
     $('[data-results-attempts]').val(el.data('competitor-attempts'));
     $('[data-results-attempts]').prop('disabled', false);
     $('[data-results] button').show();
-
     var attempts_count = $('[data-event-attempts]').data('event-attempts');
     for (var i = 1; i <= attempts_count; i++) {
         $('[data-results-attempt=' + i + ']').val(result_format(el.data('competitor-attempt' + i)));
@@ -217,17 +235,14 @@ function click_competitor(el) {
 $('[data-competitor]').click(function () {
     click_competitor($(this));
 });
-
 $('[data-competitor]').hover(function () {
     $(this).addClass("cursor");
     $(this).addClass("select_row");
 });
-
 $('[data-competitor]').mouseleave(function () {
     $(this).removeClass("cursor");
     $(this).removeClass("select_row");
 });
-
 $('[data-results]').keydown(function () {
     var key = event.which || event.keyCode;
     if (key === 13 || key === 40 || key === 38) {
@@ -243,7 +258,6 @@ $('[data-results]').keydown(function () {
             }
             return i;
         };
-
         fn_up = function (elements, start) {
             for (var i = start; i > 0; i--) {
                 var element = elements[i];
@@ -257,7 +271,6 @@ $('[data-results]').keydown(function () {
             return i;
         };
         var current = event.target || event.srcElement;
-
         for (var i = 0; i < this.elements.length; i++) {
             if (this.elements[i] === current) {
                 break;
@@ -277,17 +290,14 @@ $('[data-results]').keydown(function () {
         }
     }
 });
-
-
-$("#submit_results").focus(function(){
+$("#submit_results").focus(function () {
     var attempts_count = $('[data-event-attempts]').data('event-attempts');
     for (var i = 1; i <= attempts_count; i++) {
         var attempt = $('#attempt_' + i).val();
         $('#attempt_' + i).val(public_result(result_format(attempt)));
     }
 });
-
-$("#submit_results").focusout(function(){
+$("#submit_results").focusout(function () {
     var attempts_count = $('[data-event-attempts]').data('event-attempts');
     for (var i = 1; i <= attempts_count; i++) {
         var attempt = $('#attempt_' + i).val();

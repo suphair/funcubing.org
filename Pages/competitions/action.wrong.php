@@ -3,5 +3,3 @@
     <i class="far fa-hand-paper"></i> 
     Wrong action [<?= $action ?>] for [<?= request(1) ?>/<?= request(2) ?>] 
 </h3>
-
-

@@ -67,7 +67,7 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'FCID' and unofficial\
         $FCID = strip_tags($registration['FCID']) ?? FALSE;
         if (strlen($FCID) == 2) {
             $FCID = db::row("select CONCAT(left(max(FCID),2),right(CONCAT('00',right(max(FCID),2)+1),2))  FCID from `unofficial_competitors` where FCID like '$FCID%'")->FCID ?? "{$FCID}01";
+            db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
         }
-        db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
     }
 }

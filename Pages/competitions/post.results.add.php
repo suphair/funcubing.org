@@ -3,6 +3,10 @@
 $competitor_round = db::escape(filter_input(INPUT_POST, 'competitor_round', FILTER_VALIDATE_INT));
 
 $attempts = db::escape(filter_input(INPUT_POST, 'attempts'));
+$exclude = db::escape(filter_input(INPUT_POST, 'exclude'));
+if (!$exclude or!is_numeric($exclude)) {
+    $exclude = 0;
+}
 $code = db::escape(request(3));
 $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -24,6 +28,10 @@ if ($code and is_numeric($round)) {
                 $attempt = str_replace(['0:0', '0:'], '', $attempt);
 
                 if (is_numeric($a) and in_array($a, range(1, 5))) {
+                    if (preg_match("/$a/", $exclude)) {
+                        $attempt = "($attempt)";
+                    }
+
                     db::exec("UPDATE unofficial_competitors_result "
                             . "SET attempt$a = '$attempt'"
                             . "WHERE competitor_round = $competitor_round");

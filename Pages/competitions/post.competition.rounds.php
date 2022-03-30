@@ -20,7 +20,7 @@ foreach ($events as $event_dict => $event) {
     }
 
     $eventId = db::row("SELECT id FROM unofficial_events WHERE competition = $comp->id AND event_dict = $event_dict ")->id ?? FALSE;
-    
+
     if ($eventId) {
         if ($events_dict[$event_dict]->special) {
             db::exec("UPDATE unofficial_events SET result_dict = $result, name = '$name' WHERE id = $eventId");
@@ -33,11 +33,11 @@ foreach ($events as $event_dict => $event) {
             }
         }
 
-        $rounds=db::row("SELECT max(round) rounds FROM unofficial_events_rounds WHERE event = $eventId")->rounds ?? 0;        
-        
+        $rounds = db::row("SELECT max(round) rounds FROM unofficial_events_rounds WHERE event = $eventId")->rounds ?? 0;
+
         if (!$rounds) {
             db::exec("DELETE IGNORE FROM unofficial_events WHERE id = $eventId");
-        }else{
+        } else {
             db::exec("UPDATE unofficial_events SET format_dict = $formatId, rounds = $rounds WHERE id = $eventId");
         }
     }

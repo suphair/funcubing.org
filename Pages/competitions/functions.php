@@ -57,6 +57,7 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.show, 
         unofficial_competitions.competitor,
         coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret,
+        unofficial_competitions.secret secret_base,
         unofficial_competitions.secretRegistration,
         unofficial_competitions.shareRegistration,
         unofficial_competitions.name,
@@ -64,6 +65,7 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.date,
         unofficial_competitions.date_to,
         unofficial_competitions.ranked,
+        unofficial_competitions.rankedID,
         unofficial_competitions.rankedJudgeSenior,
         unofficial_competitions.rankedJudgeJunior,
         rankedJudgeSenior.name rankedJudgeSenior_name,
@@ -152,6 +154,7 @@ function getEvents($id) {
 
     return \db::rows("SELECT "
                     . " unofficial_events_dict.id event_dict,"
+                    . " unofficial_events_dict.code code,"
                     . " COALESCE(unofficial_events.name, unofficial_events_dict.name) name,"
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict,"
                     . " unofficial_events.id, "
@@ -379,6 +382,7 @@ function getEventByEventround($eventround) {
                     . " unofficial_events.rounds, "
                     . " unofficial_formats_dict.attempts, "
                     . " unofficial_formats_dict.format, "
+                    . " unofficial_formats_dict.cutoff_attempts, "
                     . " unofficial_events_dict.code, "
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final, "
                     . " COALESCE(unofficial_events.name, unofficial_events_dict.name) name,"
@@ -450,7 +454,7 @@ function getCompetitorsByEventdictRound($comp_id, $event_dict, $round) {
 }
 
 function attempt_to_int($attempt) {
-    if (in_array($attempt, ['dnf', 'dns', '-cutoff', '0', false])) {
+    if (in_array(strtolower($attempt), ['dnf', 'dns', '-cutoff', '0', false])) {
         return 999999;
     } else {
         $value = substr("00000" . str_replace(['.', ':'], '', $attempt), -6, 6);

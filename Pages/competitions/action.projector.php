@@ -1,0 +1,131 @@
+<?php
+$event_code = request(3);
+$round = request(4);
+
+$events = [];
+$event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
+$event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
+$event_round = $comp_data->event_rounds[$event] ?? false;
+if (!$event_round) {
+    die("Round not found [$event_code] [$round]");
+}
+$competitors = unofficial\getCompetitorsByEventround($event_round->id);
+$event = unofficial\getEventByEventround($event_round->id);
+?>
+<head>
+    <title><?= $event->name ?> / <?= $round ?></title>
+    <link rel="icon" href="<?= PageLocal() ?>Pages/competitions/projector.png" >
+    <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
+    <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?4" type="text/css"/>
+    <link rel="stylesheet" href="action.projector.css" type="text/css"/>
+</head>
+<style>
+    table.projector, table.fixed{
+        width: 100%;
+        font-size:1.5rem;
+    }
+    table.projector tr td{
+        height: 67px;
+        text-align:right;
+    }
+
+    table#table_data td{
+        font-family: Roboto, Helvetica, Arial, sans-serif;
+        padding:16px;
+        border-bottom:1px solid var(--light_gray);
+        vertical-align: inherit;
+    }
+
+    table#table_data thead td{
+        font-weight: bold;
+        background-color: rgb(220,220,220);
+    }
+
+    body{
+        margin:0px;
+        width: auto;
+        overflow: hidden;
+    }
+
+    .next_round{
+        background-color: var(--light_green);
+    }
+
+    .podium{
+        background-color: var(--light_green);
+    }
+
+    .back{
+        background-color: var(--light_gray);
+        color:var(--black);
+        padding:7px;
+        font-size:20px;
+    }
+</style>
+<table weight='100%' id ='table_data' class='projector'>
+    <thead>
+        <tr id='tr_data'>
+            <td  weight='5%' id='place_data' weight='10'>
+                <button class='back' onclick="window.location.href = location.protocol + '//' + location.host + location.pathname;">X</button>
+            </td>
+            <td  weight='20%' id='event_data' style='text-align:left'>
+                <?= $event->name; ?> - <?= $rounds_dict[$round == $event_round->rounds ? 0 : $round]->fullName ?>
+            </td> 
+            <?php for ($i = 1; $i <= $event->attempts; $i++) { ?>
+                <td  weight='10%' id='attempt_<?= $i ?>_data'>
+                    <?= $i ?>
+                </td>
+            <?php } ?>
+            <?php if ($event->format == 'average') { ?>
+                <td  weight='10%' id='average_data' style='font-size: 1.3rem'>
+                    Average
+                </td>
+            <?php } ?>
+            <?php if ($event->format == 'mean') { ?>
+                <td  weight='10%' id='mean_data'  style='font-size: 1.3rem'>
+                    Mean
+                </td>
+            <?php } ?>
+            <td  weight='10%' id='best_data'  style='font-size: 1.3rem'>
+                Best
+            </td>            
+    </thead>
+    <tbody>
+        <?php
+        $c = 0;
+        foreach ($competitors as $competitor) {
+            $c++;
+            ?>
+            <tr data-row_competitor='<?= $c ?>'>
+                <td class=" <?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
+                    <?= $competitor->place; ?>
+                </td>
+                <td  style='text-align:left'>
+                    <?= $competitor->name; ?>
+                </td>
+                <?php for ($i = 1; $i <= $event->attempts; $i++) { ?>
+                    <td>
+                        <?= str_replace(['(', ')'], '', $competitor->{"attempt$i"}); ?>
+                    </td>
+                <?php } ?>
+                <?php if ($event->format == 'average') { ?>
+                    <td class='table_new_bold'>
+                        <?= $competitor->average; ?>
+                    </td>
+                <?php } ?>
+                <?php if ($event->format == 'mean') { ?>
+                    <td class=' table_new_bold'>
+                        <?= $competitor->mean; ?>
+                    </td>
+                <?php } ?>
+                <td class=' <?= $event->format == 'best' ? 'table_new_bold' : '' ?>'>
+                    <?= $competitor->best; ?>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
+<script>
+<?php include 'action.projector.js' ?>
+</script>

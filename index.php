@@ -24,7 +24,9 @@ $request_0 = request();
 $request_1 = request(1);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
 
+
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'POST') {
+
     $file = "Pages/$request_0/post.php";
     if (file_exists($file)) {
         include $file;
@@ -145,7 +147,10 @@ $title = [
                 GitHub</a>
             <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
                 <i class="fas fa-laptop-code"></i> 
-                Konstantin Solovev (Константин Соловьёв) <i class="flag-icon flag-icon-ru"></i></a>
+                Konstantin Solovev (Константин Соловьёв)</a>
+            <i class="fas fa-user-circle"></i>
+            <?= get_count_visitors_day(); ?> visitors today 
         </p>
     </body>
 </html>
+<?php count_visitors(); ?>

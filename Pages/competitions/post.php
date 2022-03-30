@@ -11,6 +11,10 @@ if ($secret) {
         if (filter_input(INPUT_GET, 'registration_delete') !== NULL) {
             include 'post.registration.delete.php';
         }
+    } else {
+        if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and unofficial\admin()) {
+            include 'post.competition.ranking_competitor.php';
+        }
     }
 }
 
@@ -19,9 +23,10 @@ if ($me->wca_id ?? FALSE) {
     if (filter_input(INPUT_GET, 'create') !== NULL) {
         include 'post.competition.create.php';
     }
-
     $secret = db::escape(request(1));
+
     if ($secret) {
+
         $comp = unofficial\getCompetition($secret, $me);
         if ($comp->my ?? FALSE) {
 
@@ -35,6 +40,10 @@ if ($me->wca_id ?? FALSE) {
 
             if (filter_input(INPUT_GET, 'organizer_remove') !== NULL) {
                 include 'post.competition.organizer.remove.php';
+            }
+
+            if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and unofficial\admin()) {
+                include 'post.competition.rankings_settings.php';
             }
 
             if (filter_input(INPUT_GET, 'rounds') !== NULL) {
@@ -101,9 +110,12 @@ if ($me->wca_id ?? FALSE) {
     }
 }
 
-$return_refer=filter_input(INPUT_POST, 'return_refer');
-if($return_refer){
-   header("Location: ".$_SERVER['HTTP_REFERER']);
-   exit();
-}
-    
+$return_refer = filter_input(INPUT_POST, 'return_refer');
+
+if ($return_refer == 'true') {
+    header("Location: " . $_SERVER['HTTP_REFERER']);
+    exit();
+} else {
+    header("Location: " . $return_refer);
+    exit();
+} 

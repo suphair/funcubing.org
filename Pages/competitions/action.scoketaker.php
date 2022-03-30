@@ -22,7 +22,11 @@ $formats = array_unique([$event->format, 'best']);
     <script src="<?= PageLocal() ?>jQuery/tooltip.js?2" type="text/javascript"></script>
     <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?4" type="text/css"/>
 </head>
-<h2> <?= $event->name ?> / <?= $round->fullName ?> / <?= $comp->name ?> </h2>
+<h2> 
+
+    <button style="background-color: var(--light_gray)" onclick="window.location.href = location.protocol + '//' + location.host + location.pathname;">X</button>
+
+    <?= $event->name ?> / <?= $round->fullName ?> / <?= $comp->name ?> </h2>
 
 <?php
 $competitors = unofficial\getCompetitorsByEventround($round_id);
@@ -55,9 +59,10 @@ usort($competitors_sort, function($a, $b) {
                     <input hidden data-save-competitor-id name='competitor_round'>
 
                     <input hidden data-results-attempts name='attempts'><br>
+                    <input hidden data-results-exclude name='exclude'><br>
                     <?php foreach (range(1, $event->attempts) as $i) { ?>
                         <font style='font-family:monospace;font-size:40px'><?= $i ?> </font>
-                        <input autocomplete=off data-results-attempt="<?= $i ?>" name='attempt[<?= $i ?>]' id='attempt_<?= $i ?>' style="width:200px; font-family:monospace;text-align:right;font-size:40px"><br>
+                        <input data-oversecond autocomplete=off data-results-attempt="<?= $i ?>" name='attempt[<?= $i ?>]' id='attempt_<?= $i ?>' style="width:200px; font-family:monospace;text-align:right;font-size:40px"><br>
                     <?php } ?>
                     &nbsp;<button hidden style='font-size:40px' id='submit_results'>
                         <i class="fas fa-save"></i>
@@ -80,7 +85,7 @@ usort($competitors_sort, function($a, $b) {
                 <thead>
                     <tr>
                         <td>
-                            Card
+                            Place
                         </td>
                         <td>
                             Name
@@ -90,9 +95,6 @@ usort($competitors_sort, function($a, $b) {
                                 <?= $i ?>
                             </td>
                         <?php } ?>
-                        <td>
-                            #
-                        </td>
                         <?php foreach ($formats as $format) { ?>  
                             <td class="attempt">
                                 <?= ucfirst($format) ?>
@@ -108,16 +110,15 @@ usort($competitors_sort, function($a, $b) {
                             data-competitor-name='<?= $competitor->card . ' ' . $competitor->name ?>' 
                             data-competitor-attempts='<?= $competitor->attempts ?>'
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
-                                data-competitor-attempt<?= $i ?>='<?= $competitor->{"attempt$i"} ?>'
+                                data-competitor-attempt<?= $i ?>='<?= str_replace(['(', ')'], '', $competitor->{"attempt$i"}) ?>'
                             <?php } ?>>
-                            <td><?= $competitor->card ?> </td>
+                            <td><?= $competitor->place ?></td>
                             <td><?= $competitor->name ?></td>
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
                                 <td class="attempt">
                                     <?= $competitor->{"attempt$i"} ?>
                                 </td>
                             <?php } ?>
-                            <td><?= $competitor->place ?></td>
                             <?php foreach ($formats as $format) { ?>  
                                 <td class="attempt table_new_bold">
                                     <?= $competitor->$format ?>
@@ -127,15 +128,7 @@ usort($competitors_sort, function($a, $b) {
                     <?php } ?>
                 </tbody>
             </table>
-            <form method="POST" action="?results_delete"
-                  onsubmit="return confirm('Remove ALL registrations without results?') && confirm('Remove ALL registrations without results? You are sure? ')">
-                <button class="delete">
-                    <i class="fas fa-trash"></i>
-                    Remove registrations without results
-                </button>
-                <input hidden value="true" name='return_refer'>
-            </form>
-            <br><a target="_blank" href="?action=result">Print the results</a>
+            <br><a target="_blank" href="?action=result">Print results</a>
         </td>
     </tr>
 </table>

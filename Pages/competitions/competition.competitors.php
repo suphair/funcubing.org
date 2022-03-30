@@ -101,7 +101,7 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
                     }
                 }
                 ?>
-                <?= ($results_count AND $results_count != $competitors_count) ?: FALSE ?><br><?= $competitors_count ?: FALSE ?>
+                <?= $results_count ? ($results_count != $competitors_count ? $results_count : '+') : '' ?><br><?= $competitors_count ?: FALSE ?>
             </td>
         <?php } ?>
     </tr>

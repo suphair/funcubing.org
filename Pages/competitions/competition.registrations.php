@@ -116,7 +116,7 @@
                             <?php if ($comp->ranked) { ?>
                                 <td>
                                     <?php if (unofficial\admin()) { ?>
-                                        <input name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID ?>'>
+                                        <input pattern="[A-Z][A-Z]" maxlength="2" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= substr($competitor->FCID, 0, 2) ?>'>
                                         <?php if (!empty($competitor->FCID_candidates)) { ?>
                                             {<?= implode(",", $competitor->FCID_candidates) ?>} 
                                         <?php } ?>
@@ -159,15 +159,17 @@
             <?php } ?>
 
         </form>
-        <form action="?competitors_delete" method="POST"
-              onsubmit="return confirm('Delete all competitors and registrations without results?')">   
-            <div align='right'>
-                <button class="delete"> 
-                    <i class="fas fa-trash"></i>
-                    Delete all competitors and registrations without results
-                </button>
-            </div>
-        </form>
+        <?php if (!$comp->ranked) { ?>
+            <form action="?competitors_delete" method="POST"
+                  onsubmit="return confirm('Delete all competitors and registrations without results?')">   
+                <div align='right'>
+                    <button class="delete"> 
+                        <i class="fas fa-trash"></i>
+                        Delete all competitors and registrations without results
+                    </button>
+                </div>
+            </form>
+        <?php } ?>
     </div>
 <?php } ?>
 <?php

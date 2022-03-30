@@ -21,7 +21,7 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
     <tbody>
         <?php foreach ($competitors as $competitor) { ?>
             <tr>
-                <td class=" table_new_center<?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
+                <td class=" table_new_center <?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
                     <?= $competitor->place ?> 
                 </td>
                 <td >
@@ -38,15 +38,25 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                         <?= $competitor->name ?>
                     <?php } ?>
                 </td>
-                <?php foreach (range(1, $event->attempts) as $i) { ?>
+                <?php
+                $attempt_prev = false;
+                foreach (range(1, $event->attempts) as $i) {
+                    $attempt = strtoupper(str_replace("dns", "", $competitor->{"attempt$i"}));
+                    ?>
                     <td class="<?= $i == $event->attempts ? 'border-right-solid' : '' ?> attempt">
-                        <?= strtoupper(str_replace("dns", "", $competitor->{"attempt$i"})) ?>
+                        <?= $attempt ?>
+                        <?php if ($event->cutoff and $i == $event->cutoff_attempts + 1 and $attempt_prev and!$attempt) { ?>
+                            <i class="fas fa-cut"></i>
+                        <?php } ?>
                     </td>
-                <?php } ?>
+                    <?php
+                    $attempt_prev = $attempt;
+                }
+                ?>
 
                 <?php
                 foreach ($formats as $format) {
-                    $record = in_array($competitor->competitor_round, $record_attempts[$format] ?? []);
+                    $record = in_array($competitor->competitor_round, $record_attempts[str_replace('mean', 'average', $format)] ?? []);
                     ?>
                     <td class="<?= $record ? 'record' : 'attempt' ?>">
                         <b>

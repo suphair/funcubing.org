@@ -20,7 +20,8 @@ function getRankedRatings() {
         unofficial_competitors_result.attempt3,
         unofficial_competitors_result.attempt4,
         unofficial_competitors_result.attempt5,
-        unofficial_competitors_round.id round_id
+        unofficial_competitors_round.id round_id,
+        unofficial_events_rounds.round round
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -55,8 +56,9 @@ function getRankedRatings() {
         unofficial_competitors.FCID FCID,
         unofficial_events_dict.id event_id,
         unofficial_competitors_result.best result,
-        unofficial_competitors_result.order,
-        unofficial_competitors_round.id round_id
+        cast(replace(replace(best,'.',''),':','') as UNSIGNED) as 'order',
+        unofficial_competitors_round.id round_id,
+        unofficial_events_rounds.round round
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -108,17 +110,33 @@ function getRankedRatings() {
     $result_history = [];
     $result_record_competition = [];
     $result_record_attempt = [];
+    $orders = [];
 
-    foreach ($average as $row) {
-        if (!isset($result_history[$row->event_id]['average'][$row->date])) {
+    $history_average = $average;
+    usort($history_average, function($a, $b) {
+        return
+        $a->date == $b->date ? $a->order > $b->order : $a->date > $b->date;
+    });
+    $history_best = $best;
+    usort($history_best, function($a, $b) {
+        return
+        $a->date == $b->date ? $a->order > $b->order : $a->date > $b->date;
+    });
+
+    foreach ($history_average as $row) {
+        if (!isset($result_history[$row->event_id]['average'][$row->date])
+                and $row->order < ($orders[$row->event_id]['average'] ?? 99999)) {
+            $orders[$row->event_id]['average'] = $row->order;
             $result_history[$row->event_id]['average'][$row->date] = $row;
             $row->type = 'average';
             $result_record_competition[$row->competition_id][$row->event_id][] = $row;
             $result_record_attempt['best'][] = $row->round_id;
         }
     }
-    foreach ($best as $row) {
-        if (!isset($result_history[$row->event_id]['best'][$row->date])) {
+    foreach ($history_best as $row) {
+        if (!isset($result_history[$row->event_id]['best'][$row->date])
+                and $row->order < ($orders[$row->event_id]['best'] ?? 99999)) {
+            $orders[$row->event_id]['best'] = $row->order;
             $result_history[$row->event_id]['best'][$row->date] = $row;
             $row->type = 'best';
             $result_record_competition[$row->competition_id][$row->event_id][] = $row;
@@ -184,6 +202,7 @@ function getCompetitorRankings($competitor_fcid) {
         return false;
     }
     return \db::row("SELECT "
+                    . " unofficial_competitors.ID, "
                     . " unofficial_competitors.name, "
                     . " unofficial_competitors.FCID "
                     . " FROM unofficial_competitors"
@@ -275,4 +294,10 @@ function getRankedJudges() {
     ";
 
     return \db::rows($sql);
+}
+
+function existsCompetitionEvent($competition_id, $event_id) {
+    return \db::rows("SELECT 1 "
+                    . " FROM unofficial_events"
+                    . " WHERE competition = $competition_id and event_dict = $event_id");
 }
