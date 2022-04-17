@@ -1,3 +1,8 @@
+var format_result = $('[data-event-result]').data('event-result');
+var is_time = (format_result === 'time');
+var is_amount_asc = (format_result === 'amount_asc');
+var is_amount_desc = (format_result === 'amount_desc');
+
 $('[data-competitor-chosen]').change(function () {
     var val = $(this).val().toString();
     click_competitor($('[data-competitor-id=' + val + ']'));
@@ -72,7 +77,6 @@ $('[data-results]').submit(function () {
             best = centisecond;
             best_i = i;
         }
-
         if (centisecond > 0) {
             complete++;
             sum += centisecond;
@@ -108,6 +112,15 @@ $('[data-results]').submit(function () {
         mean = Math.round((sum) / 3, 2);
     }
 
+    if (is_amount_desc) {
+        var t = best;
+        var t_i = best_i;
+        best = worst;
+        best_i = worst_i;
+        worst = t;
+        worst_i = t_i;
+    }
+
     var exclude = 0;
     if (attempts_count === 5 && empty === 0) {
         if (complete === 5) {
@@ -129,24 +142,48 @@ $('[data-results]').submit(function () {
         $('[data-results-attempts]').val('');
     }
 
-    $('[data-results-attempts-best]').val(public_result(result_format_enter(best)));
-    $('[data-results-attempts-average]').val(public_result(result_format_enter(average)));
-    $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
+
+    if (is_time) {
+        $('[data-results-attempts-best]').val(public_result(result_format_enter(best)));
+        $('[data-results-attempts-average]').val(public_result(result_format_enter(average)));
+        $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
+    } else {
+        $('[data-results-attempts-best]').val(result_format_amount(best));
+        $('[data-results-attempts-average]').val(result_format_amount(average));
+        $('[data-results-attempts-mean]').val(result_format_amount(mean));
+    }
+
     var competitor = $('[data-results]').data('result-competitor-id');
     $('[data-save-competitor-id]').val(competitor);
     var average;
-    average = $('[data-results-attempts-average]').html();
-    $('#attempt_average').val(average);
-    var mean;
-    mean = $('[data-results-attempts-mean]').html();
-    $('#attempt_mean').val(mean);
     var best;
+    var mean;
+    average = $('[data-results-attempts-average]').html();
+    mean = $('[data-results-attempts-mean]').html();
     best = $('[data-results-attempts-best]').html();
+    $('#attempt_mean').val(mean);
+    $('#attempt_average').val(average);
     $('#attempt_best').val(best);
 });
 
 function result_format(value) {
-    return result_format_enter(input_to_centisecond(value));
+    if (is_time) {
+        return result_format_enter(input_to_centisecond(value));
+    } else {
+        return result_format_amount(value);
+    }
+}
+
+function result_format_amount(val) {
+    val = val.toString();
+    if (val === '') {
+        return  '';
+    } else if (val.slice(-1) == 'd' || val.slice(-1) == 'D' || val.slice(-1) == 'f' || val.slice(-1) == 'F') {
+        return 'DNF';
+    } else if (val.slice(-1) == 's' || val.slice(-1) == 'S') {
+        return  'DNS';
+    }
+    return val.replace(/[^+\d]/g, '');
 }
 
 function input_to_centisecond(val) {
@@ -303,5 +340,6 @@ $("#submit_results").focusout(function () {
         var attempt = $('#attempt_' + i).val();
         $('#attempt_' + i).val(result_format(attempt));
     }
-});
+}
+);
 

@@ -1,16 +1,14 @@
 <?php
 $event_code = request(3);
 $round = request(4);
-
-$events = [];
 $event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
 $event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
 $event_round = $comp_data->event_rounds[$event] ?? false;
 if (!$event_round) {
     die("Round not found [$event_code] [$round]");
 }
-$competitors = unofficial\getCompetitorsByEventround($event_round->id);
 $event = unofficial\getEventByEventround($event_round->id);
+$competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
 ?>
 <head>
     <title><?= $event->name ?> / <?= $round ?></title>
@@ -18,7 +16,6 @@ $event = unofficial\getEventByEventround($event_round->id);
     <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
     <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?4" type="text/css"/>
-    <link rel="stylesheet" href="action.projector.css" type="text/css"/>
 </head>
 <style>
     table.projector, table.fixed{

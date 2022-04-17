@@ -1,4 +1,4 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?1" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?4" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
@@ -62,7 +62,7 @@ if ($secret == 'competitor') {
                 $include = 'competition.index.php';
                 break;
             case false:
-                $section = 'events';
+                $section = 'info';
             case 'competitors':
             case 'records':
             case 'events':

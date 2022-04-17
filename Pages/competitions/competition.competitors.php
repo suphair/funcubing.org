@@ -2,6 +2,13 @@
     <i title='Competitors' class="fas fa-users"></i>
     Competitors
 </h2>
+<?php if ($comp->my or $comp->organizer) { ?>
+    <p>
+        <a href="?action=certificates">Download certificates</a>  ▪
+        <a target="_blank" href="?action=cards&blank">Blank cards</a> ▪
+        <a target="_blank" href="?action=export">Export results</a>
+    </p>
+<?php } ?>
 <table class="table_new">
     <thead>
         <tr>
@@ -9,6 +16,12 @@
                 Competitor
             </td>
             <?php
+            $round_next_exists = false;
+            foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
+                if ($event_round->round > 1) {
+                    $round_next_exists = true;
+                }
+            }
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                 $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
                 ?>
@@ -27,13 +40,28 @@
                 </td>
             <?php } ?>
         </tr>
+        <tr <?= !$round_next_exists ? 'hidden' : '' ?>>
+            <td>
+                <i class="fas fa-caret-square-right"></i> Advance next round
+            </td>
+            <?php
+            foreach ($comp_data->event_rounds as $event_round) {
+                $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
+                ?>
+                <td align='center' style="padding:0px" class="<?= ($event_round->round == $rounds) ? 'border_right' : '' ?>">
+                    <?php if ($event_round->round != $rounds) { ?>
+                        <?= $event_round->next_round_value ?><?= $event_round->next_round_procent ? '%' : '' ?>
+                    <?php } ?> 
+                </td>
+            <?php } ?>
+        </tr> 
     </thead>
 </tbody>
 <?php
 $c = 0;
 foreach ($comp_data->competitors as $competitor_id => $competitor) {
     if (sizeof($comp_data->competitors[$competitor_id]->events) > 0) {
-        if ($c++ == 15) {
+        if ($c++ == 20) {
             $c = 0;
             ?>
             <tr>
@@ -63,14 +91,15 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
             </td>
             <?php
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
-                $result = unofficial\getCompetitorsByEventround($event_round_id)[$competitor_id] ?? FALSE;
+                $event = unofficial\getEventByEventround($event_round_id);
+                $result = unofficial\getCompetitorsByEventround($event_round_id,$event)[$competitor_id] ?? FALSE;
                 $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
                 ?>
                 <td align="center" class="<?= ($event_round->round == $rounds) ? 'border_right' : '' ?>" >
                     <?php if ($result) { ?>
                         <?php if ($result->place ?? FALSE) { ?>
-                            <font align="center" class="<?= $result->podium ? 'podium' : '' ?> <?= $result->next_round ? 'next_round' : '' ?>">
-                            <?= $result->place ?>
+                            <font align="center" class="<?= $result->podium ? 'podium table_new_bold' : '' ?>">
+                            <?= $result->place ?><?= $result->next_round?'&bull;':'' ?><?= $result->podium?'*':'' ?>
                             </font>
                         <?php } else { ?>
                             <i style='color:var(--light_gray)' class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
@@ -101,7 +130,21 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
                     }
                 }
                 ?>
-                <?= $results_count ? ($results_count != $competitors_count ? $results_count : '+') : '' ?><br><?= $competitors_count ?: FALSE ?>
+                <?php if ($results_count) { ?>
+                    <?php if ($results_count != $competitors_count) { ?>
+                        <?= $results_count ?>
+                    <?php } else { ?>
+                        <?php if ($event_round->round == $rounds) { ?>
+                            <i style='color:var(--green)' class="fas fa-flag-checkered"></i>
+                        <?php } else { ?>
+                            <i style='color:var(--green)' class="fas fa-arrow-alt-circle-right"></i>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } else { ?>
+                    <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                <?php } ?>
+                <br>
+                <?= $competitors_count ?: '&nbsp'; ?>
             </td>
         <?php } ?>
     </tr>

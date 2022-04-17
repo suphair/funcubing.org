@@ -12,8 +12,6 @@
         Setting
     </h2>
     <form method="POST" action="?setting">
-        Name 
-        <input required type="text" name="name" value="<?= $comp->name ?>" />
         <p>
             <input <?= $comp->show ? 'checked' : '' ?> type="radio" name="show" value="1">
             <i class="fas fa-eye"></i>
@@ -28,17 +26,44 @@
             </input>
             : сompetitions are only visible via the link (for your testing or fun)
         </p>
-        Details 
-        <input type="text" name="details" value="<?= $comp->details ?>" />
-        <br>
-        Date            
-        <input required  style="width:140px" type="text" id="datepicker_from" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
-        -
-        <input  style="width:140px" type="text" id="datepicker_to" name="date_to" value="<?= ($comp->date_to ?? false) ? date('d.m.Y', strtotime($comp->date_to)) : false ?>">
-        <br>
-        Website
-        <input type="url" placeholder="https://example.com" pattern="http[s]?://.*" name="website" value="<?= $comp->website ?>">
-        <br>
+        <table class="table_info">
+            <tr>
+                <td>Name</td> 
+                <td><input required style="width:500px" type="text" name="name" value="<?= $comp->name ?>" /></td>
+            </tr>
+            <tr>
+                <td>
+                    Details
+                </td>
+                <td>
+                    <textarea name="details" style="width:500px; height:100px; " ><?= htmlspecialchars($comp->details) ?></textarea>
+                    support Markdown
+                </td>
+            </tr>
+            <tr>
+                <td>Logo</td>
+                <td>
+                    <?php if ($comp->logo) { ?>
+                        <img src="<?= $comp->logo ?>" width="50px"><br>
+                    <?php } ?>
+                    <input style="width:500px" type="url" name="logo" placeholder="Link to the picture" pattern="http[s]?://.*" value="<?= htmlspecialchars($comp->logo) ?>" /></td>
+            </tr>
+            <tr>
+                <td>Date</td>            
+                <td>
+                    <input required  style="width:140px" type="text" id="datepicker_from" name="date" value="<?= date('d.m.Y', strtotime($comp->date)) ?>">
+                    -
+                    <input  style="width:140px" type="text" id="datepicker_to" name="date_to" value="<?= ($comp->date_to ?? false) ? date('d.m.Y', strtotime($comp->date_to)) : false ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>Website</td>
+                <td>
+                    <input style="width:500px" type="url" placeholder="https://example.com" pattern="http[s]?://.*" name="website" value="<?= $comp->website ?>">
+                    <?= unofficial\getFavicon($comp->website, false) ?>
+                </td>
+            </tr>
+        </table>
         <input type="checkbox" <?= $comp->secretRegistration ? 'checked' : ''; ?> name="registration">
         <i class="fas fa-user-plus"></i> Open self-registration (competitors can register themselves)
         <?php
@@ -145,7 +170,7 @@ if ($comp_data->competition->events) {
                         <td>
                             Format
                         </td>
-                        <td>
+                        <td hidden data-event-comment>
                             Comment on competitor card
                         </td>
                         <td>
@@ -154,6 +179,10 @@ if ($comp_data->competition->events) {
                         <td>
                             Time limit<br>
                             (check if cumulative)
+                        </td>
+                        <td>
+                            Next round<br>
+                            (check if %)
                         </td>
                     </tr>
                 </thead>
@@ -164,6 +193,8 @@ if ($comp_data->competition->events) {
                             $cutoff = $eventsRounds[$event->id][$round]->cutoff;
                             $time_limit = $eventsRounds[$event->id][$round]->time_limit;
                             $cumulative = $eventsRounds[$event->id][$round]->cumulative;
+                            $nextRoundValue = $eventsRounds[$event->id][$round]->next_round_value;
+                            $nextRoundProcent = $eventsRounds[$event->id][$round]->next_round_procent;
                             $format_dict = $formats_dict[$event->format_dict];
                             ?>
                             <tr>
@@ -185,7 +216,7 @@ if ($comp_data->competition->events) {
                                     <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
                                     <?= $format_dict->name ?>
                                 </td>
-                                <td align="left">
+                                <td align="left" hidden data-event-comment>
                                     <?php $comment = $eventsRounds[$event->id][$round]->comment; ?>
                                     <input style="width: 200px"  name="comments[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $comment ?>">
                                     <?= $comment ? '<i class="fas fa-comment-dots"></i>' : '' ?>
@@ -204,8 +235,16 @@ if ($comp_data->competition->events) {
                                     <?= ($time_limit and $cumulative) ? '<i class="fas fa-plus-circle"></i>' : '' ?>
                                 </td>
                                 <td>
+                                    <?php
+                                    if ($round != $event->rounds) {
+                                        ?>
+                                        <input type="number" name="next_round_value[<?= $event->event_dict ?>][<?= $round ?>]" required min="1" max="100" value="<?= $nextRoundValue ?>" style="width: 50px"></input>
+                                        <input type="checkbox" name="next_round_procent[<?= $event->event_dict ?>][<?= $round ?>]" <?= $nextRoundProcent ? 'checked' : '' ?>></input>
+                                    <?php } ?>
+                                </td>
+                                <td>
                                     <a target="_blank" href="<?= PageIndex() ?>competitions/<?= $comp->secret ?>/event/<?= $events_dict[$event->event_dict]->code ?>/<?= $round ?>?action=cards&blank">
-                                        Competitor card example
+                                        Example card
                                     </a>
                                 </td>
                             </tr>    
@@ -231,7 +270,7 @@ if ($comp_data->competition->events) {
         <table class='table_new'>
             <thead>
                 <tr>
-                    <td class="table_new_center" colspan='<?= sizeof($rounds_dict) + 1 ?>'>Rounds</td>
+                    <td class="table_new_center" colspan='<?= sizeof($rounds_dict) ?>'>Rounds</td>
                     <td class="table_new_center" colspan='2'>Event</td>
                     <td class="table_new_center" colspan='<?= sizeof($formats_dict) ?>'>Format</td>
                     <td class="table_new_center" colspan='2'>Result</td>
@@ -253,7 +292,7 @@ if ($comp_data->competition->events) {
                     <?php } ?>
 
                     <?php foreach ($results_dict as $resultId => $result_dict) { ?>
-                        <td><?= $result_dict->name ?></td>
+                        <td><?= $result_dict->smallName ?></td>
                     <?php } ?>
                 </tr>
             </thead>

@@ -45,7 +45,7 @@ foreach ($events_dict as $event) {
                     <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
                 </td>
                 <td align="center">
-                    <?= $competition->competitors ?>
+                    <?= $competition->competitors + 0 ?>
                 </td>      
                 <td>
                     <?php if ($competition->upcoming) { ?>

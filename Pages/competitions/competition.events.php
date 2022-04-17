@@ -33,6 +33,9 @@ if ($comp_data->competition->events) {
                 <td>
                     <i class="fas fa-stop-circle"></i> Time limit
                 </td>
+                <td>
+                    <i class="fas fa-caret-square-right"></i> Advance to next round
+                </td>
                 <?php if ($comp->ranked) { ?>
                     <td class="attempt">
                         <i class="fas fa-trophy"></i> Average
@@ -41,7 +44,7 @@ if ($comp_data->competition->events) {
                         <i class="fas fa-trophy"></i> Single
                     </td>
                 <?php } ?>
-                <td>
+                <td hidden data-event-comment>
                     <i class="fas fa-comment-dots"></i> Comment
                 </td>
             </tr>
@@ -107,7 +110,15 @@ if ($comp_data->competition->events) {
                             <?php $cumulative = $eventsRounds[$event->id][$round]->cumulative; ?>
                             <?= $time_limit ? ($time_limit . ($cumulative ? ' cumulative' : '')) : '' ?>
                         </td>
-
+                        <td class="attempt">
+                            <?php if ($event->rounds > $round) { ?>
+                                <?php if ($event_round->next_round_procent) { ?>
+                                    Top <?= $event_round->next_round_value ?>%
+                                <?php } else { ?>
+                                    Top <?= $event_round->next_round_value ?>
+                                <?php } ?>   
+                            <?php } ?>   
+                        </td>
                         <?php if ($comp->ranked) { ?>
                             <td class="attempt">
                                 <?php
@@ -136,8 +147,8 @@ if ($comp_data->competition->events) {
                                 ?>
                             </td>
                         <?php } ?>
-                        <td align="left">
-                            <?= $eventsRounds[$event->id][$round]->comment; ?>
+                        <td align="left" hidden data-event-comment>
+                            <?= $event_round->comment; ?>
                         </td>
                     </tr>    
                 <?php } ?>   

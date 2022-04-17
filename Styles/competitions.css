@@ -12,12 +12,11 @@
 }
 
 .next_round{
-    color: var(--green);
+    color: darkgreen;
 }
 
 .podium{
-    color: var(--red);
-    font-weight:bold;
+    color: darkgreen;
 }
 
 .record{

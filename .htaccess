@@ -22,12 +22,13 @@ RewriteCond %{REQUEST_URI} \.ini$
 RewriteRule \.ini$ - [R=404]
  
 RewriteCond %{REQUEST_URI} !^/index\.php
-RewriteCond %{REQUEST_FILENAME} !-l
+#RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/Classes/errors/
 RewriteRule .* index.php [L,QSA]
 
-php_value session.gc_maxlifetime 7200
+php_value session.gc_maxlifetime 172800
 php_value session.cookie_lifetime 0
 php_value session.save_path Sessions
 php_value display_errors on

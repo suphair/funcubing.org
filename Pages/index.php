@@ -29,9 +29,6 @@ $sectionData = (object) [
     <div class="shadow" <?php if ($section->stop ?? false) { ?> style="background-color: lightgrey" <?php } ?> >
         <table <?php if ($section->stop ?? false) { ?> style="background-color: lightgrey" <?php } ?> >
             <tr>
-                <td> 
-                    <img class='logo' src='<?= PageIndex() ?>Pages/<?= $name ?>/icon.png'> 
-                </td>
                 <td>
                     <h1>
                         <?php if ($section->stop ?? false) { ?>

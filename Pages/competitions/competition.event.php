@@ -23,19 +23,23 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
             <tr>
                 <td class=" table_new_center <?= $competitor->podium ? 'podium' : '' ?> <?= $competitor->next_round ? 'next_round' : '' ?>">
                     <?= $competitor->place ?> 
+                    <?= $competitor->next_round ? '&bull;' : '' ?>
+                    <?= $competitor->podium ? '*' : '' ?>
                 </td>
-                <td >
+                <td>
                     <?php
                     if ($comp->ranked) {
                         $link = $competitor->FCID ? "rankings/competitor/$competitor->FCID" : false;
                     } else {
                         $link = "competitor/$competitor->id";
                     }
-                    if ($link) {
-                        ?>
-                        <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $competitor->name ?></a>
-                    <?php } else { ?>
+                    ?>
+                    <?php if ($link) { ?>
+                        <a href="<?= PageIndex() . "competitions/$link" ?>">
+                        <?php } ?>
                         <?= $competitor->name ?>
+                        <?php if ($link) { ?>
+                        </a>
                     <?php } ?>
                 </td>
                 <?php

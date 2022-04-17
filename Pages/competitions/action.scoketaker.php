@@ -21,6 +21,7 @@ $formats = array_unique([$event->format, 'best']);
     <script src="<?= PageLocal() ?>jQuery/chosen_v1/chosen.jquery.js?2" type="text/javascript"></script>
     <script src="<?= PageLocal() ?>jQuery/tooltip.js?2" type="text/javascript"></script>
     <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?4" type="text/css"/>
+    <link rel="stylesheet" href="<?= PageIndex() ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
 </head>
 <h2> 
 
@@ -29,8 +30,7 @@ $formats = array_unique([$event->format, 'best']);
     <?= $event->name ?> / <?= $round->fullName ?> / <?= $comp->name ?> </h2>
 
 <?php
-$competitors = unofficial\getCompetitorsByEventround($round_id);
-
+$competitors = unofficial\getCompetitorsByEventround($round_id, $event);
 $competitors_sort = $competitors;
 usort($competitors_sort, function($a, $b) {
     return $a->card > $b->card;
@@ -39,8 +39,9 @@ usort($competitors_sort, function($a, $b) {
 <table width="100%">
     <tr>
         <td width="10%" valign='top'>
-            <span data-event-attempts='<?= $event->attempts ?>' data-event-result='<?= $event->result ?>'></span>
-            <?php if (sizeof($competitors)) { ?>
+            <span data-event-attempts='<?= $event->attempts ?>'
+                  data-event-result='<?= $event->result_code ?>'></span>
+                  <?php if (sizeof($competitors)) { ?>
                 <form 
                     action='?results_add' method='POST' data-results data-results-competitor-id> 
                     <select
@@ -64,8 +65,8 @@ usort($competitors_sort, function($a, $b) {
                         <font style='font-family:monospace;font-size:40px'><?= $i ?> </font>
                         <input data-oversecond autocomplete=off data-results-attempt="<?= $i ?>" name='attempt[<?= $i ?>]' id='attempt_<?= $i ?>' style="width:200px; font-family:monospace;text-align:right;font-size:40px"><br>
                     <?php } ?>
-                    &nbsp;<button hidden style='font-size:40px' id='submit_results'>
-                        <i class="fas fa-save"></i>
+                    <font style='font-family:monospace;font-size:40px'>&nbsp; </font>
+                    <button hidden style='font-size:40px' id='submit_results'>
                         Submit
                     </button>
                     <?php foreach ($formats as $f => $format) { ?>
@@ -73,8 +74,18 @@ usort($competitors_sort, function($a, $b) {
                     <?php } ?>
                 </form>
             <?php } ?>
-
+            <br>
             <p><?= $event->comment ?></p>
+            <p>
+                <?php if ($event->result_code == 'amount_asc') { ?>
+                    <i class="fas fa-sort-numeric-down"></i>
+                    <?= $event->result_name ?><?php } ?>
+                <?php if ($event->result_code == 'amount_desc') { ?>
+                    <i class="fas fa-sort-numeric-down-alt"></i>
+                    <?= $event->result_name ?>
+                <?php } ?>
+
+            </p>
             <p><?= $event->cutoff ? ('<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?></p>
             <p><?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?></p>
             <p><?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?></p>
@@ -103,7 +114,21 @@ usort($competitors_sort, function($a, $b) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($competitors as $competitor) { ?>
+                    <?php
+                    $competitor_without_results = 0;
+                    $next_round_competitors = 0;
+                    $next_round_register = 0;
+                    foreach ($competitors as $competitor) {
+                        if ($competitor->next_round_register) {
+                            $next_round_register++;
+                        }
+                        if (!$competitor->place) {
+                            $competitor_without_results++;
+                        }
+                        if ($competitor->next_round and!$event->final) {
+                            $next_round_competitors++;
+                        }
+                        ?>
                         <tr class='competitor_result' 
                             data-competitor 
                             data-competitor-id='<?= $competitor->competitor_round ?>' 
@@ -112,8 +137,14 @@ usort($competitors_sort, function($a, $b) {
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
                                 data-competitor-attempt<?= $i ?>='<?= str_replace(['(', ')'], '', $competitor->{"attempt$i"}) ?>'
                             <?php } ?>>
-                            <td><?= $competitor->place ?></td>
-                            <td><?= $competitor->name ?></td>
+                            <td style="color:<?= ($competitor->next_round or $competitor->podium) ? 'darkgreen' : '' ?>">
+                                <?= $competitor->place ?>
+                                <?= $competitor->next_round ? '&bull;' : '' ?>
+                                <?= $competitor->podium ? '*' : '' ?>
+                            </td>
+                            <td>
+                                <?= $competitor->name ?>
+                            </td>
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
                                 <td class="attempt">
                                     <?= $competitor->{"attempt$i"} ?>
@@ -128,10 +159,42 @@ usort($competitors_sort, function($a, $b) {
                     <?php } ?>
                 </tbody>
             </table>
-            <br><a target="_blank" href="?action=result">Print results</a>
+            <br>
+            <table width="100%">
+                <tr>
+                    <td width="50%" valign="top">
+                        <a target="_blank" href="?action=result">Print results</a>
+                    </td>
+                    <td width="50%" align="right">
+                        <?php $complete = false; ?>
+                        <?php
+                        if ($competitor_without_results) {
+                            $complete = true;
+                            ?>
+                            <p>Remove <?= $competitor_without_results ?> competitors without results</p>
+                        <?php } ?>
+                        <?php
+                        if ($next_round_competitors and!$next_round_register) {
+                            $complete = true;
+                            ?>
+                            <p>Register <?= $next_round_competitors ?> participants for the next round</p>
+                        <?php } ?>
+                        <?php if ($complete) { ?>
+                            <form action='?close_round' method='POST'>
+                                <button>
+                                    <i class="fas fa-check-double"></i> Close this round
+                                </button>
+                            </form>
+                        <?php } elseif (sizeof($competitors)) { ?>
+                            <i class="fas fa-check-double"></i> This round is closed
+                        <?php } ?>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 </table>
 <script>
-<?php include 'action.scoketaker.js' ?>
+<?php include 'action.scoketaker.js'
+?>
 </script>

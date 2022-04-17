@@ -86,12 +86,12 @@ if ($me->wca_id ?? FALSE) {
                 include 'post.result.delete.php';
             }
 
-            if (filter_input(INPUT_GET, 'results_delete') !== NULL) {
-                include 'post.results.delete.php';
-            }
-
             if (filter_input(INPUT_GET, 'results_add') !== NULL) {
                 include 'post.results.add.php';
+            }
+            
+            if (filter_input(INPUT_GET, 'close_round') !== NULL) {
+                include 'post.results.close_round.php';
             }
 
             if (filter_input(INPUT_GET, 'resuts_registrations_add_first') !== NULL) {
@@ -110,12 +110,13 @@ if ($me->wca_id ?? FALSE) {
     }
 }
 
+
 $return_refer = filter_input(INPUT_POST, 'return_refer');
 
 if ($return_refer == 'true') {
     header("Location: " . $_SERVER['HTTP_REFERER']);
     exit();
-} else {
+} elseif ($return_refer) {
     header("Location: " . $return_refer);
     exit();
 } 

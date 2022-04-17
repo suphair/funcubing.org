@@ -66,7 +66,7 @@ usort($competitors_holder_records, function($a, $b) {
         ?>
     </tbody>
 </table>
-
+<hr>
 <h2>
     <i title='Competitors' class="fas fa-users"></i>
     Competitors (<?= count($competitors) ?>)

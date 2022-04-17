@@ -8,17 +8,30 @@ if ($event_round_this) {
         $round = 1;
     }
     $event_round_this = $comp_data->rounds[$event_dict][$round]->round->id ?? null;
-    $event = unofficial\getEventByEventround($event_round_this);
-    $competitors = unofficial\getCompetitorsByEventround($event_round_this);
-    $formats = array_unique([$event->format, 'best']);
     if ($event_round_this == null) {
         include 'competition.event.wrong.php';
         $section = false;
+    } else {
+        $event = unofficial\getEventByEventround($event_round_this);
+        $competitors = unofficial\getCompetitorsByEventround($event_round_this, $event);
+        $next_round_competitors = 0;
+        if (!$event->final) {
+            foreach ($competitors as $competitor) {
+                if ($competitor->next_round) {
+                    $next_round_competitors++;
+                }
+            }
+        }
+        $formats = array_unique([$event->format, 'best']);
     }
 }
 $records = unofficial\getRankedRecordbyCompetition($comp->id);
 ?>
-<h1>
+<h1 style="background-color: rgba(0,0,0,.1);padding:5px;margin-bottom: 10px; margin-top: 10px; border-radius: 10px;">
+    <a 
+        class="<?= $section == 'info' ? 'select' : '' ?>"
+        href="<?= PageIndex() . "competitions/$secret" ?>"
+        ><i title="General info" class="fas fa-info-circle"></i></a>
     <a 
         class="<?= $section == 'events' ? 'select' : '' ?>"
         href="<?= PageIndex() . "competitions/$secret/events" ?>"
@@ -41,40 +54,22 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
            ><i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i></a>
        <?php } ?>
 </h1>   
-
-<div class="shadow2" >
-    <?php
-    if ($section == 'events') {
-        include 'competition.events.php';
-    } elseif ($section == 'records') {
-        include 'competition.records.php';
-    } else {
-        if ($comp->my or $comp->organizer) {
-            ?>
-            <p>
-                <?php if (!$event_round_this) { ?>
-                    <a href="?action=certificates">Download certificates</a>  ▪
-                <?php } ?>
-                <?php if (sizeof($comp_data->competitors)) { ?>
-                    <a target="_blank" href="?action=cards">Print competitors cards</a> ▪
-                <?php } ?>     
-                <a target="_blank" href="?action=cards&blank">Print blank competitors cards</a> ▪
-                <a target="_blank" href="?action=export">Export results</a>
-                <?php if ($event_round_this) { ?>
-                    ▪ <a target="_blank" href="?action=export&format=txt">TXT results</a>
-                <?php } ?>
-            </p>
-            <?php
-        }
-        if (($comp->my or $comp->organizer) and $section == 'result') {
-            include 'competition.event.index.php';
-        } elseif ($event_round_this and ($comp->my or $comp->organizer) and $section == 'event_competitors') {
-            include 'competition.event.index.php';
-        } elseif ($section == 'event') {
-            include 'competition.event.index.php';
-        } elseif (!$event_round_this and $section == 'competitors') {
-            include 'competition.competitors.php';
-        }
+<?php
+if ($section == 'info') {
+    include 'competition.info.php';
+} elseif ($section == 'events') {
+    include 'competition.events.php';
+} elseif ($section == 'records') {
+    include 'competition.records.php';
+} else {
+    if (($comp->my or $comp->organizer) and $section == 'result') {
+        include 'competition.event.index.php';
+    } elseif ($event_round_this and ($comp->my or $comp->organizer) and $section == 'event_competitors') {
+        include 'competition.event.index.php';
+    } elseif ($section == 'event') {
+        include 'competition.event.index.php';
+    } elseif (!$event_round_this and $section == 'competitors') {
+        include 'competition.competitors.php';
     }
-    ?>
-</div>
+}
+?>

@@ -2,14 +2,15 @@
 session_start();
 ob_start();
 
-foreach (['Classes', 'Functions'] as $dir) {
+foreach (['Classes', 'Functions', 'API'] as $dir) {
     foreach (scandir($dir) as $file) {
-        if (strpos($file, ".php") !== FALSE) {
+        if (strpos($file, ".php") !== FALSE and $file != 'index.php') {
             require_once "$dir/$file";
         }
     }
 }
-
+//$mobile = (check_mobile_device() or $_SESSION['mobile'] ?? false);
+include_once 'vendor/autoload.php';
 config::init('Config');
 errors::register(config::isLocalhost());
 
@@ -23,6 +24,10 @@ wcaapi::setConnection(db::connection());
 $request_0 = request();
 $request_1 = request(1);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
+
+if ($request_0 == 'api') {
+    include('API/index.php');
+}
 
 
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'POST') {
@@ -57,7 +62,6 @@ if ($request_0 == 'template') {
     include('Pages/template/index.php');
 }
 
-
 $title = [
     'competitions' => 'Competitions',
     'goals' => 'Competition Goals',
@@ -78,7 +82,7 @@ $title = [
             <title>Fun Cubing</title>
             <link rel="icon" href="<?= PageLocal() ?>Pages/index.png" >
         <?php } ?>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?1" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
@@ -87,70 +91,67 @@ $title = [
         <script src="<?= PageLocal() ?>jQuery/tooltip.js?2" type="text/javascript"></script>
 
     </head>
-    <body>     
-        <table class="title">
-            <tbody><tr>
+    <body> 
+        <div class="wrapper">
+            <div class="content">
+                <table class="title">
+                    <tbody>
+                        <tr>
+                            <td class="header" width="50%" style="white-space: nowrap">
+                                <a href="<?= PageIndex() ?>">Fun Cubing</a>
+                                <?php if ($title) { ?>
+                                    &bull;   
+                                    <a href="<?= PageIndex() ?><?= $request_0 ?>"><?= $title ?></a>
+                                    <span hidden id="sub_navigation_separator">&bull;</span>
+                                    <span id="sub_navigation"></span>
+                                <?php } ?>
+                            </td>
+                            <td valign="center" align="right" width="100%">
+                                <?php include('Pages/competitor/block.index.php'); ?>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    <?php if ($title) { ?>
-                        <td class="header">
-                            <a href="<?= PageIndex() ?>">FC</a>    
-                        </td>
-                        <td class="logo">
-                            <img src="<?= PageIndex() ?>Pages/<?= $request_0 ?>/icon.png">  
-                        </td>
-                        <td class="header">
-                            <a href="<?= PageIndex() ?><?= $request_0 ?>">
-                                <?= $title ?>
-                            </a>
-                        </td>
-                    <?php } else { ?>
-                        <td class="logo">
-                            <img src="<?= PageIndex() ?>Pages/index.png">  
-                        </td>
-                        <td class="header">
-                            <a href="<?= PageIndex() ?>">Fun Cubing</a>    
-                        </td>
+                <?php
+                if (!$request_0) {
+                    include 'Pages/index.php';
+                } elseif (in_array($request_0, ['friends', 'goals', 'announcements'])) {
+                    ?>
+                    <h1 style="color: red">
+                        The <b><?= $title ?></b> section disabled until the WCA returns the events to Russia.
+                    </h1>
+                    <?php
+                } else {
+                    $file = "Pages/$request_0/index";
+                    if (file_exists("$file.php")) {
+                        include "$file.php";
+                    } else {
+                        ?>
+                        <div class='shadow2 error'>
+                            <i class='far fa-hand-paper'></i>
+                            <?= "Wrong page [$request_0]" ?>
+                        </div>
                     <?php } ?>
-                </tr>
-            </tbody>
-        </table>
-        <p style="padding:10px 0px">
-            <?php include('Pages/competitor/block.index.php'); ?>
-        </p>
-        <?php
-        if (!$request_0) {
-            include 'Pages/index.php';
-        } elseif (in_array($request_0, ['friends', 'goals', 'announcements'])) {
-            ?>
-            <h1 style="color: red">
-                The <b><?= $title ?></b> section disabled until the WCA returns the events to Russia.
-            </h1>
-            <?php
-        } else {
-            $file = "Pages/$request_0/index";
-            if (file_exists("$file.php")) {
-                include "$file.php";
-            } else {
-                ?>
-                <div class='shadow2 error'>
-                    <i class='far fa-hand-paper'></i>
-                    <?= "Wrong page [$request_0]" ?>
-                </div>
-            <?php } ?>
-        <?php } ?>
-        <p align='center'>
-            <a href="mailto:<?= config::get('Support', 'email') ?>?subject=funcubung.org">
-                <i class="far fa-envelope"></i>
-                <?= config::get('Support', 'email') ?></a>
-            <a target="_blank" href="https://github.com/suphair/funcubing.org">
-                <i class="fab fa-github"></i>
-                GitHub</a>
-            <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
-                <i class="fas fa-laptop-code"></i> 
-                Konstantin Solovev (Константин Соловьёв)</a>
-            <i class="fas fa-user-circle"></i>
-            <?= get_count_visitors_day(); ?> visitors today 
-        </p>
+                <?php } ?>
+            </div>
+            <div class="footer">
+                <hr>
+                <p align='center'>
+                    <a href="mailto:<?= config::get('Support', 'email') ?>?subject=funcubung.org">
+                        <i class="far fa-envelope"></i>
+                        <?= config::get('Support', 'email') ?></a>
+                    <a target="_blank" href="https://github.com/suphair/funcubing.org">
+                        <i class="fab fa-github"></i>
+                        GitHub</a>
+                    <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
+                        <i class="fas fa-laptop-code"></i> 
+                        Konstantin Solovev (Константин Соловьёв)</a>
+                    <i class="fas fa-user-circle"></i>
+                    <?= get_count_visitors_day(); ?> visitors today 
+                </p>
+            </div>
+        </div>
     </body>
 </html>
 <?php count_visitors(); ?>

@@ -1,5 +1,4 @@
 <?php
-
 $name = strip_tags(db::escape(filter_input(INPUT_POST, 'name', FILTER_DEFAULT)));
 $code = db::escape(request(3));
 $round = db::escape(request(4));

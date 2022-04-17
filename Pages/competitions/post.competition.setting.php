@@ -3,6 +3,7 @@
 $website = db::escape(filter_input(INPUT_POST, 'website'));
 $name = db::escape(filter_input(INPUT_POST, 'name'));
 $details = db::escape(filter_input(INPUT_POST, 'details'));
+$logo = db::escape(filter_input(INPUT_POST, 'logo'));
 $secret = db::escape(filter_input(INPUT_POST, 'secret'));
 $date = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date'))));
 $date_to = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date_to'))));
@@ -18,6 +19,7 @@ db::exec("  UPDATE  unofficial_competitions
             SET 
                 name = '$name',
                 details = '$details',
+                logo = '$logo',
                 date = '$date',
                 date_to = " . ($date_to == '1970-01-01' ? 'null' : "'$date_to'" ) . ",
                 secretRegistration = $secretRegistration,

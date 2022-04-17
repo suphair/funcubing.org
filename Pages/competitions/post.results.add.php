@@ -12,13 +12,15 @@ $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 if ($code and is_numeric($round)) {
-    if (db::row("SELECT 1 FROM unofficial_competitors_round"
+    $competitors_round = db::row("SELECT unofficial_results_dict.code FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
+                    . " JOIN unofficial_results_dict on (unofficial_results_dict.id = unofficial_events.result_dict OR unofficial_results_dict.id = unofficial_events_dict.result_dict)"
                     . " WHERE unofficial_competitors_round.id = $competitor_round "
                     . " AND unofficial_events_rounds.round = $round"
-                    . " AND unofficial_events_dict.code = '$code'")) {
+                    . " AND unofficial_events_dict.code = '$code'");
+    if ($competitors_round) {
 
         if (!$attempts) {
             db::exec("DELETE FROM unofficial_competitors_result WHERE competitor_round = $competitor_round");
@@ -46,11 +48,17 @@ if ($code and is_numeric($round)) {
             db::exec("UPDATE unofficial_competitors_result "
                     . "SET attempts = '$attempts'"
                     . "WHERE competitor_round = $competitor_round");
-
             $order = 0;
-            $order += (10000000 * unofficial\attempt_to_int($attempt_arr['average'] ?? 0));
-            $order += (10000000 * unofficial\attempt_to_int($attempt_arr['mean'] ?? 0));
-            $order += unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
+            if ($competitors_round->code == 'amount_desc') {
+                $order += 10000000 * 999999;
+                $order += (10000000 * (999999 - unofficial\attempt_to_int($attempt_arr['average'] ?? 0)));
+                $order += (10000000 * (999999 - unofficial\attempt_to_int($attempt_arr['mean'] ?? 0)));
+                $order += 9999 - unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
+            } else {
+                $order += (10000000 * unofficial\attempt_to_int($attempt_arr['average'] ?? 0));
+                $order += (10000000 * unofficial\attempt_to_int($attempt_arr['mean'] ?? 0));
+                $order += unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
+            }
             db::exec("UPDATE unofficial_competitors_result "
                     . "SET `order` = '$order'"
                     . "WHERE competitor_round = $competitor_round");

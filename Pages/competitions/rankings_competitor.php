@@ -12,10 +12,10 @@ if (!$competitor) {
     <?php
     exit();
 }
+change_title($competitor->name);
 ?>
 <h1>
-    <i class="fas fa-user"></i> <?= $competitor->name ?>
-<?= $ranked_icon ?> <?= $competitor->FCID ?>
+    <i class="fas fa-user"></i> <?= $competitor->name ?> [<?= $competitor->FCID ?>]
 </h1> 
 
 <?php

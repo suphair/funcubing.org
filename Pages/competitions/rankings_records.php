@@ -57,7 +57,7 @@
         ?>
     </tbody>
 </table>
-
+<hr>
 <h2>
     <i class="fas fa-history"></i>
     History of records

@@ -9,5 +9,4 @@
 /Scripts/
 /Classes/mysqldumpClass.php
 /.well-known/
-refer.php
-study.php
+/vendor

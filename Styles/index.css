@@ -27,16 +27,16 @@ body div {
     padding: 10px;
 }
 
-.header a{
-    padding: 10px 20px 0 0;
-    font-size: 40px;
-    text-align: center;
-    font-variant: small-caps;
+.header{
+    font-size: 2em;
+}
+
+.header i{
+    font-size: 14px;
 }
 
 .logo img, img.logo{
     width: 40px;   
-    margin:10px 5px;
     padding: 0px 10px 0px 0px;
     vertical-align:top;
 }
@@ -52,7 +52,10 @@ table{
     margin-bottom:0px;
     background-color: var(--white);
 }
-
+table.title{
+    margin:0px;
+    width: 100%;
+}
 
 table.inner_border>tbody td{
     border-left:1px solid var(--base_color);
@@ -214,7 +217,7 @@ td.table_new_right{
 }
 
 
-td.table_new_bold{
+.table_new_bold{
     font-weight: bold;
 }
 
@@ -425,4 +428,33 @@ div.shadow_inline_current{
     height:50px !important;
     color:black !important;
     width:300px !important;
+}
+
+
+
+html,
+body {
+	height: 100%;
+        padding:0px;
+}
+.wrapper {
+	position: relative;
+	min-height: 100%;
+        margin:0px;
+        width: 100%;
+}
+.content {
+        margin:0px;
+        width: 100%;
+        margin-bottom: 15px;
+}
+.footer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+        padding:8px;
+        margin:0px;
+        margin-left: 30px;
+        height: 50px;
 }

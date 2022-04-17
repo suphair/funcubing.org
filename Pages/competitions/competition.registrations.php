@@ -115,10 +115,21 @@
                             <?php } ?>
                             <?php if ($comp->ranked) { ?>
                                 <td>
-                                    <?php if (unofficial\admin()) { ?>
-                                        <input pattern="[A-Z][A-Z]" maxlength="2" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= substr($competitor->FCID, 0, 2) ?>'>
-                                        <?php if (!empty($competitor->FCID_candidates)) { ?>
-                                            {<?= implode(",", $competitor->FCID_candidates) ?>} 
+                                    <?php
+                                    if (unofficial\admin()) {
+                                        $name1 = mb_substr(explode(' ', $competitor->name)[0] ?? false, 0, 1, "UTF-8");
+                                        $name2 = mb_substr(explode(' ', $competitor->name)[1] ?? false, 0, 1, "UTF-8");
+                                        $FCID_preinput = unofficial\rus_lat($name1) . unofficial\rus_lat($name2);
+                                        ?>
+                                        <?php if (sizeof($competitor->FCID_candidates) == 1) { ?>
+                                            <input readonly maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID_candidates[0] ?>'>
+                                        <?php } elseif ($competitor->FCID) { ?> 
+                                            <input readonly maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID ?>'>
+                                        <?php } else { ?>
+                                            <input maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $FCID_preinput ?>'>
+                                            <?php if (!empty($competitor->FCID_candidates)) { ?>
+                                                {<?= implode(",", $competitor->FCID_candidates) ?>} 
+                                            <?php } ?>
                                         <?php } ?>
                                     <?php } ?>
                                     <?= $competitor->FCID ? $competitor->FCID : '-' ?>
@@ -151,7 +162,7 @@
                 <i class="far fa-save"></i>
                 Save registrations
             </button>
-            <?php if (unofficial\admin()) { ?>
+            <?php if (unofficial\admin() and $comp->ranked) { ?>
                 <button name="button" value="FCID"> 
                     <i class="far fa-save"></i>
                     Save FC ID

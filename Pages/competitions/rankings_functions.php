@@ -181,9 +181,9 @@ function getRankedCompetitions($competitor_fcid = false) {
         competition_competitors.count competitors
     FROM unofficial_competitions
     JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
-    LEFT OUTER JOIN dict_competitors judgeSenior on judgeSenior.wcaid = unofficial_competitions.rankedJudgeSenior
-    LEFT OUTER JOIN dict_competitors judgeJunior on judgeJunior.wcaid = unofficial_competitions.rankedJudgeJunior
-    JOIN (select count(*) count, uc.competition
+    LEFT OUTER JOIN dict_competitors judgeSenior on judgeSenior.wcaid = unofficial_competitions.rankedJudgeSenior and unofficial_competitions.rankedJudgeSenior<>''
+    LEFT OUTER JOIN dict_competitors judgeJunior on judgeJunior.wcaid = unofficial_competitions.rankedJudgeJunior and unofficial_competitions.rankedJudgeJunior<>''
+    LEFT OUTER JOIN (select count(*) count, uc.competition
         FROM unofficial_competitors uc
         WHERE coalesce(uc.FCID,'')<>''
         GROUP BY uc.competition
@@ -300,4 +300,47 @@ function existsCompetitionEvent($competition_id, $event_id) {
     return \db::rows("SELECT 1 "
                     . " FROM unofficial_events"
                     . " WHERE competition = $competition_id and event_dict = $event_id");
+}
+
+function rus_lat($rus) {
+    $map = [
+        'А' => 'A',
+        'Б' => 'B',
+        'В' => 'V',
+        'Г' => 'G',
+        'Д' => 'D',
+        'Е' => 'E',
+        'Ё' => 'E',
+        'Ж' => 'Z',
+        'З' => 'Z',
+        'И' => 'I',
+        'Й' => 'I',
+        'К' => 'K',
+        'Л' => 'L',
+        'М' => 'M',
+        'Н' => 'N',
+        'О' => 'O',
+        'П' => 'P',
+        'Р' => 'R',
+        'С' => 'S',
+        'Т' => 'T',
+        'У' => 'U',
+        'Ф' => 'F',
+        'Х' => 'H',
+        'Ч' => 'C',
+        'Ц' => 'C',
+        'Ш' => 'S',
+        'Щ' => 'S',
+        'Ъ' => 'X',
+        'Ы' => 'I',
+        'Ъ' => 'X',
+        'Э' => 'E',
+        'Ю' => 'U',
+        'Я' => 'A'
+    ];
+
+    if (!$rus) {
+        return 'X';
+    }
+    return $map[strtoupper($rus)] ?? $rus;
 }
