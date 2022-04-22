@@ -76,16 +76,16 @@ $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
             <?php } ?>
             <?php if ($event->format == 'average') { ?>
                 <td  weight='10%' id='average_data' style='font-size: 1.3rem'>
-                    Average
+                    <?= t('Average', 'Среднее'); ?>
                 </td>
             <?php } ?>
             <?php if ($event->format == 'mean') { ?>
                 <td  weight='10%' id='mean_data'  style='font-size: 1.3rem'>
-                    Mean
+                    <?= t('Mean', 'Среднее'); ?>
                 </td>
             <?php } ?>
             <td  weight='10%' id='best_data'  style='font-size: 1.3rem'>
-                Best
+                <?= t('Best', 'Лучшая'); ?> 
             </td>            
     </thead>
     <tbody>

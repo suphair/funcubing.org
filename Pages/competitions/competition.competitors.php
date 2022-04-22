@@ -1,19 +1,20 @@
 <h2>
-    <i title='Competitors' class="fas fa-users"></i>
-    Competitors
+    <i class="fas fa-users"></i>
+    <?= t('Competitors', 'Участники') ?>
 </h2>
 <?php if ($comp->my or $comp->organizer) { ?>
     <p>
-        <a href="?action=certificates">Download certificates</a>  ▪
-        <a target="_blank" href="?action=cards&blank">Blank cards</a> ▪
-        <a target="_blank" href="?action=export">Export results</a>
+        <i class="fas fa-user-cog"></i> <a href="<?= PageIndex() . "competitions/$comp->secret/registrations" ?>"><?= t('Registrations', 'Регистрации') ?></a>
+        <i class="fas fa-users"></i> <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/registrations"><?= t('Export registrations', 'Экспорт регистраций') ?></a>
+        <i class="fas fa-list-alt"></i> <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/results"><?= t('Export results', 'Экспорт результатов') ?></a>
+        <i class="fas fa-certificate"></i> <a target="_blank" href="?action=certificates"><?= t('Competitors', 'Сертификаты') ?></a>
     </p>
 <?php } ?>
 <table class="table_new">
     <thead>
         <tr>
             <td>
-                Competitor
+                <?= t('Competitor', 'Имя') ?>
             </td>
             <?php
             $round_next_exists = false;
@@ -42,7 +43,7 @@
         </tr>
         <tr <?= !$round_next_exists ? 'hidden' : '' ?>>
             <td>
-                <i class="fas fa-caret-square-right"></i> Advance next round
+                <i class="fas fa-caret-square-right"></i> <?= t('Advance next round', 'Проходят дальше') ?>
             </td>
             <?php
             foreach ($comp_data->event_rounds as $event_round) {
@@ -92,14 +93,14 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
             <?php
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                 $event = unofficial\getEventByEventround($event_round_id);
-                $result = unofficial\getCompetitorsByEventround($event_round_id,$event)[$competitor_id] ?? FALSE;
+                $result = unofficial\getCompetitorsByEventround($event_round_id, $event)[$competitor_id] ?? FALSE;
                 $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
                 ?>
                 <td align="center" class="<?= ($event_round->round == $rounds) ? 'border_right' : '' ?>" >
                     <?php if ($result) { ?>
                         <?php if ($result->place ?? FALSE) { ?>
                             <font align="center" class="<?= $result->podium ? 'podium table_new_bold' : '' ?>">
-                            <?= $result->place ?><?= $result->next_round?'&bull;':'' ?><?= $result->podium?'*':'' ?>
+                            <?= $result->place ?><?= $result->next_round ? '&bull;' : '' ?><?= $result->podium ? '*' : '' ?>
                             </font>
                         <?php } else { ?>
                             <i style='color:var(--light_gray)' class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
@@ -114,7 +115,7 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
 <tfoot>
     <tr>
         <td>
-            Total <?= sizeof($comp_data->competitors) ?>
+            <?= t('Total', 'Всего') ?> <?= sizeof($comp_data->competitors) ?>
         </td>
         <?php
         foreach ($comp_data->event_rounds as $event_round_id => $event_round) {

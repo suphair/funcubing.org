@@ -1,19 +1,19 @@
 <?php $judges = unofficial\getRankedJudges(); ?>
 <h2>
     <i title='Competitors' class="fas fa-user-tie"></i>
-    Judges  (<?= count($judges) ?>)
+    <?= t('Judges', 'Судьи') ?> (<?= count($judges) ?>)
 </h2>
 <table class='table_new'>
     <thead>
         <tr>
             <td>
-                Name
+                <?= t('Name', 'Имя') ?>
             </td>
             <td>
-                Rank
+                <?= t('Rank', 'Звание') ?>
             </td>
             <td>
-                Competitions
+                <?= t('Competitions', 'Соревнования') ?>
             </td>
         </tr>    
     </thead>
@@ -24,7 +24,8 @@
                     <?= $judge->name ?>
                 </td>
                 <td>
-                    <?= $judge->is_senior?'Senior Judge':'Junior Judge' ?>
+                    <?= t($judge->is_senior ? 'Senior Judge' : 'Judge', $judge->is_senior ? 'Главный судья' : 'Судья' )
+                    ?>
                 </td>     
                 <td align="center">
                     <?= $judge->competitions ?>

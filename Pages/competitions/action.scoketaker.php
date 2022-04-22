@@ -46,7 +46,7 @@ usort($competitors_sort, function($a, $b) {
                     action='?results_add' method='POST' data-results data-results-competitor-id> 
                     <select
                         data-competitor-chosen
-                        data-placeholder="Choose a competitor"
+                        data-placeholder="<?= t('Choose a competitor', 'Выберите участника') ?>"
                         class="chosen-select" multiple>
                             <?php foreach ($competitors_sort as $competitor) { ?>
                             <option value="<?= $competitor->competitor_round ?>">
@@ -67,7 +67,7 @@ usort($competitors_sort, function($a, $b) {
                     <?php } ?>
                     <font style='font-family:monospace;font-size:40px'>&nbsp; </font>
                     <button hidden style='font-size:40px' id='submit_results'>
-                        Submit
+                        <?= t('Submit', 'Подтвердить') ?>
                     </button>
                     <?php foreach ($formats as $f => $format) { ?>
                         <input hidden name='attempt[<?= $format ?>]' data-results-attempts-<?= $format ?>></span>
@@ -86,9 +86,9 @@ usort($competitors_sort, function($a, $b) {
                 <?php } ?>
 
             </p>
-            <p><?= $event->cutoff ? ('<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?></p>
-            <p><?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?></p>
-            <p><?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?></p>
+            <p><?= $event->cutoff ? ('<i class="fas fa-cut"></i> ' . t('Cutoff', 'Катофф') . ' ' . $event->cutoff ) : '' ?></p>
+            <p><?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit ) : '' ?></p>
+            <p><?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit . ' ' . t('cumulative', 'суммарно') ) : '' ?></p>
 
         </td>
         <td width="50%" valign='top'>
@@ -96,10 +96,10 @@ usort($competitors_sort, function($a, $b) {
                 <thead>
                     <tr>
                         <td>
-                            Place
+                            <?= t('Place', 'Место') ?>
                         </td>
                         <td>
-                            Name
+                            <?= t('Name', 'Имя') ?> 
                         </td>
                         <?php foreach (range(1, $event->attempts) as $i) { ?>
                             <td class="attempt">
@@ -108,7 +108,7 @@ usort($competitors_sort, function($a, $b) {
                         <?php } ?>
                         <?php foreach ($formats as $format) { ?>  
                             <td class="attempt">
-                                <?= ucfirst($format) ?>
+                                <?= t(ucfirst($format), str_replace(['mean', 'average', 'best'], ['Среднее', 'Среднее', 'Лучшая'], $format)) ?>
                             </td>  
                         <?php } ?>
                     </tr>
@@ -163,7 +163,7 @@ usort($competitors_sort, function($a, $b) {
             <table width="100%">
                 <tr>
                     <td width="50%" valign="top">
-                        <a target="_blank" href="?action=result">Print results</a>
+                        <a target="_blank" href="?action=result"><?= t('Print results', 'Печать результатов') ?></a>
                     </td>
                     <td width="50%" align="right">
                         <?php $complete = false; ?>
@@ -171,22 +171,22 @@ usort($competitors_sort, function($a, $b) {
                         if ($competitor_without_results) {
                             $complete = true;
                             ?>
-                            <p>Remove <?= $competitor_without_results ?> competitors without results</p>
+                            <p><?= t('Remove', 'Отменить') ?> <?= $competitor_without_results ?> <?= t('competitors without results', 'участников без результатов') ?></p>
                         <?php } ?>
                         <?php
                         if ($next_round_competitors and!$next_round_register) {
                             $complete = true;
                             ?>
-                            <p>Register <?= $next_round_competitors ?> participants for the next round</p>
+                            <p><?= t('Register', 'Зарегистровать') ?> <?= $next_round_competitors ?> <?= t('competitors for the next round', 'участников в следующий раунд') ?></p>
                         <?php } ?>
                         <?php if ($complete) { ?>
                             <form action='?close_round' method='POST'>
                                 <button>
-                                    <i class="fas fa-check-double"></i> Close this round
+                                    <i class="fas fa-check-double"></i> <?= t('Close this round', 'Завершить текущий раунд') ?>
                                 </button>
                             </form>
                         <?php } elseif (sizeof($competitors)) { ?>
-                            <i class="fas fa-check-double"></i> This round is closed
+                            <i class="fas fa-check-double"></i> <?= t('This round is closed', 'Текущий раунд завершен') ?>
                         <?php } ?>
                     </td>
                 </tr>

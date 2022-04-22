@@ -3,7 +3,6 @@
 namespace api;
 
 function competitions($competition_id = false) {
-
     $wca_id = get_me()['wca_id'] ?? false;
     $competitions = \db::rows("SELECT 
                     c.id,
@@ -11,6 +10,7 @@ function competitions($competition_id = false) {
                     coalesce(c.rankedID,c.secret) url,
                     c.website,
                     c.date start_date,
+                    coalesce(c.rankedID,c.secret) secret,
                     coalesce(c.date_to,c.date) end_date,
                     c.ranked is_ranked,
                     c.show is_publish,
@@ -29,8 +29,9 @@ function competitions($competition_id = false) {
     $competitions_key = [];
     foreach ($competitions as $competition) {
         $competition_key = new \stdClass();
+        $competition_key->id = $competition->secret;
         $competition_key->name = $competition->name;
-        $competition_key->url = PageIndex() . 'competitions/' . $competition->url;
+        $competition_key->url = 'https:' . PageIndex() . 'competitions/' . $competition->url;
         $competition_key->website = $competition->website;
         $competition_key->start_date = $competition->start_date;
         $competition_key->end_date = $competition->end_date;
@@ -58,6 +59,7 @@ function competitions($competition_id = false) {
                         'main' => false
             ];
         }
+
         $competitions_key[$competition->id] = $competition_key;
     }
     $organizers = \db::rows('SELECT 

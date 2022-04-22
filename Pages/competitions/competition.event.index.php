@@ -8,39 +8,35 @@
         <?php if ($section != 'event') { ?>
         </a>
     <?php } ?>
-    <?php if (false and($comp->my or $comp->organizer)) { ?>
-        <a  class="<?= $section == 'result' ? 'select' : '' ?>" style="padding-left:15px"  href="<?= PageIndex() . "competitions/$secret/result/$event->code/$event->round" ?> ">
-            <i class="far fa-keyboard"></i>Enter results
-        </a>
-    <?php } ?>
     <?php if ($comp->my or $comp->organizer) { ?>
         <i style="padding-left:15px" class="fas fa-list-alt"></i>
-        <a  href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=scoketaker" ?> ">Enter results</a>
+        <a  href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=scoketaker" ?> "><?= t('Enter results', 'Ввод результатов') ?></a>
     <?php } ?>
     <?php if ($comp->my or $comp->organizer) { ?>
         <i style="padding-left:15px" class="fas fa-user-cog"></i>
-        <a class="<?= $section == 'event_competitors' ? 'select' : '' ?>" href="<?= PageIndex() . "competitions/$secret/event_competitors/$event->code/$event->round" ?> ">Add/Remove Competitors</a>
+        <a class="<?= $section == 'event_competitors' ? 'select' : '' ?>" href="<?= PageIndex() . "competitions/$secret/event_competitors/$event->code/$event->round" ?> "><?= t('Add/Remove Competitors', 'Добавление/Удаление участников') ?></a>
     <?php } ?>    
 </h2> 
 <p>
-    <?= $event->comment ? ('&nbsp;<i class="fas fa-comment-dots"></i> Cutoff ' . $event->comment ) : '' ?>
-    <?= $event->cutoff ? ('&nbsp;<i class="fas fa-cut"></i> Cutoff ' . $event->cutoff ) : '' ?>
-    <?= ($event->time_limit and!$event->cumulative) ? ('&nbsp;<i class="fas fa-stop-circle"></i> Time limit ' . $event->time_limit ) : '' ?>
-    <?= ($event->time_limit and $event->cumulative) ? ('&nbsp;<i class="fas fa-plus-circle"></i> Time limit ' . $event->time_limit . ' cumulative' ) : '' ?>
+    <?= $event->comment ? ('&nbsp;<i class="fas fa-comment-dots"></i> ' . $event->comment ) : '' ?>
+    <?= $event->cutoff ? ('&nbsp;<i class="fas fa-cut"></i> ' . t('Cutoff', 'Катофф') . ' ' . $event->cutoff ) : '' ?>
+    <?= ($event->time_limit and!$event->cumulative) ? ('&nbsp;<i class="fas fa-stop-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit ) : '' ?>
+    <?= ($event->time_limit and $event->cumulative) ? ('&nbsp;<i class="fas fa-plus-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit . ' ' . t('in total', 'суммарно') ) : '' ?>
     <?php if (!$event->final and $event->next_round_value) { ?>
-        &nbsp;<i class="fas fa-caret-square-right"></i> Top <?= $event->next_round_value . ($event->next_round_procent ? '%' : '') ?> advance next round 
+        &nbsp;<i class="fas fa-caret-square-right"></i> <?= t('Top', 'Лучшие') ?> <?= $event->next_round_value . ($event->next_round_procent ? '%' : '') ?> <?= t('advance next round', 'проходят дальше') ?> 
         <?= $next_round_competitors ? " ($next_round_competitors)" : '' ?>
     <?php } ?>
-    &nbsp;<i class="fas fa-tv"></i> <a target='blank' href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=projector" ?>">Projector</a>
-    &nbsp;<i class="fas fa-print"></i> <a target="_blank" href="?action=result">Print results</a>
+</p>
+<br>
+<p><i class="fas fa-tv"></i> <a target='blank' href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=projector" ?>"><?= t('Projector', 'Проектор') ?></a>
+    &nbsp;<i class="fas fa-print"></i> <a target="_blank" href="?action=result"><?= t('Print results', 'Печать результатов') ?></a>
     <?php if ($comp->my or $comp->organizer) { ?>
         <?php if (sizeof($comp_data->competitors)) { ?>
-            ▪ <a target="_blank" href="?action=cards">Competitior cards</a>
+            ▪ <a target="_blank" href="?action=cards"><?= t('Competitior cards', 'Карточки участников') ?></a>
         <?php } ?>     
-        ▪ <a target="_blank" href="?action=cards&blank">Blank cards</a>
-        ▪ <a target="_blank" href="?action=export">Export results</a>
+        ▪ <a target="_blank" href="?action=cards&blank"><?= t('Blank cards', 'Пустые карточки') ?></a>
         <?php if ($event_round_this) { ?>
-            ▪ <a target="_blank" href="?action=export&format=txt">TXT results</a>
+            ▪ <a target="_blank" href="?action=export&format=txt"><?= t('TXT results', 'Результаты в TXT') ?></a>
         <?php } ?>
     <?php } ?>
 </p>

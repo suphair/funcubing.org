@@ -17,14 +17,14 @@ asort($organizers);
         ?>
         <div class="shadow2" >
             <?= $ranked_icon ?>
-            View in FunCubing Rankings: 
+            <?= t('View in Rankings', 'Посмотреть в рейтинге') ?>: 
             <?php foreach ($FCIDlist as $FCID) { ?>
                 <a href="<?= PageIndex() . "competitions/rankings/competitor/$FCID" ?>"><?= $FCID ?></a>
             <?php } ?>
         </div>
     <?php } ?>
     <?php if (sizeof($organizers) > 1) { ?>
-        <h3>Organizers:
+        <h3><?= t('Organizers', 'Организаторы') ?>:
             <?php foreach ($organizers as $organizer_id => $organizer_name) { ?>
                 <?php if ($organizer_id == $competitor->creator_id) { ?>
                     <i class="fas fa-check-square"></i>
@@ -40,7 +40,7 @@ asort($organizers);
     <?php } ?>
     <div class="shadow2" >
         <h2>
-            Competitions
+            <?= t('Competitions', 'Соревнования') ?> 
         </h2>
         <table class="table_new" data-showing>
             <tbody>    
@@ -63,8 +63,8 @@ asort($organizers);
                         </td>
                         <td>
                             <a target="_blank" href="<?= PageIndex() . "competitions/competitor/$competition->competitor_id?action=certificate" ?>">
-                                <i class="fas fa-print"></i>
-                                certificate
+                                <i class="fas fa-certificate"></i>
+                                <?= t('certificate', 'сертификат') ?> 
                             </a>
                         </td>       
                     </tr>
@@ -81,24 +81,24 @@ asort($organizers);
     }
     ?>
     <div class="shadow2" >
-        <h2>Results</h2>
+        <h2><?= t('Results', 'Результаты') ?></h2>
         <table class="table_new" data-showing>
             <thead>
                 <tr>
-                    <td>Place</td>
-                    <td>Event</td>
-                    <td>Date</td>
-                    <td>Competition</td>
+                    <td><?= t('Place', 'Место') ?></td>
+                    <td><?= t('Event, Round', 'Дисциплина, Раунд') ?></td>
+                    <td><?= t('Date', 'Дата') ?></td>
+                    <td><?= t('Competition', 'Соревнование') ?></td>
                     <?php foreach (range(1, 5) as $i) { ?>
                         <td class='attempt'>
                             <?= $i ?>
                         </td>
                     <?php } ?>
                     <td class="table_new_center">
-                        Average
+                        <?= t('Average', 'Среднее') ?>
                     </td>
                     <td class="table_new_center">
-                        Best
+                        <?= t('Best', 'Лучшая') ?>
                     </td>
                 <tr>
             </thead>
@@ -123,11 +123,7 @@ asort($organizers);
                             <td>
                                 <i class="<?= $result->event_image ?>"></i>
                                 <?= $result->event_name ?>, 
-                                <?php if ($result->final) { ?>
-                                    final
-                                <?php } else { ?>
-                                    round <?= $result->round ?>  
-                                <?php } ?>
+                                <?= $result->round_name ?>  
                             </td>
                             <td>
                                 <?= dateRange($result->competition_date); ?>

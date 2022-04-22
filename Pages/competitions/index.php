@@ -30,9 +30,7 @@ if ($secret == 'competitor') {
 
         switch ($section) {
             case 'registrations':
-                if (db::escape(request(3)) == 'api') {
-                    $include = 'competition.registrations.api.php';
-                } elseif ($comp->my or $comp->organizer) {
+                if ($comp->my or $comp->organizer) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';
@@ -79,3 +77,4 @@ if ($secret == 'competitor') {
 } else {
     include 'competitions.php';
 }
+?><br>

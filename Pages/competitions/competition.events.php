@@ -5,43 +5,43 @@ if ($comp_data->competition->events) {
     ?> 
     <h2>
         <i title='Events' class="fas fa-newspaper"></i>
-        Events
+        <?= t('Events', 'Дисциплины') ?>
     </h2>
     <table class="table_new">
         <thead>
             <tr>
                 <td align="center">
-                    <i title='Competitors' class="fas fa-users"></i>
+                    <i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i>
                 </td>
                 <td align="center">
-                    <i title='Results' class="fas fa-list-alt"></i>
+                    <i title='<?= t('Results', 'Результаты') ?>' class="fas fa-list-alt"></i>
                 </td>
                 <td></td>
                 <td></td>
                 <td>
-                    Event
+                    <?= t('Events', 'Дисцплины') ?>
                 </td>  
                 <td>
-                    Round
+                    <?= t('Round', 'Раунд') ?>
                 </td>  
                 <td>
-                    Format
+                    <?= t('Format', 'Формат') ?>
                 </td>
                 <td>
-                    <i class="fas fa-cut"></i> Cutoff
+                    <i class="fas fa-cut"></i> <?= t('Cutoff', 'Катофф') ?>
                 </td>
                 <td>
-                    <i class="fas fa-stop-circle"></i> Time limit
+                    <i class="fas fa-stop-circle"></i> <?= t('Time limit', 'Лимит по времени') ?>
                 </td>
                 <td>
-                    <i class="fas fa-caret-square-right"></i> Advance to next round
+                    <i class="fas fa-caret-square-right"></i> <?= t('Advance to next round', 'Проходят дальше') ?>
                 </td>
                 <?php if ($comp->ranked) { ?>
                     <td class="attempt">
-                        <i class="fas fa-trophy"></i> Average
+                        <i class="fas fa-trophy"></i> <?= t('Average', 'Среднее') ?>
                     </td>
                     <td class="attempt">
-                        <i class="fas fa-trophy"></i> Single
+                        <i class="fas fa-trophy"></i> <?= t('Single', 'Лучшая') ?>
                     </td>
                 <?php } ?>
                 <td hidden data-event-comment>
@@ -101,6 +101,25 @@ if ($comp_data->competition->events) {
                         <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
                             <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
                             <?= $format_dict->name ?>
+                            <?php
+                            if ($events_dict[$event->event_dict]->special) {
+                                $result_dict = $results_dict[$event->result_dict];
+                                if ($result_dict->code == 'amount_asc') {
+                                    ?>
+                                    <br>
+                                    <i class="fas fa-sort-numeric-down"></i>
+                                    <?= $result_dict->name ?>
+                                    <?php
+                                }
+                                if ($result_dict->code == 'amount_desc') {
+                                    ?>
+                                    <br>
+                                    <i class="fas fa-sort-numeric-down-alt"></i>
+                                    <?= $result_dict->name ?>
+                                    <?php
+                                }
+                            }
+                            ?>
                         </td>
                         <td class="attempt">
                             <?= $cutoff ?>
@@ -108,14 +127,14 @@ if ($comp_data->competition->events) {
                         <td class="attempt">
                             <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
                             <?php $cumulative = $eventsRounds[$event->id][$round]->cumulative; ?>
-                            <?= $time_limit ? ($time_limit . ($cumulative ? ' cumulative' : '')) : '' ?>
+                            <?= $time_limit ? ($time_limit . ($cumulative ? t(' in total', ' суммарно') : '')) : '' ?>
                         </td>
                         <td class="attempt">
                             <?php if ($event->rounds > $round) { ?>
                                 <?php if ($event_round->next_round_procent) { ?>
-                                    Top <?= $event_round->next_round_value ?>%
+                                    <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>%
                                 <?php } else { ?>
-                                    Top <?= $event_round->next_round_value ?>
+                                    <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>
                                 <?php } ?>   
                             <?php } ?>   
                         </td>

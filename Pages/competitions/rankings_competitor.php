@@ -21,22 +21,24 @@ change_title($competitor->name);
 <?php
 $results = unofficial\getResutsByCompetitorRankings($competitor->FCID);
 $results_events = [];
+$competitor_ids = [];
 foreach ($results as $result) {
+    $competitor_ids[$result->competition_id] = $result->competitor_id;
     $results_events[$result->event_dict][] = $result;
 }
 ?>
 <div>
     <h2>
-        Personal Records
+        <?= t('Personal Records', 'Текущие личные рекорды') ?>
     </h2>
     <table class="table_new" data-showing>
         <thead>
             <tr>
-                <td>Event</td>
-                <td>Rank</td>
-                <td>Single</td>
-                <td>Average</td>
-                <td>Rank</td>
+                <td><?= t('Event', 'Дисциплина') ?></td>
+                <td><?= t('Rank', 'Рейтинг') ?></td>
+                <td><?= t('Single', 'Лучшая') ?></td>
+                <td><?= t('Average', 'Среднее') ?></td>
+                <td><?= t('Rank', 'Рейтинг') ?></td>
             <tr>
         </thead>
         <tbody>
@@ -47,45 +49,45 @@ foreach ($results as $result) {
                 $top_rating_best = ($rating_best->order ?? false) <= 10;
                 $top_rating_average = ($rating_average->order ?? false) <= 10;
                 ?>
-    <?php if ($rating_best or $rating_average) { ?>
+                <?php if ($rating_best or $rating_average) { ?>
                     <tr>
                         <td>
                             <i class="<?= $event_att->image ?>"></i>
-        <?= $event_att->name ?>
+                            <?= $event_att->name ?>
                         </td>
                         <td align='center' class="<?= $top_rating_best ? 'podium' : '' ?>">
-        <?= $rating_best->order ?? false ?>
+                            <?= $rating_best->order ?? false ?>
                         </td>
                         <td align='center' > <?= $rating_best->result ?? false ?></td>
                         <td align='center' > <?= $rating_average->result ?? false ?></td>
                         <td align='center' class="<?= $top_rating_average ? 'podium' : '' ?>">
-        <?= $rating_average->order ?? false ?>
+                            <?= $rating_average->order ?? false ?>
                         </td>
                     </tr>
                 <?php } ?>
-<?php } ?>
+            <?php } ?>
 
         </tbody>
     </table>
 </div>
 
 <div>
-    <h2>Results</h2>
+    <h2><?= t('Results', 'Результаты') ?></h2>
     <table class="table_new" data-showing>
         <thead>
             <tr>
-                <td>Event</td>
-                <td>Competition</td>
-                <td>Round</td>
-                <td>Place</td>
+                <td><?= t('Event', 'Дисциплина') ?></td>
+                <td><?= t('Competition', 'Соревнование') ?></td>
+                <td><?= t('Round', 'Раунд') ?></td>
+                <td><?= t('Place', 'Место') ?></td>
                 <td class="attempt">
-                    Single
+                    <?= t('Single', 'Лучшая') ?>
                 </td>
                 <td class="attempt">
-                    Average
+                    <?= t('Average', 'Среднее') ?>
                 </td>
                 <td class="table_new_center" colspan="5">
-                    Solves
+                    <?= t('Solves', 'Сборки') ?>
                 </td>
             <tr>
         </thead>
@@ -99,34 +101,34 @@ foreach ($results as $result) {
                     <tr>
                         <td>
                             <i class="<?= $result->event_image ?>"></i>
-        <?= $result->event_name ?>
+                            <?= $result->event_name ?>
                         </td>
                         <td>
                             <a href="<?= PageIndex() . "competitions/$result->secret" ?>">
-        <?= $result->competition_name ?>
+                                <?= $result->competition_name ?>
                             </a> 
                         </td>
                         <td>
-        <?= $rounds_dict[$result->final ? 0 : $result->round]->smallName; ?>
+                            <?= $rounds_dict[$result->final ? 0 : $result->round]->smallName; ?>
                         </td>
                         <td align='center' class="<?= $result->podium ? 'podium' : '' ?>">
-        <?= $result->place ?> 
+                            <?= $result->place ?> 
                         </td>
                         <td class='attempt <?= $record_best ? 'record' : '' ?>' style="font-weight: bold">
-        <?= strtoupper($result->best); ?>
+                            <?= strtoupper($result->best); ?>
                         </td>
                         <td class='attempt <?= $record_average ? 'record' : '' ?>' style="font-weight: bold">
                             <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->average)); ?>
-                        <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean)); ?>
+                            <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean)); ?>
                         </td>
-                            <?php foreach (range(1, 5) as $i) { ?>
+                        <?php foreach (range(1, 5) as $i) { ?>
                             <td class='attempt'>
-                            <?= strtoupper(str_replace('dns', '', $result->{"attempt$i"})); ?>
+                                <?= strtoupper(str_replace('dns', '', $result->{"attempt$i"})); ?>
                             </td>
-                    <?php } ?>
+                        <?php } ?>
                     </tr>    
                 <?php } ?>
-<?php } ?>
+            <?php } ?>
         </tbody>
     </table>
 </div>
@@ -134,47 +136,49 @@ foreach ($results as $result) {
 <?php $competitions = unofficial\getRankedCompetitionsbyCompetitor($competitor->FCID); ?>
 <div>
     <h2>
-        Competitions
+        <?= t('Competitions', 'Соревнования') ?>
     </h2>
 
     <table class='table_new'>
         <thead>
             <tr>
                 <td>
-                    Competition
+                    <?= t('Competition', 'Наименование') ?>
                 </td>
                 <td>
-                    Senior Judge
+                    <?= t('Judge', 'Судья') ?>
                 </td>
                 <td>
-                    Judge
-                </td>
-                <td>
-                    Organizer
+                    <?= t('Organizer', 'Организатор') ?>
                 </td>
                 <td/>
                 <td>
-                    Date
+                    <?= t('Date', 'Дата') ?>
                 </td>
                 <td>
-                    Web site
+                    <?= t('Web site', 'Сайт') ?>
                 </td>
             </tr>    
         </thead>
         <tbody>
-<?php foreach ($competitions as $competition) { ?>
+            <?php foreach ($competitions as $competition) { ?>
                 <tr>   
                     <td>                    
                         <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
                     </td>
-                    <td>
-    <?= $competition->judgeSenior_name ?>
+                    <td><?php
+                        $judges = [];
+                        if ($competition->judgeSenior_name) {
+                            $judges[] = $competition->judgeSenior_name;
+                        }
+                        if ($competition->judgeJunior_name) {
+                            $judges[] = $competition->judgeJunior_name;
+                        }
+                        ?>
+                        <?= implode(', ', $judges); ?>
                     </td>      
                     <td>
-    <?= $competition->judgeJunior_name ?>
-                    </td>      
-                    <td>
-    <?= $competition->competitor_name ?>
+                        <?= $competition->competitor_name ?>
                     </td>      
                     <td>
                         <?php if ($competition->upcoming) { ?>
@@ -182,16 +186,22 @@ foreach ($results as $result) {
                         <?php } ?>
                         <?php if ($competition->run) { ?>
                             <i style='color:var(--green)' class="fas fa-running"></i>
-    <?php } ?>
+                        <?php } ?>
                     </td>
                     <td>
-    <?= dateRange($competition->date, $competition->date_to) ?>
+                        <?= dateRange($competition->date, $competition->date_to) ?>
                     </td>
                     <td>
-    <?php unofficial\getFavicon($competition->website) ?>
+                        <?php unofficial\getFavicon($competition->website) ?>
                     </td>
+                    <td>
+                        <a target="_blank" href="<?= PageIndex() . "competitions/competitor/{$competitor_ids[$competition->id]}?action=certificate" ?>">
+                            <i class="fas fa-certificate"></i>
+                            <?= t('certificate', 'сертификат') ?>
+                        </a>
+                    </td>     
                 </tr>
-<?php } ?>
+            <?php } ?>
         </tbody>
     </table> 
 </div>
@@ -199,7 +209,7 @@ foreach ($results as $result) {
 <?php if (unofficial\admin()) { ?>
     <form method="POST" action="?ranking_competitor">    
         Name <input required name="name" value="<?= $competitor->name ?>"><br>
-        FC ID<input required pattern="[A-Z][A-Z]" maxlength="2" name="FCID" value="<?= substr($competitor->FCID,0,2) ?>"><br>
+        FC ID<input required pattern="[A-Z][A-Z]" maxlength="2" name="FCID" value="<?= substr($competitor->FCID, 0, 2) ?>"><br>
         <input hidden name="current_name" value="<?= $competitor->name ?>">
         <input hidden name="current_FCID" value="<?= $competitor->FCID ?>">
         <input hidden name="current_ID" value="<?= $competitor->ID ?>">

@@ -8,13 +8,13 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
 <table class="table_new">
     <thead>
         <tr>
-            <td>Place</td>
-            <td>Competitor</td>
+            <td><?= t('Place', 'Место') ?></td>
+            <td><?= t('Competitor', 'Имя') ?></td>
             <?php foreach (range(1, $event->attempts) as $i) { ?>
                 <td class="attempt"><?= $i ?></td>
             <?php } ?>
-            <?php foreach ($formats as $format) { ?>
-                <td class="attempt"><?= ucfirst($format) ?></td>
+            <?php foreach ($formats as $format) {?>
+                <td class="attempt"><?= t(ucfirst($format), str_replace(['mean', 'average', 'best'], ['Среднее', 'Среднее', 'Лучшая'], $format)) ?></td>
             <?php } ?>
         <tr>
     </thead>

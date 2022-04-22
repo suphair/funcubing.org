@@ -11,6 +11,7 @@ use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 class markdown {
 
     static function convertToHtml($content) {
+        //$content = str_replace("\n", '<br>', $content);
         $environment = Environment::createCommonMarkEnvironment();
         $environment->addExtension(new HeadingPermalinkExtension());
         $environment->addExtension(new TableOfContentsExtension());
@@ -20,7 +21,7 @@ class markdown {
             'heading_permalink' => [
                 'html_class' => 'markdown-heading-permalink',
                 'min_heading_level' => 2,
-                'symbol'=>''
+                'symbol' => ''
             ]
         ]);
 
@@ -34,7 +35,7 @@ class markdown {
             ]
         ]);
 
-        $converter = new CommonMarkConverter([],$environment);
+        $converter = new CommonMarkConverter([], $environment);
 
         return $converter->convertToHtml($content);
     }

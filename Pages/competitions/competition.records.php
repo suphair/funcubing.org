@@ -1,15 +1,15 @@
 <h2>
     <i class="fas fa-trophy"></i> 
-    Updated FunCubing records</h2>
+    <?= t('Updated records', 'Обновлённые рекорды') ?></h2>
 <table class="table_new">
     <thead>
         <tr>
             <td></td>
-            <td>Event</td>
-            <td>Type</td>
-            <td class='attempt'>Result</td>
-            <td>Competitor</td>
-            <td colspan='5' align='center'>Solves</td>
+            <td><?= t('Event', 'Дисциплина') ?></td>
+            <td><?= t('Type', 'Тип') ?></td>
+            <td class='attempt'><?= t('Result', 'Результат') ?></td>
+            <td><?= t('Competitor', 'Имя') ?></td>
+            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
         </tr>
     </thead>
     <tbody>
@@ -26,7 +26,7 @@
                             <?= $event->name ?>
                         </td>
                         <td>
-                            <?= ['best' => 'Single', 'average' => 'Average'][$record->type] ?>
+                            <?= ['best' => t('Single','Лучшая'), 'average' => t('Average','Среднее')][$record->type] ?>
                         </td>
                         <td class='record'>
                             <?= $record->result ?>

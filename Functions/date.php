@@ -4,9 +4,13 @@ function dateRange($start, $end = null) {
     $parse = function($date) {
         $time = strtotime($date);
         return [
-            'year' => date("Y", $time),
-            'month' => date("M", $time),
-            'day' => date("j", $time)
+    'year' => date("Y", $time),
+    'month' => t(
+            date("M", $time),
+            ['', 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+            [date("n", $time)]
+    ),
+    'day' => date("j", $time)
         ];
     };
 

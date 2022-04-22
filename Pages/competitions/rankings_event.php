@@ -6,24 +6,24 @@
         <a 
             class='<?= $type == 'best' ? 'select' : '' ?>' 
             href='<?= PageIndex() ?>competitions/rankings/<?= $event_select->code ?>/best'>
-            Single</a>
+            <?= t('Single', 'Лучшая') ?></a>
     <?php } ?>
     <?php if (isset($ratings[$event_select->id]['average'])) { ?>
         <a 
             class='<?= $type == 'average' ? 'select' : '' ?>' 
             href='<?= PageIndex() ?>competitions/rankings/<?= $event_select->code ?>/average'>
-            Average</a>
+            <?= t('Average', 'Среднее') ?></a>
     <?php } ?>
 </h2>
 <table class='table_new'>
     <thead>
         <tr>
             <td>#</td>
-            <td>Name</td>
-            <td class="attempt">Result</td>
-            <td>Competition</td>
+            <td><?= t('Name', 'Имя') ?></td>
+            <td class="attempt"><?= t('Result', 'Результат') ?></td>
+            <td><?= t('Competition', 'Соревнование') ?></td>
             <?php if ($type == 'average') { ?>
-                <td colspan='5' align='center'>Solves</td>
+                <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
             <?php } ?>
         </tr>
     </thead>

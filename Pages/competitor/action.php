@@ -9,3 +9,8 @@ if ($action == 'login') {
 if ($action == 'logout') {
     include 'action.logout.php';
 }
+
+if ($action == 'language') {
+    include 'action.language.php';
+}
+

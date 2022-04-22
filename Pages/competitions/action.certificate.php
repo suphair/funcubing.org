@@ -1,145 +1,109 @@
 <?php
 
-if ($competitor_id ?? FALSE and!$competitor) {
-    die("competitor [$competitor_id] not found");
-}
-
 $competitors = [];
 if (!isset($comp)) {
     $comp = unofficial\getCompetition($competitor->competition_secret);
-    $competitors[$competitor->id] = unofficial\getResutsByCompetitor($competitor->id);
+    $competitors[$competitor->name] = unofficial\getResutsByCompetitor($competitor->id);
 } else {
     foreach ($comp_data->competitors as $competitor) {
-        $competitors[$competitor->id] = unofficial\getResutsByCompetitor($competitor->id);
+        $competitors[$competitor->name] = unofficial\getResutsByCompetitor($competitor->id);
     }
+}
+$RU = t(false, true);
+$comp_api = api\competitions($comp->secret)[$comp->id];
+
+$organisers = [];
+$judges = [];
+foreach ($comp_api->organizers as $organizer) {
+    $organisers[] = trim(explode("(", $organizer->name)[0]);
+}
+foreach ($comp_api->judges ?? [] as $judge) {
+    $judges[] = str_replace(' ', '&nbsp;', trim(explode("(", $judge->name)[0]));
 }
 
 
-$xPlace = 10;
-$xAttempt = 17;
-$xCompetitor = 50;
-
-$pdf = new FPDF('P', 'mm');
-$max_page = 30;
-foreach ($competitors as $results) {
-    $pdf->SetFont('courier');
-    $pages = ceil(sizeof($results) / $max_page);
-    $xStart = 5;
-    $xEnd = $pdf->w - 5;
-    for ($p = 0; $p < $pages; $p++) {
-        $dis_prev = 0;
-        $start = $p * $max_page;
-        $end = min(array(($p + 1) * $max_page, sizeof($results)));
-        $on_page = ($end - $start + 1);
-        $pdf->AddPage();
-
-        $pdf->SetLineWidth(1);
-        //$pdf->Line($xStart, 35, $xEnd, 35);
-        //$pdf->Line($xStart + $xPlace, 30, $xEnd - $xAttempt * $column_attempt_count, 30);
-
-        $n = 0;
-        $n_ext = 0;
-        for ($c = $start; $c < $end; $c++) {
-            $result = $results[$c];
-            if ($dis_prev != $result->event_dict and $c > $start) {
-                $n += 0.5;
-                $n_ext += 0.5;
+$mpdf = new \Mpdf\Mpdf();
+$stylesheet = '
+               td {
+                    border: 2px solid lightgray;
+                    padding:3px;
+                    font-size:18px;
+               }
+               table{
+                    border-collapse:collapse;
+               }
+               thead td{
+                    font-weight:bold;
+               }';
+$mpdf->WriteHTML($stylesheet, 1);
+$competitors_count = count($competitors);
+$r = 0;
+foreach ($competitors as $competitor_name => $results) {
+    $r++;
+    $results_event = [];
+    foreach ($results as $result) {
+        $result_row = false;
+        if ($result->best) {
+            $result_row = ['value' => $result->best, 'format' => t('best', 'лучшая'), 'position' => $result->place];
+        }
+        if ($result->mean and!in_array($result->mean, ['DNF', 'dnf', '-cutoff'])) {
+            $result_row = ['value' => $result->mean, 'format' => t('mean', 'среднее'), 'position' => $result->place];
+        }
+        if ($result->average and!in_array($result->average, ['DNF', 'dnf', '-cutoff'])) {
+            $result_row = ['value' => $result->average, 'format' => t('average', 'среднее'), 'position' => $result->place];
+        }
+        if ($result_row and!isset($results_event[$result->event_name])) {
+            $results_event[$result->event_name] = (object) $result_row;
+        }
+    }
+    if (sizeof($results_event)) {
+        $html = '<div style="padding:20px 20px 0px 20px"><span style="font-size:20px;">';
+        if (sizeof($judges)) {
+            if ($RU) {
+                $html .= '<b>' . implode(" and ", $judges) . '</b>'
+                        . ', от имени <span class="nobr"><b>Fun&nbsp;Cubing</b></span>, и ';
+            } else {
+                $html .= '<b>' . implode(" and ", $judges) . '</b>'
+                        . ', on behalf of the <span class="nobr"><b>Fun&nbsp;Cubing</b></span>, and ';
             }
-            $dis_prev = $result->event_dict;
-
-            $n++;
-
-
-            $pdf->SetFillColor(240, 240, 240);
-            $pdf->Rect(5, 38 + ($n - 1) * 8, $pdf->w - 10, 8, "F");
-
-            $pdf->SetLineWidth(0.3);
-            if ($n > 0) {
-                $pdf->Line(5, 38 + ($n - 1) * 8, $pdf->w - 5, 38 + ($n - 1) * 8);
-            }
-            $pdf->Line(5, 38 + $n * 8, $pdf->w - 5, 38 + $n * 8);
-
-            $pdf->SetFont('Arial', 'B', 12);
-            $pdf->Text(7, 35 + $n * 8, $result->place . ($result->podium ? '*' : ''));
-
-            $pdf->SetFont('Arial', '', 12);
-
-            $pdf->Text(28, 35 + $n * 8, $result->event_name);
-
-            $pdf->Text(16, 35 + $n * 8, $rounds_dict[$result->final ? 0 : $result->round]->smallName);
-
-            $dX = 1;
-
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $result->best));
-            $dX++;
-            $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace('-cutoff', '', $result->average)));
-            $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', str_replace('-cutoff', '', $result->mean)));
-            $dX++;
-
-
-            $pdf->SetFont('Arial', '', 10);
-            for ($i = 5; $i > 0; $i--) {
-                if ($result->average == "-cutoff" and $result->{"attempt$i"} == 'dns') {
-                    
-                } else {
-                    $pdf->Text($xEnd - $dX * $xAttempt, 35 + $n * 8, sprintf('%0 10s', $result->{"attempt$i"}));
-                }
-                $dX++;
+        }
+        if (sizeof($organisers)) {
+            if ($RU) {
+                $html .= '<b>' . implode(" and ", $organisers) . '</b>'
+                        . ', от имени команды организаторов, подтвержают что';
+            } else {
+                $html .= '<b>' . implode(" and ", $organisers) . '</b>'
+                        . ', on behalf of the organization team, certify that';
             }
         }
 
+        if ($RU) {
+            $text = 'принимал участие в <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, получив
+следующие результаты:';
+        } else {
+            $text = 'has participated in the <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, obtaining the
+following results:';
+        }
 
-        //$pdf->Image("Image/UC_B.png",5,5,20,20,'png');
+        $mpdf->WriteHTML($html . '</span></div><div style="text-align:center"><h1>' . $competitor_name . '</h1></div>'
+                . '<div style="padding:10px 20px 0px 20px"><span style="font-size:20px;">'
+                . $text . '</div>'
+                . '<table style="width:100%; margin:10px 20px 0px 20px;">'
+                . '<thead><tr><td width="300px">' . t('Event', 'Дисциплина') . '</td><td colspan=2 align="center">' . t('Result', 'Результат') . '</td><td width="30px">' . t('Position', 'Место') . '</td></tr></thead><tbody>');
+        foreach ($results_event as $event_name => $result_event) {
+            $mpdf->WriteHTML('<tr><td>' . $event_name . '</td><td align="center">' . $result_event->format . '</td><td align="right">' . $result_event->value . '</td><td align="center">' . $result_event->position . '</td></tr>');
+        }
 
-
-
-
-        $pdf->SetFont('msserif', '', 18);
-        $lat = iconv('utf-8', 'windows-1251', $comp->name . ', ' . dateRange($comp->date, $comp->date_to));
-        $pdf->Text(5, 23, $lat);
-
-        $lat = iconv('utf-8', 'windows-1251', $result->competitor_name);
-        $pdf->Text(5, 13, $lat);
-
-        $pdf->SetFont('Arial', '', 20);
-        $pdf->SetLineWidth(0.3);
-        $pdf->Line(5, 38, $pdf->w - 5, 38);
-
-        $pdf->SetLineWidth(0.1);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(6, 35, 'Place');
-        $pdf->Line(15, 30, 15, 32 + 8 * ($on_page + $n_ext));
-        $pdf->Text(16, 35, 'Round');
-        $pdf->Line(27, 30, 27, 32 + 8 * ($on_page + $n_ext));
-        $pdf->Text(28, 35, 'Event');
-
-
-        $dX = 1;
-
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Line($xEnd - $dX * $xAttempt, 30, $xEnd - $dX * $xAttempt, 32 + 8 * ($on_page + $n_ext));
-        $pdf->Text($xEnd - $dX * $xAttempt + 5, 35, 'Best');
-        $dX++;
-        $pdf->Line($xEnd - $dX * $xAttempt, 30, $xEnd - $dX * $xAttempt, 32 + 8 * ($on_page + $n_ext));
-        $pdf->Text($xEnd - $dX * $xAttempt + 5, 35, 'Avg');
-        $dX++;
-
-        $pdf->SetFont('Arial', '', 10);
-        for ($i = 5; $i > 0; $i--) {
-            $pdf->Text($xEnd - $dX * $xAttempt, 35, sprintf('%0 9s', $i));
-            $pdf->Line($xEnd - $dX * $xAttempt, 30, $xEnd - $dX * $xAttempt, 32 + 8 * ($on_page + $n_ext));
-            $dX++;
+        $mpdf->WriteHTML('</tbody></table>');
+        $mpdf->WriteHTML('<div style="padding:20px 20px 0px 20px; text-align:right"><span style="font-size:18px;">' . dateRange($comp->date, $comp->date_to) . '</span></div>');
+        if ($competitors_count != $r) {
+            $mpdf->AddPage();
         }
     }
 }
-
 if (sizeof($competitors) == 1) {
-    $pdf->Output('competitor_certificate_' . $competitor->id . ".pdf", 'I');
+    $mpdf->Output($comp->name . '-' . array_keys($competitors)[0] . '-Certificate.pdf', 'I');
+} else {
+    $mpdf->Output($comp->name . '-Certificates.pdf', 'I');
 }
-
-if (sizeof($competitors) > 1) {
-    $pdf->Output('competition_certificates_' . $comp->secret . ".pdf", 'D');
-}
-
-$pdf->Close();
+exit();

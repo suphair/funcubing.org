@@ -54,47 +54,34 @@ foreach ($events as $event_round) {
             $n++;
 
             if ($c % 2 == 0) {
-                #   $pdf->SetFillColor(240, 240, 240);
-                #   $pdf->Rect(5, 38 + ($n - 1) * 8, $pdf->GetPageWidth() - 10, 8, "F");
+                
             }
-            #$pdf->Line(18, 23 + $n * 8, $pdf->GetPageWidth() - 5, 23 + $n * 8);
-            #$pdf->SetFont('Arial', '', 12);
             $place = $competitor->place;
             if ($competitor->podium) {
-                #$pdf->SetFont('msserif', 'U', 10);
                 $pdf->Text(12, 20 + $n * $yCompetitor, '*');
             }
             if ($competitor->next_round) {
-                #$pdf->SetFont('msserif', 'U', 10);
                 $pdf->Text(12, 20 + $n * $yCompetitor, '>');
             }
             $pdf->Text(7, 20 + $n * $yCompetitor, $place);
             $pdf->SetFont('msserif', '', 10);
             $dX = 1;
             if ($event->format == 'average') {
-                #$pdf->SetFont('msserif', 'B', 10);
-
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 - 1 + $n * $yCompetitor, '.');
                 $dX++;
-                #$pdf->SetFont('msserif', '', 10);
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->average));
                 $dX++;
             } elseif ($event->format == 'mean') {
-                #$pdf->SetFont('msserif', 'B', 10);
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 - 1 + $n * $yCompetitor, '.');
                 $dX++;
-                #$pdf->SetFont('msserif', '', 10);
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt(str_replace("-cutoff", "", $competitor->mean)));
                 $dX++;
             } else {
-                #$pdf->SetFont('msserif', 'B', 10);
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
                 $dX++;
             }
-            #$pdf->SetFont('msserif', '', 10);
-            #$pdf->SetFont('Arial', '', 10);
             for ($i = $event->attempts; $i > 0; $i--) {
 
                 $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->{"attempt$i"}));
@@ -112,8 +99,6 @@ foreach ($events as $event_round) {
                         $xEnd - ($dX - 1) * $xAttempt,
                         21.5 + ($n - 0.4) * $yCompetitor);
             }
-
-            #            $pdf->SetFont('msserif', '', 12);
             $lat = iconv('utf-8', 'windows-1251', $competitor->name);
             $pdf->SetFillColor(255, 255, 255);
             $pdf->SetDash(0);
@@ -123,41 +108,27 @@ foreach ($events as $event_round) {
             $pdf->SetDash(0.1, 5);
         }
 
-
-#        $pdf->SetFont('msserif', '', 12);
-        $even_name = iconv('utf-8', 'windows-1251', $event->name);
+        $event_name = iconv('utf-8', 'windows-1251', $event->name);
         $comp_name = iconv('utf-8', 'windows-1251', $comp->name);
-        $round = $rounds_dict[$event->final ? 0 : $event->round]->fullName;
-        $pdf->Text(5, 13, "$even_name, $round. $comp_name");
-
-        #       $pdf->SetFont('Arial', '', 20);
-        //$pdf->SetLineWidth(0.3);
-        #$pdf->Line(5, 38, $pdf->GetPageWidth() - 5, 38);
-        //$pdf->SetLineWidth(0.1);
-        #      $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(6, 20, 'Place');
-        # $pdf->Line(15, 30, 15, 32 + 8 * $on_page);
-        $pdf->Text(18, 20, 'Competitor');
+        $round = iconv('utf-8', 'windows-1251', $rounds_dict[$event->final ? 0 : $event->round]->fullName);
+        $pdf->Text(5, 13, "$event_name, $round. $comp_name");
+        $pdf->Text(6, 20, t('Place', iconv('utf-8', 'windows-1251', 'Место')));
+        $pdf->Text(18, 20, t('Competitor', iconv('utf-8', 'windows-1251', 'Имя')));
 
         $dX = 1;
 
         if ($event->format == 'mean') {
-            #         $pdf->SetFont('Arial', '', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, 'Best');
+            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
             $dX++;
-            #        $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, 'Mean');
+            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Mean', iconv('utf-8', 'windows-1251', 'Среднее')));
             $dX++;
         } elseif ($event->format == 'average') {
-            #       $pdf->SetFont('Arial', '', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, 'Best');
+            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
             $dX++;
-            #      $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, 'Avg');
+            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Average', iconv('utf-8', 'windows-1251', 'Среднее')));
             $dX++;
         } else {
-            #     $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, 'Best');
+            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
             $dX++;
         }
         $pdf->SetFont('Arial', '', 10);

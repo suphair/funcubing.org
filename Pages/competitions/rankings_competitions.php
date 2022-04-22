@@ -18,23 +18,23 @@ foreach ($events_dict as $event) {
 ?>
 <h2>
     <i title='Competitors' class="fas fa-cubes"></i>
-    Competitions  (<?= count($competitions) ?>)
+    <?= t('Competitions', 'Соревнования') ?>  (<?= count($competitions) ?>)
 </h2>
 <table class='table_new'>
     <thead>
         <tr>
             <td>
-                Competition
+                <?= t('Competition', 'Наименование') ?>
             </td>
             <td>
-                <i title='Competitors' class="fas fa-users"></i>
+                <i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i>
             </td>
             <td></td>
             <td>
-                Date
+                <?= t('Date', 'Дата') ?>
             </td>
-            <td>Single Record</td>
-            <td>Average Record</td>
+            <td><?= t('Single Record', 'Рекорд лучшая') ?></td>
+            <td><?= t('Average Record', 'Рекорд среднее') ?></td>
 
         </tr>    
     </thead>
@@ -67,9 +67,9 @@ foreach ($events_dict as $event) {
                                     $current = $comp_histoty_record[$competition->id][$type][$event->id];
                                     if ($current) {
                                         ?>
-                                        <i title='Current Record' style="color:rgb(0,100,0)" class="<?= $events_dict[$event->id]->image ?>"></i>
+                                        <i title='<?= t('Current Record', 'Текущий рекорд') ?>' style="color:rgb(0,100,0)" class="<?= $events_dict[$event->id]->image ?>"></i>
                                     <?php } else { ?>
-                                        <i title='History Record' style="color:var(--black)" class="<?= $events_dict[$event->id]->image ?>"></i>
+                                        <i title='<?= t('History Record', 'Рекорд в истории') ?>' style="color:var(--black)" class="<?= $events_dict[$event->id]->image ?>"></i>
                                         <?php
                                     }
                                 } else {

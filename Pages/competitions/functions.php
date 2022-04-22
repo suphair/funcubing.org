@@ -10,6 +10,7 @@ function admin() {
 
 function getCompetitions($me, $mine) {
     $me_id = ($me->id ?? -1);
+    $me_wcaid = ($me->wca_id ?? -1);
     $admin = admin();
     $sql = "SELECT
         unofficial_competitions.website,
@@ -28,11 +29,14 @@ function getCompetitions($me, $mine) {
         dict_competitors.name competitor_name,
         dict_competitors.country competitor_country,
         unofficial_organizers.id organizer,
-        unofficial_competitions.competitor = $me_id my
+        unofficial_competitions.competitor = $me_id my,
+        without_FCID.count without_FCID
     FROM unofficial_competitions
     JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
+    left outer JOIN (select count(*) count,competition from `unofficial_competitors` where FCID is null group by competition) without_FCID 
+        on without_FCID.competition=unofficial_competitions.id
     LEFT OUTER JOIN unofficial_organizers 
-    ON unofficial_organizers.competition = unofficial_competitions.id and unofficial_organizers.wcaid='$me_id' 
+    ON unofficial_organizers.competition = unofficial_competitions.id and unofficial_organizers.wcaid='$me_wcaid' 
     WHERE unofficial_competitions.competitor = $me_id OR unofficial_organizers.id     
     ";
     if (!$mine) {
@@ -92,11 +96,11 @@ function getCompetition($secret, $me = FALSE) {
 }
 
 function getEventsDict() {
-
+    $RU = t('', 'RU');
     $rows = \db::rows("SELECT "
                     . " unofficial_events_dict.id id,"
                     . " unofficial_events_dict.image, "
-                    . " unofficial_events_dict.name,"
+                    . " unofficial_events_dict.name$RU name,"
                     . " unofficial_events_dict.code,"
                     . " unofficial_events_dict.result_dict,"
                     . " unofficial_events_dict.special"
@@ -110,15 +114,15 @@ function getEventsDict() {
 }
 
 function getFormatsDict() {
-
+    $RU = t('', 'RU');
     $rows = \db::rows("SELECT "
                     . " unofficial_formats_dict.id id,"
                     . " unofficial_formats_dict.format, "
                     . " unofficial_formats_dict.attempts,"
-                    . " unofficial_formats_dict.name,"
+                    . " unofficial_formats_dict.name$RU name,"
                     . " unofficial_formats_dict.code,"
                     . " unofficial_formats_dict.cutoff_attempts,"
-                    . " unofficial_formats_dict.cutoff_name"
+                    . " unofficial_formats_dict.cutoff_name$RU cutoff_name"
                     . " FROM unofficial_formats_dict "
                     . " ORDER BY code");
     $formats_dict = [];
@@ -129,9 +133,9 @@ function getFormatsDict() {
 }
 
 function getRoundsDict() {
-
+    $RU = t('', 'RU');
     $rows = \db::rows("SELECT "
-                    . " id, name, image, fullName, smallName"
+                    . " id, name, image, fullName$RU fullName, fullName fullNameEN, smallName$RU smallName"
                     . " FROM unofficial_rounds_dict "
                     . " ORDER BY id");
     $rounds_dict = [];
@@ -143,9 +147,9 @@ function getRoundsDict() {
 }
 
 function getResultsDict() {
-
+    $RU = t('', 'RU');
     $rows = \db::rows("SELECT "
-                    . " id, name, code, smallName"
+                    . " id, name$RU name, code, smallName"
                     . " FROM unofficial_results_dict "
                     . " ORDER BY id");
     $results_dict = [];
@@ -156,11 +160,11 @@ function getResultsDict() {
 }
 
 function getEvents($id) {
-
+    $RU = t('', 'RU');
     return \db::rows("SELECT "
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_events_dict.code code,"
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name) name,"
+                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name,"
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict,"
                     . " unofficial_events.id, "
                     . " unofficial_events.rounds, "
@@ -227,6 +231,7 @@ function generateSecret() {
 }
 
 function getCompetitionData($id) {
+    $RU = t('', 'RU');
     $data = new \stdClass();
     $data->competition = new \stdClass();
     $data->competition->competitors = [];
@@ -252,7 +257,7 @@ function getCompetitionData($id) {
                     . " unofficial_events.rounds event_rounds, "
                     . " unofficial_events.id,"
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict, "
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name) name "
+                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name "
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
                     . " WHERE unofficial_events.competition = $id");
@@ -362,7 +367,7 @@ function getCompetitionData($id) {
     $event_dicts = \db::rows("SELECT "
                     . " unofficial_events_dict.id,"
                     . " unofficial_events_dict.image, "
-                    . " unofficial_events_dict.name,"
+                    . " unofficial_events_dict.name$RU name,"
                     . " unofficial_events_dict.code,"
                     . " unofficial_events_dict.result_dict,"
                     . " unofficial_events_dict.special"
@@ -391,12 +396,14 @@ function getCompetitorsSession($id, $session) {
 }
 
 function getEventByEventround($eventround) {
+    $RU = t('', 'RU');
     return \db::row("SELECT"
                     . " COALESCE(unofficial_events_rounds.comment,'') comment, "
                     . " COALESCE(unofficial_events_rounds.cutoff,'') cutoff, "
                     . " COALESCE(unofficial_events_rounds.time_limit,'') time_limit, "
                     . " COALESCE(unofficial_events_rounds.cumulative,0) cumulative, "
                     . " unofficial_events_dict.image, "
+                    . " unofficial_events_dict.special, "
                     . " unofficial_events_rounds.round, "
                     . " unofficial_events_rounds.next_round_procent, "
                     . " unofficial_events_rounds.next_round_value, "
@@ -406,7 +413,7 @@ function getEventByEventround($eventround) {
                     . " unofficial_formats_dict.cutoff_attempts, "
                     . " unofficial_events_dict.code, "
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final, "
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name) name,"
+                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name,"
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_results_dict.name result_name,  "
                     . " unofficial_results_dict.code result_code  "
@@ -605,11 +612,13 @@ function getCompetitionsByCompetitor($competitor_id) {
 }
 
 function getResutsByCompetitorMain($competitor_id) {
+    $RU = t('', 'RU');
     return \db::rows("SELECT"
                     . " unofficial_events_dict.id event_dict,"
-                    . " unofficial_events_dict.name event_name,"
+                    . " unofficial_events_dict.name$RU event_name,"
                     . " unofficial_events_dict.image event_image,"
                     . " unofficial_events_rounds.round,"
+                    . " unofficial_rounds_dict.smallName$RU round_name, "
                     . " unofficial_competitors_result.place, "
                     . " unofficial_competitions.name competition_name, "
                     . " unofficial_competitions.date competition_date, "
@@ -634,6 +643,7 @@ function getResutsByCompetitorMain($competitor_id) {
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN  unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict "
+                    . " JOIN  unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
                     . " JOIN unofficial_competitors main_competitor ON main_competitor.name = unofficial_competitors.name "
                     . " JOIN unofficial_competitions main_competition ON main_competition.id = main_competitor.competition "
                     . " JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor "
@@ -646,9 +656,10 @@ function getResutsByCompetitorMain($competitor_id) {
 }
 
 function getResutsByCompetitor($competitor_id) {
+    $RU = t('', 'RU');
     return \db::rows("SELECT"
                     . " unofficial_events_dict.id event_dict,"
-                    . " COALESCE(unofficial_events_dict.name, unofficial_events.name) event_name,"
+                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) event_name,"
                     . " unofficial_events_dict.image event_image,"
                     . " unofficial_events_rounds.round,"
                     . " unofficial_competitors_result.place, "

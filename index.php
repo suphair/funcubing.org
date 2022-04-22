@@ -23,7 +23,19 @@ wcaapi::setConnection(db::connection());
 
 $request_0 = request();
 $request_1 = request(1);
+$request_2 = request(2);
+$request_3 = request(3);
+$request_4 = request(4);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
+
+if ($_SESSION['user_lang'] ?? false) {
+    $_SESSION['lang'] = $_SESSION['user_lang'];
+} else {
+    $_SESSION['lang'] = 'RU';
+}
+if (!in_array($_SESSION['lang'], ['RU', 'EN'])) {
+    $_SESSION['lang'] = 'RU';
+}
 
 if ($request_0 == 'api') {
     include('API/index.php');
@@ -82,7 +94,7 @@ $title = [
             <title>Fun Cubing</title>
             <link rel="icon" href="<?= PageLocal() ?>Pages/index.png" >
         <?php } ?>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?1" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?2" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
@@ -149,6 +161,11 @@ $title = [
                         Konstantin Solovev (Константин Соловьёв)</a>
                     <i class="fas fa-user-circle"></i>
                     <?= get_count_visitors_day(); ?> visitors today 
+
+                    <a target="_blank" href="<?= PageIndex() ?>api" title="Api Information"> 
+                        <i class="fas fa-wrench"></i>
+                        Api Information
+                    </a> 
                 </p>
             </div>
         </div>

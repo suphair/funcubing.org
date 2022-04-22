@@ -1,17 +1,17 @@
 
 <h2>
     <i class="fas fa-trophy"></i> 
-    Records
+    <?= t('Records', 'Рекорды') ?>
 </h2>
 <table class='table_new'>
     <thead>
         <tr>
-            <td>Event</td>
-            <td>Type</td>
-            <td>Name</td>
-            <td class="attempt">Result</td>
-            <td>Competition</td>
-            <td colspan='5' align='center'>Solves</td>
+            <td><?= t('Event', 'Дисцпилина') ?></td>
+            <td><?= t('Type', 'Тип') ?></td>
+            <td><?= t('Name', 'Имя') ?></td>
+            <td class="attempt"><?= t('Result', 'Результат') ?></td>
+            <td><?= t('Competition', 'Соревнование') ?></td>
+            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
         </tr>
     </thead>
     <tbody>
@@ -19,8 +19,8 @@
         foreach ($events_dict as $event) {
             $event_record = $ratings[$event->id] ?? [];
             $record_types = [
-                'Single' => current($event_record['best'] ?? []),
-                'Average' => current($event_record['average'] ?? [])];
+                t('Single', 'Лучшая') => current($event_record['best'] ?? []),
+                t('Average', 'Среднее') => current($event_record['average'] ?? [])];
             foreach ($record_types as $type => $record) {
                 if ($record) {
                     ?>
@@ -60,17 +60,17 @@
 <hr>
 <h2>
     <i class="fas fa-history"></i>
-    History of records
+    <?= t('History of records', 'История рекордов') ?>
 </h2>
 <table class='table_new'>
     <thead>
         <tr>
-            <td>Event</td>
-            <td  class="attempt">Single</td>
-            <td  class="attempt">Average</td>            
-            <td>Name</td>
-            <td>Competition</td>
-            <td colspan='5' align='center'>Solves</td>
+            <td><?= t('Event', 'Дисциплина') ?></td>
+            <td class="attempt"><?= t('Single', 'Лучшая') ?></td>
+            <td class="attempt"><?= t('Average', 'Среднее') ?></td>            
+            <td><?= t('Name', 'Имя') ?></td>
+            <td><?= t('Competition', 'Соревнование') ?></td>
+            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
         </tr>
     </thead>
     <tbody>

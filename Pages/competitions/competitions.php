@@ -4,7 +4,10 @@ if (!($me->wca_id ?? FALSE)) {
     ?>    
     <h3>
         <i class="error far fa-hand-paper"></i> 
-        To create competition you need to sign in with WCA and have a WCA ID.
+        <?=
+        t('To create competition you need to sign in with WCA and have a WCA ID.',
+                'Для создания соренования вам нужно войти через WCA и иметь WCA ID.')
+        ?>
     </h3>
 <?php } else { ?>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -16,17 +19,21 @@ if (!($me->wca_id ?? FALSE)) {
     </script>
 
     <form method="POST" action="?create">
-        <b>Create competition</b> 
+        <b><?= t('Create competition', 'Создать соревнование') ?></b> 
         <input required placeholder="RamenskoeMeeting #1" type="text" name="name" value="" />
-        <input style="width:140px" placeholder="Select date" required type="text" id="datepicker" name="date">
+        <input style="width:140px" placeholder="<?= t('Select date', 'Выберите дату') ?>" required type="text" id="datepicker" name="date">
         <button>
             <i class="fas fa-plus-circle"></i> 
-            Create
+            <?= t('Create', 'Создать') ?>
         </button>
     </form>
-    <i class="fas fa-info-circle"></i> Competitions is created privately.
+    <i class="fas fa-info-circle"></i> <?=
+    t('Competitions is created privately.
     You can make them public later in the settings.
-    Or leave them hidden for your testing or fun.
+    Or leave them hidden for your testing or fun.',
+            'Соревнования создаются приватными. Вы можете сделать их публичными позже. 
+            Или оставить спрятанными для тестирования или развлечения.')
+    ?>
 <?php } ?>
 <hr>
 <br>
@@ -43,16 +50,16 @@ asort($owners);
     <?php if ($mine) { ?>
         <i class="far fa-eye"></i>
         <a href="?show=all">
-            Show all
+            <?= t('Show all', 'Показать все') ?>
         </a>
     <?php } elseif ($me) { ?>
         <i class="fas fa-crown"></i>
-        <a href="?show=mine">Show only mine</a>&nbsp;
+        <a href="?show=mine"><?= t('Show only mine', 'Показать только мои') ?></a>&nbsp;
     <?php } ?>
     <?php if (!$mine) { ?>
         <i class="fas fa-user-tie"></i>
         <select data-owner-select>
-            <option value='0' selected>All organizers</option>
+            <option value='0' selected><?= t('All organizers', 'Все организаторы') ?></option>
             <?php foreach ($owners as $id => $name) { ?>
                 <option value='<?= $id ?>'>
                     <?= $name ?>
@@ -63,53 +70,51 @@ asort($owners);
     | 
     <a href="<?= PageIndex() ?>competitions/rankings" title="Rankings"> 
         <?= $ranked_icon ?>
-        Rankings
+        <?= t('Rankings', 'Рейтинг') ?>
     </a> 
 </p>
 <table class='table_new'>
     <thead>
         <tr>
             <td/>
+            <td>
+                <?= t('Organizer', 'Организатор') ?>
+
+            </td>
+            <td>
+                <?= t('Competition', 'Наименование') ?>
+
+            </td>
             <td/>
             <td>
-                Organizer
+                <?= t('Date', 'Дата') ?>
+
             </td>
             <td>
-            </td>
-            <td>
-                Competition
-            </td>
-            <td/>
-            <td>
-                Date
-            </td>
-            <td>
-                Web site
+                <?= t('Web site', 'Сайт') ?>
+
             </td>
         </tr>    
     </thead>
     <tbody>
         <?php foreach ($competitions as $competition) { ?>
             <tr data-owner='<?= $competition->competitor ?>'>   
-                <td>
+                <td align="left" >
                     <?php if (!$competition->show) { ?>
                         <i class="far fa-eye-slash"></i>
                     <?php } ?>
-                </td>
-                <td align="center" >
+                    <?= ($competition->without_FCID and $competition->ranked and unofficial\admin()) ? '<span style="color:red"><i class="fas fa-user-check"></i></span>' : '' ?>
                     <?php if ($competition->my) { ?>
-                        <i class="far fa-crown"></i>
+                        <i class="fas fa-crown"></i>
                     <?php } elseif ($competition->organizer) { ?>
                         <i class="fas fa-user-tie"></i>
+                    <?php } ?>
+                    <?php if ($competition->ranked) { ?>
+                        <?= $ranked_icon ?>
                     <?php } ?>
                 </td>
                 <td>
                     <?= $competition->competitor_name ?>
-                </td>   
-                <td>
-                    <?php if ($competition->ranked) { ?>
-                        <?= $ranked_icon ?>
-                    <?php } ?>
                 </td>   
                 <td>                    
                     <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>

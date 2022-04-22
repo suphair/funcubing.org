@@ -61,10 +61,10 @@ foreach (['average', 'best'] as $type_att) {
 ?>
 <hr>
 <h1>
-    <a href= '<?= PageIndex() ?>competitions/rankings' class='<?= $select == 'records' ? 'select' : '' ?>'><i title='Records' class="fas fa-trophy"></i></a>
-    <a href= '<?= PageIndex() ?>competitions/rankings/competitors' class='<?= in_array($select, ['competitor', 'competitors']) ? 'select' : '' ?>'><i title='Competitors' class="fas fa-users"></i></a>
-    <a href= '<?= PageIndex() ?>competitions/rankings/competitions' class='<?= $select == 'competitions' ? 'select' : '' ?>'><i title='Competitors' class="fas fa-cubes"></i></a>
-    <a href= '<?= PageIndex() ?>competitions/rankings/judges' class='<?= $select == 'judges' ? 'select' : '' ?>'><i title='Judges' class="fas fa-user-tie"></i></a>
+    <a href= '<?= PageIndex() ?>competitions/rankings' class='<?= $select == 'records' ? 'select' : '' ?>'><i title='<?= t('Records', 'Рекорды') ?>' class="fas fa-trophy"></i></a>
+    <a href= '<?= PageIndex() ?>competitions/rankings/competitors' class='<?= in_array($select, ['competitor', 'competitors']) ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i></a>
+    <a href= '<?= PageIndex() ?>competitions/rankings/competitions' class='<?= $select == 'competitions' ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Соревнования') ?>' class="fas fa-cubes"></i></a>
+    <a href= '<?= PageIndex() ?>competitions/rankings/judges' class='<?= $select == 'judges' ? 'select' : '' ?>'><i title='<?= t('Judges', 'Судьи') ?>' class="fas fa-user-tie"></i></a>
         <?php
         $events_dict = unofficial\getEventsDict();
         foreach ($events_dict as $event_dict) {
@@ -73,7 +73,7 @@ foreach (['average', 'best'] as $type_att) {
             }
             if (!$event_dict->special and isset($ratings[$event_dict->id]['best'])) {
                 ?>
-            <a href='<?= PageIndex() ?>competitions/rankings/<?= $event_dict->code ?>'><i class=" <?= $event_code == $event_dict->code ? 'select' : '' ?> <?= $event_dict->image ?>"></i></a>
+            <a href='<?= PageIndex() ?>competitions/rankings/<?= $event_dict->code ?>'><i title="<?= $event_dict->name ?>" class=" <?= $event_code == $event_dict->code ? 'select' : '' ?> <?= $event_dict->image ?>"></i></a>
         <?php }
         ?>
     <?php } ?>
@@ -108,4 +108,3 @@ switch ($select) {
 <script>
 <?php include 'rankings.js'; ?>
 </script>
-<hr>

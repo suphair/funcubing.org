@@ -1,7 +1,7 @@
 <?php $competitors = unofficial\getRankedCompetitors(); ?>
 <h2>
     <i class="fas fa-trophy"></i> 
-    Record holders
+    <?= t('Record holders', 'Держатели рекордов') ?> 
 </h2>
 
 <?php
@@ -22,10 +22,10 @@ usort($competitors_holder_records, function($a, $b) {
 <table class="table_new">
     <thead>
         <tr>
-            <td>Name</td>
+            <td><?= t('Name', 'Имя') ?> </td>
             <td>FC ID</td>
-            <td align="center">Single</td>
-            <td align="center">Average</td>
+            <td align="center"><?= t('Single', 'Лучшая') ?></td>
+            <td align="center"><?= t('Average', 'Среднее') ?></td>
         </tr>
 
     </thead>
@@ -69,14 +69,14 @@ usort($competitors_holder_records, function($a, $b) {
 <hr>
 <h2>
     <i title='Competitors' class="fas fa-users"></i>
-    Competitors (<?= count($competitors) ?>)
+    <?= t('Competitors', 'Участники') ?> (<?= count($competitors) ?>)
 </h2>
 <table class="table_new">
     <thead>
         <tr>
-            <td>Name</td>
+            <td><?= t('Name', 'Имя') ?></td>
             <td>FC ID</td>
-            <td>Competitions</td>
+            <td><?= t('Competitions', 'Соревнований') ?></td>
         </tr>
     </thead>
     <tbody>

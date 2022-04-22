@@ -31,20 +31,20 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
     <a 
         class="<?= $section == 'info' ? 'select' : '' ?>"
         href="<?= PageIndex() . "competitions/$secret" ?>"
-        ><i title="General info" class="fas fa-info-circle"></i></a>
+        ><i title="<?= t('General info', 'Информация'); ?>" class="fas fa-info-circle"></i></a>
     <a 
         class="<?= $section == 'events' ? 'select' : '' ?>"
         href="<?= PageIndex() . "competitions/$secret/events" ?>"
-        ><i title='Events' class="fas fa-newspaper"></i></a>
+        ><i title='<?= t('Events', 'Дисцпилины'); ?>' class="fas fa-newspaper"></i></a>
     <a 
         class="<?= $section == 'competitors' ? 'select' : '' ?>"
         href="<?= PageIndex() . "competitions/$secret/competitors" ?>"
-        ><i title='Competitors' class="fas fa-users"></i></a>
+        ><i title='<?= t('Competitors', 'Участники'); ?>' class="fas fa-users"></i></a>
         <?php if (sizeof($records)) { ?>
         <a 
             class="<?= $section == 'records' ? 'select' : '' ?>"
             href="<?= PageIndex() . "competitions/$secret/records" ?>"
-            ><i title='Records' class="fas fa-trophy"></i></a>    
+            ><i title='<?= t('Records', 'Рекорды'); ?>' class="fas fa-trophy"></i></a>    
         <?php } ?>
 
     <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>

@@ -4,7 +4,7 @@ $me = wcaoauth::me();
 $secret = db::escape(request(1));
 $action = filter_input(INPUT_GET, 'action');
 $rounds_dict = unofficial\getRoundsDict();
-$notAuthorized = in_array($action, ['result', 'projector', 'mobile']);
+$notAuthorized = in_array($action, ['result', 'projector', 'mobile', 'certificates']);
 
 if (!$secret) {
     include 'action.wrong.php';

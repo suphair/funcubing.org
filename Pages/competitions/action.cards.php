@@ -3,7 +3,7 @@
 $blank = filter_input(INPUT_GET, 'blank') ?? FALSE;
 $event_code = request(3);
 $round = request(4);
-
+$RU = t(false, true);
 $events = [];
 $event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
 $event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
@@ -58,7 +58,7 @@ foreach ($events as $event) {
 
             $pdf->SetFont('msserif', '', 12);
             $lat = iconv('utf-8', 'windows-1251', $comp_data->events[$event->event_dict]->name);
-            $round = $rounds_dict[$event->final ? 0 : $event->round]->fullName;
+            $round = iconv('utf-8', 'windows-1251', $rounds_dict[$event->final ? 0 : $event->round]->fullName);
             $pdf->Text($point[0] + 10, $point[1] + 5, "$lat / $round");
 
             $pdf->SetFont('Arial', '', 10);
@@ -85,11 +85,23 @@ foreach ($events as $event) {
                 $Ry += 6;
             }
 
-            $pdf->SetFont('Arial', '', 10);
-            $pdf->Text($point[0] + 40, $point[1] + $Ry + 1, 'Result');
-            $pdf->Text($point[0] + 67, $point[1] + $Ry + 1, 'Judge');
-            $pdf->Text($point[0] + 83, $point[1] + $Ry + 1, 'Comp');
-            $pdf->Text($point[0] + 15, $point[1] + $Ry + 1, 'Scr');
+            if ($RU) {
+                $pdf->SetFont('msserif', '', 12);
+                $pdf->Text($point[0] + 35, $point[1] + $Ry + 1,
+                        iconv('utf-8', 'windows-1251', 'Результат'));
+                $pdf->Text($point[0] + 64, $point[1] + $Ry + 1,
+                        iconv('utf-8', 'windows-1251', 'Судья'));
+                $pdf->Text($point[0] + 79, $point[1] + $Ry + 1,
+                        iconv('utf-8', 'windows-1251', 'Участник'));
+                $pdf->Text($point[0] + 10, $point[1] + $Ry + 1,
+                        iconv('utf-8', 'windows-1251', 'Скрамбл'));
+            } else {
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->Text($point[0] + 40, $point[1] + $Ry + 1, 'Result');
+                $pdf->Text($point[0] + 67, $point[1] + $Ry + 1, 'Judge');
+                $pdf->Text($point[0] + 83, $point[1] + $Ry + 1, 'Comp');
+                $pdf->Text($point[0] + 15, $point[1] + $Ry + 1, 'Scr');
+            }
 
             $format = $formats_dict[$comp_data->events[$event->event_dict]->format_dict];
             foreach (range(1, $format->attempts) as $k) {
@@ -104,16 +116,26 @@ foreach ($events as $event) {
                         ($k == 2 and $format->attempts == 5)or
                         ($k == 1 and $format->attempts == 3))) {
                     $pdf->SetFont('msserif', '', 8);
-                    $lat = "$k attempt" . ($k > 1 ? 's' : '' ) . " to get < $event->cutoff";
-                    $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, $lat);
+                    if ($RU) {
+                        $lat = "$k " . ($k == 1 ? 'попытка' : 'попытки') . " чтобы достичь < $event->cutoff";
+                        $pdf->Line($point[0] + 80, $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 99, $point[1] + $Ry + 0.8 + $k * 16);
+                    } else {
+                        $lat = "$k attempt" . ($k > 1 ? 's' : '' ) . " to get < $event->cutoff";
+                        $pdf->Line($point[0] + 63, $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 99, $point[1] + $Ry + 0.8 + $k * 16);
+                    }
+                    $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, iconv('utf-8', 'windows-1251', $lat));
                     $pdf->Line($point[0], $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 25, $point[1] + $Ry + 0.8 + $k * 16);
-                    $pdf->Line($point[0] + 63, $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 99, $point[1] + $Ry + 0.8 + $k * 16);
+
                 }
             }
             if ($event->time_limit) {
                 $pdf->SetFont('msserif', '', 8);
-                $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');
-                $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, $lat);
+                if ($RU) {
+                $lat = 'Лимит по времени ' . $event->time_limit . ($event->cumulative ? ' суммарно' : '');
+                }else{
+                $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');    
+                }
+                $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, iconv('utf-8', 'windows-1251', $lat));
             }
             $pdf->SetFont('Arial', '', 14);
             $pdf->Text($point[0] - 1, $point[1] + 40 + 5 * 16 + 10, "Ex");

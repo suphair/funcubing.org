@@ -17,11 +17,11 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                 }
                 ?>
                 <form action='?resuts_registration_add' method='POST'>        
-                    Create new competitor
+                    <?= t('Create new competitor', 'Создать нового участника') ?>
                     <input name='name'>
                     <button>
                         <i class="fas fa-plus-square"></i>
-                        Create
+                        <?= t('Create', 'Создать') ?>
                     </button>
                 </form>
                 <?php if (sizeof($competitors_first)) { ?>
@@ -30,8 +30,8 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                         <table class="table_new">
                             <thead>
                                 <tr>
-                                    <td>Competitor</td>
-                                    <td>Add</td>
+                                    <td><?= t('Competitor', 'Имя') ?></td>
+                                    <td><?= t('Add', 'Выбрать') ?></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,7 +48,7 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                         </table>
                         <button>
                             <i class="fas fa-user-plus"></i>
-                            Add competitors
+                            <?= t('Add competitors', 'Добавить участников') ?>
                         </button>
                     </form>
                 <?php } ?>
@@ -77,16 +77,16 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                             <thead>
                                 <tr>
                                     <td>
-                                        Place in the preview round
+                                        <?= t('Place in the preview round', 'Место в пред. раунде') ?>
                                     </td>
                                     <td>
-                                        Competitor
+                                        <?= t('Competitor', 'Имя') ?>
                                     </td>
                                     <td>
-                                        Add/Remove
+                                        <?= t('Add/Remove', 'Добавить/Отменить') ?>
                                     </td>
                                     <td>
-                                        Bulk select
+                                        <?= t('Bulk select', 'Массовый выбор') ?>
                                     </td>
                                 </tr>
                             </thead>
@@ -114,7 +114,7 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                                         <td>
                                             <?php if ($competitor->place >= 1) { ?>
                                                 <a href='#' data-competitor-place-select = '<?= $competitor->place ?>'>
-                                                    up to <?= $competitor->place ?> places
+                                                    <?= t("up to $competitor->place places", "до $competitor->place места") ?>
                                                 </a>
                                             <?php } ?>
                                         </td>
@@ -124,7 +124,7 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                         </table>    
                         <button>
                             <i class="fas fa-user-plus"></i>
-                            Add competitors
+                            <?= t('Add competitors', 'Добавить участников') ?>
                         </button>
                     </form>  
                 <?php } ?>
@@ -135,9 +135,9 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                 <thead>
                     <tr>
                         <td>#</td>
-                        <td>Competitor</td>
-                        <td>Complete</td>
-                        <td>Remove</td>
+                        <td><?= t('Competitor', 'Имя') ?></td>
+                        <td><?= t('Complete', 'Завершено') ?></td>
+                        <td><?= t('Remove', 'Отменить') ?></td>
                     <tr>
                 </thead>
                 <tbody>

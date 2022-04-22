@@ -5,7 +5,6 @@ namespace api;
 function get_me() {
     $wcaoauth = \wcaoauth::me();
     if (!$wcaoauth) {
-        http_response_code(401);
         $json = ['error' => 'Not authorized'];
     } else {
         $json = [
