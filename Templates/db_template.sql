@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Sun, 17 Apr 2022 11:06:49 +0000
+-- Date: Fri, 22 Apr 2022 05:30:54 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -530,6 +530,7 @@ CREATE TABLE `unofficial_events_dict` (
   `result_dict` int(11) DEFAULT NULL,
   `special` tinyint(4) DEFAULT '0',
   `order` int(11) DEFAULT NULL,
+  `nameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `code` (`code`),
@@ -577,6 +578,8 @@ CREATE TABLE `unofficial_formats_dict` (
   `code` varchar(255) DEFAULT NULL,
   `cutoff_attempts` int(11) DEFAULT NULL,
   `cutoff_name` varchar(255) DEFAULT NULL,
+  `nameRU` varchar(255) DEFAULT NULL,
+  `cutoff_nameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -636,6 +639,7 @@ CREATE TABLE `unofficial_results_dict` (
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `smallName` varchar(255) DEFAULT NULL,
+  `nameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -653,6 +657,8 @@ CREATE TABLE `unofficial_rounds_dict` (
   `image` varchar(255) DEFAULT NULL,
   `fullName` varchar(255) DEFAULT NULL,
   `smallName` varchar(255) DEFAULT NULL,
+  `fullNameRU` varchar(255) DEFAULT NULL,
+  `smallNameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -734,4 +740,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Sun, 17 Apr 2022 11:06:49 +0000
+-- Dump completed on: Fri, 22 Apr 2022 05:30:54 +0000
