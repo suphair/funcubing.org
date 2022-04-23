@@ -282,14 +282,23 @@ function getFCIDlistbyName($name) {
 }
 
 function getRankedJudges() {
-    $sql = "select 
-                `dict_competitors`.name, 
-                `unofficial_judges`.is_senior, 
-                count(*) competitions 
-            from `unofficial_judges`
-            join `dict_competitors` on `dict_competitors`.wcaid = `unofficial_judges`.wcaid
-            join `unofficial_competitions` on `dict_competitors`.wcaid in(`unofficial_competitions`.`rankedJudgeSenior`,`unofficial_competitions`.`rankedJudgeJunior`)
-            group by `dict_competitors`.name, `unofficial_judges`.is_senior
+    $RU = t('', 'RU');
+    $sql = "
+    select     
+            coalesce(dict_competitors.name$RU ,dict_competitors.name) name,
+            t.competitions,
+            t.is_senior
+            from(
+                select 
+                    dict_competitors.wcaid wcaid, 
+                    `unofficial_judges`.is_senior, 
+                    count(*) competitions 
+                from `unofficial_judges`
+                join `dict_competitors` on `dict_competitors`.wcaid = `unofficial_judges`.wcaid
+                join `unofficial_competitions` on `dict_competitors`.wcaid in(`unofficial_competitions`.`rankedJudgeSenior`,`unofficial_competitions`.`rankedJudgeJunior`)
+                group by `dict_competitors`.wcaid, `unofficial_judges`.is_senior
+            )t
+            join `dict_competitors` on `dict_competitors`.wcaid = t.wcaid
             order by `dict_competitors`.name
     ";
 

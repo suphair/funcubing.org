@@ -9,7 +9,7 @@ foreach (['Classes', 'Functions', 'API'] as $dir) {
         }
     }
 }
-//$mobile = (check_mobile_device() or $_SESSION['mobile'] ?? false);
+$mobile = (check_mobile_device() or $_SESSION['mobile'] ?? false);
 include_once 'vendor/autoload.php';
 config::init('Config');
 errors::register(config::isLocalhost());
@@ -75,7 +75,7 @@ if ($request_0 == 'template') {
 }
 
 $title = [
-    'competitions' => 'Competitions',
+    'competitions' => t('Competitions', 'Соревнования'),
     'goals' => 'Competition Goals',
     'mosaic' => 'Mosaic Building',
     'friends' => 'Friends\' Competitions',

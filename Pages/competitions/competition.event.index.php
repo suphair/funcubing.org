@@ -25,19 +25,26 @@
     <?php if (!$event->final and $event->next_round_value) { ?>
         &nbsp;<i class="fas fa-caret-square-right"></i> <?= t('Top', 'Лучшие') ?> <?= $event->next_round_value . ($event->next_round_procent ? '%' : '') ?> <?= t('advance next round', 'проходят дальше') ?> 
         <?= $next_round_competitors ? " ($next_round_competitors)" : '' ?>
+        <?php if ($event->next_round_value > $next_round_competitors and!$event->next_round_procent) { ?>
+            <?= t('no more than 75%', 'не более 75%') ?>
+        <?php }
+        ?>
     <?php } ?>
+    <?= $ranked_icon ?>
+    <a href="<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>">
+        <?= t('Event rankings', 'Рейтинг дисциплины') ?>
+    </a>
 </p>
 <br>
-<p><i class="fas fa-tv"></i> <a target='blank' href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=projector" ?>"><?= t('Projector', 'Проектор') ?></a>
+<p>
+    <i class="fas fa-tv"></i> <a target='blank' href="<?= PageIndex() . "competitions/$secret/event/$event->code/$event->round?action=projector" ?>"><?= t('Projector', 'Проектор') ?></a>
     &nbsp;<i class="fas fa-print"></i> <a target="_blank" href="?action=result"><?= t('Print results', 'Печать результатов') ?></a>
     <?php if ($comp->my or $comp->organizer) { ?>
         <?php if (sizeof($comp_data->competitors)) { ?>
             ▪ <a target="_blank" href="?action=cards"><?= t('Competitior cards', 'Карточки участников') ?></a>
         <?php } ?>     
         ▪ <a target="_blank" href="?action=cards&blank"><?= t('Blank cards', 'Пустые карточки') ?></a>
-        <?php if ($event_round_this) { ?>
-            ▪ <a target="_blank" href="?action=export&format=txt"><?= t('TXT results', 'Результаты в TXT') ?></a>
-        <?php } ?>
+        ▪ <a target="_blank" href="?action=export&format=txt"><?= t('TXT results', 'Результаты в TXT') ?></a>
     <?php } ?>
 </p>
 <?php

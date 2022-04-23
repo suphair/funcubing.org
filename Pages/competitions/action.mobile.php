@@ -1,30 +1,21 @@
 <meta name="viewport" content="width=device-width">
 <head>
-    <link rel="icon" href="<?= PageLocal() ?>Pages/competitions/projector.png" >
+    <title><?= $comp->name ?></title>
+    <link rel="icon" href="<?= PageLocal() ?>Pages/competitions/mobile.png" >
     <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="<?= PageLocal() ?>Pages/competitions/action.mobile.css?1" type="text/css"/>
 </head>
 <script>
     $('body').html('');
-</script>
+</script><button class='back' onclick="window.location.href = location.protocol + '//' + location.host + location.pathname;">X</button>
 <b><?= $comp->name ?></b>
 <br id="landscape"> 
-<?php
-$event_code = request(3);
-$round = request(4);
-$event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
-$event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
-$event_round_select = $comp_data->event_rounds[$event] ?? false;
-if (!$event_round_select) {
-    die("Round not found [$event_code] [$round]");
-}
-?>
 <select id="event">
     <?php
     foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
         $event_dict = $events_dict[$event_round->event_dict];
         ?>
-        <option name="<?= $event_round->id ?>" <?= $event_round_select->id == $event_round->id ? 'selected' : '' ?>>
+        <option name="<?= $event_round->id ?>" >
             <?= $event_dict->name ?> -  <?= $rounds_dict[$event_round->round == $event_round->rounds ? 0 : $event_round->round]->fullName; ?>
         </option>
     <?php } ?>
@@ -36,6 +27,7 @@ foreach ($comp_data->event_rounds as $event_round) {
     $format_dict = $formats_dict[$event_round->format_dict];
     $formats = array_unique([$format_dict->format, 'best']);
     ?>
+    <a name="<?= $event_round->id ?>"></a>
     <table data-event id="<?= $event_round->id ?>">
         <thead>
             <tr>

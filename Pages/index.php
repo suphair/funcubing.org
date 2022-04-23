@@ -1,8 +1,11 @@
 <?php
 $sectionData = (object) [
             'competitions' => (object) [
-                'title' => 'Competitions',
-                'description' => 'To organize competitions. Any speedcuber can register a competition.'
+                'title' => t('Competitions', 'Соревнования'),
+                'description' => t(
+                        'To organize competitions. Any speedcuber can register a competition.',
+                        'Проведение соревнований. Любой спидкубер может зарегистрировать и провести соревнование.'
+                )
             ],
             'mosaic' => (object) [
                 'title' => 'Mosaic Building',

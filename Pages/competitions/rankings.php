@@ -59,6 +59,12 @@ foreach (['average', 'best'] as $type_att) {
     }
 }
 ?>
+<p> <?= $ranked_icon ?> <?=
+    t(
+            'The rankings includes only competitions held at the highest level.',
+            'В рейтинге участвуют только проведённые на высшем уровне соревнования.')
+    ?>
+</p>
 <hr>
 <h1>
     <a href= '<?= PageIndex() ?>competitions/rankings' class='<?= $select == 'records' ? 'select' : '' ?>'><i title='<?= t('Records', 'Рекорды') ?>' class="fas fa-trophy"></i></a>

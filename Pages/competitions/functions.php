@@ -12,6 +12,7 @@ function getCompetitions($me, $mine) {
     $me_id = ($me->id ?? -1);
     $me_wcaid = ($me->wca_id ?? -1);
     $admin = admin();
+    $RU = t('', 'RU');
     $sql = "SELECT
         unofficial_competitions.website,
         unofficial_competitions.id,
@@ -25,8 +26,8 @@ function getCompetitions($me, $mine) {
         unofficial_competitions.ranked,
         (date(unofficial_competitions.date) > current_date) upcoming,
         (date(unofficial_competitions.date) = current_date 
-        or date(unofficial_competitions.date_to) = current_date ) run,
-        dict_competitors.name competitor_name,
+        or date(unofficial_competitions.date_to) = current_date) run,
+        coalesce(dict_competitors.name$RU, dict_competitors.name) competitor_name,
         dict_competitors.country competitor_country,
         unofficial_organizers.id organizer,
         unofficial_competitions.competitor = $me_id my,
@@ -55,6 +56,7 @@ function getCompetition($secret, $me = FALSE) {
     $me_id = ($me->id ?? -1);
     $me_wcaid = ($me->wca_id ?? -1);
     $admin = admin() ? 'TRUE' : 'FALSE';
+    $RU = t('', 'RU');
     $sql = "SELECT
         unofficial_competitions.website,
         unofficial_competitions.id,
@@ -73,9 +75,9 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.rankedID,
         unofficial_competitions.rankedJudgeSenior,
         unofficial_competitions.rankedJudgeJunior,
-        rankedJudgeSenior.name rankedJudgeSenior_name,
-        rankedJudgeJunior.name rankedJudgeJunior_name,
-        dict_competitors.name competitor_name,
+        coalesce(rankedJudgeSenior.name$RU,rankedJudgeSenior.name) rankedJudgeSenior_name,
+        coalesce(rankedJudgeJunior.name$RU,rankedJudgeJunior.name) rankedJudgeJunior_name,
+        coalesce(dict_competitors.name$RU,dict_competitors.name) competitor_name,
         dict_competitors.wcaid competitor_wcaid,
         dict_competitors.country competitor_country,
         (unofficial_competitions.competitor = $me_id OR $admin) my,
@@ -379,7 +381,7 @@ function getCompetitionData($id) {
     }
 
     $organizers = \db::rows("SELECT "
-                    . " dict_competitors.name competitor_name,"
+                    . " coalesce(dict_competitors.name$RU,dict_competitors.name) competitor_name,"
                     . " unofficial_organizers.wcaid competitor_wcaid"
                     . " FROM unofficial_organizers"
                     . " LEFT OUTER JOIN dict_competitors on unofficial_organizers.wcaid = dict_competitors.wcaid "
@@ -740,4 +742,45 @@ function updateCompetitionCard($competition_id) {
             \db::exec("update `unofficial_competitors` set card = $card where id = $competitor->id");
         }
     }
+}
+
+function getBestAttempts($comp_id) {
+    $attempts = \db::rows("select
+        e_dict.code,
+        rounds.round,
+        result.best,
+        coalesce(result.mean, result.average) average,
+        result.order,
+        replace(replace(coalesce(result.mean,result.average),'.',''),':','') average_order
+        from 
+        `unofficial_competitors_result` result
+        join `unofficial_competitors_round` round on round.id=result.competitor_round
+        join `unofficial_events_rounds` rounds on rounds.id=round.round
+        join `unofficial_events` events on events.id=rounds.event
+        join `unofficial_events_dict` e_dict on e_dict.id=events.event_dict
+        join `unofficial_competitions` competition on competition.id=events.competition
+        where competition.id = $comp_id
+        order by e_dict.code,rounds.round,result.order");
+    $results = [];
+    foreach ($attempts as $attempt) {
+        if (!isset($best_order[$attempt->code][$attempt->round])
+                or $best_order[$attempt->code][$attempt->round] > $attempt->order) {
+            if ($attempt->average and!in_array(strtolower($attempt->average), ['dnf', 'dns'])) {
+                $results[$attempt->code][$attempt->round]['best'] = str_replace(['(', ')'], '', $attempt->best);
+                $best_order[$attempt->code][$attempt->round] = $attempt->order;
+            }
+        }
+    }
+
+    foreach ($attempts as $attempt) {
+        if (!isset($average_order[$attempt->code][$attempt->round])
+                or $average_order[$attempt->code][$attempt->round] > $attempt->average_order) {
+            if ($attempt->average and!in_array(strtolower($attempt->average), ['dnf', '-cutoff'])) {
+                $results[$attempt->code][$attempt->round]['average'] = $attempt->average;
+                $average_order[$attempt->code][$attempt->round] = $attempt->average_order;
+            }
+        }
+    }
+
+    return $results;
 }

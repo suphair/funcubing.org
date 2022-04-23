@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Fri, 22 Apr 2022 05:30:54 +0000
+-- Date: Fri, 22 Apr 2022 05:54:53 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -83,6 +83,7 @@ CREATE TABLE `dict_competitors` (
   `wid` int(11) DEFAULT NULL,
   `timestamp_insert` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `timestamp_update` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `nameRU` varchar(255) DEFAULT NULL,
   UNIQUE KEY `wcaid` (`wcaid`,`wid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -740,4 +741,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Fri, 22 Apr 2022 05:30:54 +0000
+-- Dump completed on: Fri, 22 Apr 2022 05:54:53 +0000

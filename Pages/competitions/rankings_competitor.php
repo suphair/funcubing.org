@@ -218,5 +218,4 @@ foreach ($results as $result) {
             Rename
         </button>
     </form>
-
 <?php } ?>

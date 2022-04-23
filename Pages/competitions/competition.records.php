@@ -10,6 +10,7 @@
             <td class='attempt'><?= t('Result', 'Результат') ?></td>
             <td><?= t('Competitor', 'Имя') ?></td>
             <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
+            <td></td>
         </tr>
     </thead>
     <tbody>
@@ -26,7 +27,7 @@
                             <?= $event->name ?>
                         </td>
                         <td>
-                            <?= ['best' => t('Single','Лучшая'), 'average' => t('Average','Среднее')][$record->type] ?>
+                            <?= ['best' => t('Single', 'Лучшая'), 'average' => t('Average', 'Среднее')][$record->type] ?>
                         </td>
                         <td class='record'>
                             <?= $record->result ?>
@@ -46,6 +47,11 @@
                                 <?= $record->{"attempt$i"} ?? false ?>
                             </td>
                         <?php } ?>
+                        <td>
+                            <a href="<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/<?= $record->type ?>">
+                                <?= $ranked_icon ?> <?= t('Rankings', 'Рейтинг') ?>
+                            </a>
+                        </td>
                     </tr>
                 <?php } ?>
             <?php } ?>

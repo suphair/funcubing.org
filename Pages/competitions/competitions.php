@@ -36,6 +36,17 @@ if (!($me->wca_id ?? FALSE)) {
     ?>
 <?php } ?>
 <hr>
+<p> <?= $ranked_icon ?> 
+    <a href="<?= PageIndex() ?>competitions/rankings"> 
+        <?= t('Go to the rankings', 'Перейти в рейтинг') ?>
+    </a>
+    -
+    <?=
+    t(
+            'includes only competitions held at the highest level.',
+            'участвуют только проведённые на высшем уровне соревнования.')
+    ?>
+</p>
 <br>
 <?php $mine = ($me and filter_input(INPUT_GET, 'show') == 'mine'); ?>
 <?php $competitions = unofficial\getCompetitions($me, $mine); ?>
@@ -67,11 +78,6 @@ asort($owners);
             <?php } ?>
         </select>
     <?php } ?>
-    | 
-    <a href="<?= PageIndex() ?>competitions/rankings" title="Rankings"> 
-        <?= $ranked_icon ?>
-        <?= t('Rankings', 'Рейтинг') ?>
-    </a> 
 </p>
 <table class='table_new'>
     <thead>

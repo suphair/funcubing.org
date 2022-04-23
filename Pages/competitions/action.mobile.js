@@ -1,5 +1,16 @@
-var current_event = $('#event').find('option').eq(0).attr("name");
+var hash = $(location).attr('hash');
+if (hash) {
+    var current_event = hash.replace('#', '');
+    $('select option[name=' + current_event + ']').prop('selected', true);
+} else {
+    var current_event = $('#event').find('option').eq(0).attr("name");
+}
 var landscape;
+
+$('[data-event]').hide();
+$('#' + current_event + ' [data-event]').show();
+$('#' + current_event).show();
+
 select_event(current_event);
 resize(current_event);
 
@@ -11,10 +22,10 @@ $('#event').change(function () {
 });
 
 function select_event(event) {
-    $('[data-event]').hide();
-    $('#' + event + ' [data-event]').show();
-    $('#' + event).show();
-
+    if ('#' + event != $(location).attr('hash')) {
+        window.location = window.location.href.split('#')[0] + '#' + event;
+        window.location.reload(true);
+    }
 }
 
 $(function () {

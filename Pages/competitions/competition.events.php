@@ -1,6 +1,7 @@
 <?php
 $events = unofficial\getEvents($comp->id);
 $eventsRounds = unofficial\getEventsRounds($comp->id);
+$bestAttempts = unofficial\getBestAttempts($comp->id);
 if ($comp_data->competition->events) {
     ?> 
     <h2>
@@ -38,10 +39,10 @@ if ($comp_data->competition->events) {
                 </td>
                 <?php if ($comp->ranked) { ?>
                     <td class="attempt">
-                        <i class="fas fa-trophy"></i> <?= t('Average', 'Среднее') ?>
+                        <?= t('Best average', 'Лучшее среднее') ?>
                     </td>
                     <td class="attempt">
-                        <i class="fas fa-trophy"></i> <?= t('Single', 'Лучшая') ?>
+                        <?= t('Best single', 'Лучшая сборка') ?>
                     </td>
                 <?php } ?>
                 <td hidden data-event-comment>
@@ -50,7 +51,10 @@ if ($comp_data->competition->events) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($events as $event) { ?>
+            <?php
+            foreach ($events as $event) {
+                $event_code = $events_dict[$event->event_dict]->code;
+                ?>
                 <?php
                 foreach (range(1, $event->rounds) as $round) {
                     $event_round = $eventsRounds[$event->id][$round];
@@ -141,8 +145,10 @@ if ($comp_data->competition->events) {
                         <?php if ($comp->ranked) { ?>
                             <td class="attempt">
                                 <?php
+                                $record_exists = false;
                                 foreach ($records[$event->event_dict] ?? [] as $record) {
                                     if ($record->type == 'average' and $record->round == $round) {
+                                        $record_exists = true;
                                         ?>
                                         <span class="record">
                                             <?= $record->result ?>
@@ -150,12 +156,17 @@ if ($comp_data->competition->events) {
                                         <?php
                                     }
                                 }
-                                ?>
+                                if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['average'] ?? false) {
+                                    ?>
+                                    <?= $bestAttempts[$event_code][$event_round->round]['average'] ?>
+                                <?php } ?>
                             </td>
                             <td class="attempt">
                                 <?php
+                                $record_exists = false;
                                 foreach ($records[$event->event_dict] ?? [] as $record) {
                                     if ($record->type == 'best' and $record->round == $round) {
+                                        $record_exists = true;
                                         ?>
                                         <span class="record">
                                             <?= $record->result ?>
@@ -163,7 +174,10 @@ if ($comp_data->competition->events) {
                                         <?php
                                     }
                                 }
-                                ?>
+                                if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['best'] ?? false) {
+                                    ?>
+                                    <?= $bestAttempts[$event_code][$event_round->round]['best'] ?>
+                                <?php } ?>
                             </td>
                         <?php } ?>
                         <td align="left" hidden data-event-comment>

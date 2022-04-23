@@ -14,13 +14,20 @@ $comp_api = api\competitions($comp->secret)[$comp->id];
 
 $organisers = [];
 $judges = [];
-foreach ($comp_api->organizers as $organizer) {
-    $organisers[] = trim(explode("(", $organizer->name)[0]);
-}
+
 foreach ($comp_api->judges ?? [] as $judge) {
-    $judges[] = str_replace(' ', '&nbsp;', trim(explode("(", $judge->name)[0]));
+    $judge_name = str_replace(' ', '&nbsp;', trim(explode("(", $judge->name)[0]));
+    if (!in_array($judge_name, $judges)) {
+        $judges[] = $judge_name;
+    }
 }
 
+foreach ($comp_api->organizers as $organizer) {
+    $organizer_name = str_replace(' ', '&nbsp;', trim(explode("(", $organizer->name)[0]));
+    if (!in_array($organizer_name, $judges) and!in_array($organizer_name, $organisers)) {
+        $organisers[] = $organizer_name;
+    }
+}
 
 $mpdf = new \Mpdf\Mpdf();
 $stylesheet = '
@@ -60,7 +67,7 @@ foreach ($competitors as $competitor_name => $results) {
         $html = '<div style="padding:20px 20px 0px 20px"><span style="font-size:20px;">';
         if (sizeof($judges)) {
             if ($RU) {
-                $html .= '<b>' . implode(" and ", $judges) . '</b>'
+                $html .= '<b>' . implode(" и ", $judges) . '</b>'
                         . ', от имени <span class="nobr"><b>Fun&nbsp;Cubing</b></span>, и ';
             } else {
                 $html .= '<b>' . implode(" and ", $judges) . '</b>'
@@ -69,7 +76,7 @@ foreach ($competitors as $competitor_name => $results) {
         }
         if (sizeof($organisers)) {
             if ($RU) {
-                $html .= '<b>' . implode(" and ", $organisers) . '</b>'
+                $html .= '<b>' . implode(" и ", $organisers) . '</b>'
                         . ', от имени команды организаторов, подтвержают что';
             } else {
                 $html .= '<b>' . implode(" and ", $organisers) . '</b>'

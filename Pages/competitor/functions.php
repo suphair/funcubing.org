@@ -33,4 +33,14 @@ function actual($competitor) {
         }
         \db::exec("UPDATE dict_competitors SET name = '$name', wid = $wid, wcaid = '$wcaid', country = '$country' WHERE wid = '{$row_wid->wid}'");
     }
+
+    $nameRU = trim(str_replace([$name, '(', ')'], '', $competitor->name));
+    if ($country == 'RU' and $nameRU) {
+        if ($row_wid) {
+            \db::exec("UPDATE dict_competitors SET nameRU = '$nameRU' WHERE wid = '{$row_wid->wid}'");
+        }
+        if ($row_wcaid) {
+            \db::exec("UPDATE dict_competitors SET nameRU = '$nameRU' WHERE wcaid = '{$row_wcaid->wcaid}'");
+        }
+    }
 }

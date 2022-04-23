@@ -92,7 +92,7 @@
                     <tr><td colspan="2"><hr></td></tr>
                     <tr>
                         <td><?= $ranked_icon ?></td>
-                        <td><a href="<?= PageIndex() . "competitions/rankings" ?>"><?= t('Rankings', 'Рейтинг') ?></a></td>
+                        <td><a href="<?= PageIndex() . "competitions/rankings" ?>"><?= t('Included in the rankings', 'Участвует в рейтинге') ?></a></td>
                     </tr>
 
                     <?php

@@ -47,6 +47,11 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
             ><i title='<?= t('Records', 'Рекорды'); ?>' class="fas fa-trophy"></i></a>    
         <?php } ?>
 
+    <?php if ($mobile) { ?>
+        <a href="<?= PageIndex() . "competitions/$secret/?action=mobile" ?>">
+            <i title="<?= t('Mobile', 'Смартфон') ?>" class="fas fa-mobile-alt"></i>
+        </a>
+    <?php } ?>
     <?php foreach ($comp_data->event_rounds as $event_round_id => $event_round) { ?>
         <a class="<?= $event_round_this == $event_round_id ? 'select' : '' ?>"
            title="<?= $comp_data->events[$event_round->event_dict]->name ?>, <?= $rounds_dict[$event_round->round == $event_round->rounds ? 0 : $event_round->round]->fullName ?>"

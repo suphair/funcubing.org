@@ -4,6 +4,7 @@ namespace api;
 
 function competitions($competition_id = false) {
     $wca_id = get_me()['wca_id'] ?? false;
+    $RU = t('', 'RU');
     $competitions = \db::rows("SELECT 
                     c.id,
                     c.name,
@@ -15,11 +16,11 @@ function competitions($competition_id = false) {
                     c.ranked is_ranked,
                     c.show is_publish,
                     dc.wcaid dc_wcaid,
-                    dc.name dc_name,
+                    coalesce(dc.name$RU, dc.name) dc_name,
                     dcSJ.wcaid dcSJ_wcaid,
-                    dcSJ.name dcSJ_name,
+                    coalesce(dcSJ.name$RU, dcSJ.name) dcSJ_name,
                     dcJJ.wcaid dcJJ_wcaid,
-                    dcJJ.name dcJJ_name
+                    coalesce(dcJJ.name$RU, dcJJ.name) dcJJ_name
                 FROM unofficial_competitions c 
                 JOIN dict_competitors dc on dc.wid=c.competitor 
                 LEFT OUTER JOIN dict_competitors dcSJ on dcSJ.wcaid=c.rankedJudgeSenior 
@@ -62,12 +63,12 @@ function competitions($competition_id = false) {
 
         $competitions_key[$competition->id] = $competition_key;
     }
-    $organizers = \db::rows('SELECT 
+    $organizers = \db::rows("SELECT 
                             o.competition,
                             dc.wcaid,
-                            dc.name
+                            coalesce(dc.name$RU, dc.name) name
                         FROM unofficial_organizers o
-                        JOIN dict_competitors dc on dc.wcaid=o.wcaid ');
+                        JOIN dict_competitors dc on dc.wcaid=o.wcaid ");
     foreach ($organizers as $organizer) {
         if ($competitions_key[$organizer->competition] ?? false) {
             $main_organizer = $competitions_key[$organizer->competition]->organizers[0]->wca_id;
