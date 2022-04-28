@@ -34,6 +34,10 @@ foreach ($comp_api->organizers as $organizer) {
 
 $mpdf = new \Mpdf\Mpdf();
 $stylesheet = '
+               body {
+                    background-image:url(' . PageIndex() . 'Pages/competitions/certificate' . ($comp->ranked ? 'FC' : '') . '.png); 
+                    background-image-resize:4
+               }
                td {
                     border: 2px solid lightgray;
                     padding:3px;
@@ -67,43 +71,62 @@ foreach ($competitors as $competitor_name => $results) {
         }
     }
     if (sizeof($results_event)) {
-        $html = '<div style="padding:20px 20px 0px 20px"><span style="font-size:20px;">';
+        $html = '<div style="padding:20px 30px 0px 30px"><span style="font-size:20px;">';
         if (sizeof($judges)) {
             if ($RU) {
                 $html .= '<b>' . implode(" и ", $judges) . '</b>'
-                        . ', от имени <span class="nobr"><b>Fun&nbsp;Cubing</b></span>';
+                        . ', от имени <span class="nobr"><b>Федерации&nbsp;Спидкубинга</b></span>';
             } else {
                 $html .= '<b>' . implode(" and ", $judges) . '</b>'
-                        . ', on behalf of the <span class="nobr"><b>Fun&nbsp;Cubing</b></span>';
+                        . ', on behalf of the <span class="nobr"><b>Speedcubing&nbsp;Federation</b></span>';
+            }
+        }
+        if (sizeof($organisers) and sizeof($judges)) {
+            if ($RU) {
+                $html .= ', и ';
+            } else {
+                $html .= ', and ';
             }
         }
         if (sizeof($organisers)) {
             if ($RU) {
-                $html .= ', и <b>' . implode(" и ", $organisers) . '</b>'
-                        . ', от имени команды организаторов, подтвержают что';
+                $html .= '<b>' . implode(" и ", $organisers) . '</b>'
+                        . ', от имени команды организаторов';
             } else {
-                $html .= ', and <b>' . implode(" and ", $organisers) . '</b>'
-                        . ', on behalf of the organization team, certify that';
+                $html .= '<b>' . implode(" and ", $organisers) . '</b>'
+                        . ', on behalf of the organization team';
             }
         }
 
         if ($RU) {
-            $html .= ', подтвержают что';
+            if ((sizeof($organisers) + sizeof($judges)) > 1) {
+                $html .= ', подтвержают что';
+            } else {
+                $html .= ', подтвержает что';
+            }
         } else {
             $html .= ', certify that';
         }
 
+        if ($RU) {
+            $text = 'принимал(a) участие в <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, получив
+следующие результаты:';
+        } else {
+            $text = 'has participated in the <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, obtaining the
+following results:';
+        }
+
         $mpdf->WriteHTML($html . '</span></div><div style="text-align:center"><h1>' . $competitor_name . '</h1></div>'
-                . '<div style="padding:10px 20px 0px 20px"><span style="font-size:20px;">'
+                . '<div style="padding:10px 30px 0px 30px"><span style="font-size:20px;">'
                 . $text . '</div>'
-                . '<table style="width:100%; margin:10px 20px 0px 20px;">'
+                . '<table style="width:100%; margin:10px 30px 0px 30px;">'
                 . '<thead><tr><td width="300px">' . t('Event', 'Дисциплина') . '</td><td colspan=2 align="center">' . t('Result', 'Результат') . '</td><td width="30px">' . t('Position', 'Место') . '</td></tr></thead><tbody>');
         foreach ($results_event as $event_name => $result_event) {
             $mpdf->WriteHTML('<tr><td>' . $event_name . '</td><td align="center">' . $result_event->format . '</td><td align="right">' . $result_event->value . '</td><td align="center">' . $result_event->position . '</td></tr>');
         }
 
         $mpdf->WriteHTML('</tbody></table>');
-        $mpdf->WriteHTML('<div style="padding:20px 20px 0px 20px; text-align:right"><span style="font-size:18px;">' . dateRange($comp->date, $comp->date_to) . '</span></div>');
+        $mpdf->WriteHTML('<div style="padding:20px; text-align:center"><span style="font-size:18px;">' . dateRange($comp->date, $comp->date_to, 'M') . '</span></div>');
         if ($competitors_count != $r) {
             $mpdf->AddPage();
         }
