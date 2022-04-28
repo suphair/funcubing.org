@@ -1,8 +1,9 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?4" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?3" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
-$ranked_icon = '<i title="FunCubing Rankings Competition" class="fas fa-mountain"></i>';
+$ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
+$wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {
     $competitor_id = request(2);
     $competitor = unofficial\getCompetitor($competitor_id);
@@ -29,16 +30,30 @@ if ($secret == 'competitor') {
         $section = db::escape(request(2));
 
         switch ($section) {
+            case 'wcaid':
+                if ($comp->ranked and ($comp->my or $comp->organizer or unofficial\federation() )) {
+                    $include = 'competition.wcaid.php';
+                } else {
+                    $include = 'competition.accessdenied.php';
+                }
+                break;
             case 'registrations':
-                if ($comp->my or $comp->organizer) {
+                if (($comp->my or $comp->organizer) and!$comp->approved) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'setting':
-                if ($comp->my) {
+                if ($comp->my and!$comp->approved) {
                     $include = 'competition.setting.php';
+                } else {
+                    $include = 'competition.accessdenied.php';
+                }
+                break;
+            case 'ranking':
+                if (unofficial\federation()) {
+                    $include = 'competition.ranking.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }

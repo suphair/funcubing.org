@@ -1,4 +1,5 @@
 <?php
+
 if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
 
     $registrations = filter_input(INPUT_POST, 'registrations', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -15,6 +16,13 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
             db::exec("UPDATE IGNORE unofficial_competitors SET name = '$name' WHERE id = $competitorId ");
         }
 
+        $non_resident = isset($registration['non_resident']) ? 0 : 1;
+        unset($registration['non_resident']);
+        if ($non_resident) {
+            db::exec("UPDATE IGNORE unofficial_competitors SET non_resident = $non_resident, FCID = null WHERE id = $competitorId ");
+        } else {
+            db::exec("UPDATE IGNORE unofficial_competitors SET non_resident = $non_resident WHERE id = $competitorId ");
+        }
         if (!is_array($registration)) {
             $registration = [];
         }
@@ -63,22 +71,24 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'FCID' and unofficial\
     }
 
     foreach ($registrations as $competitorId => $registration) {
-        $FCID = strip_tags($registration['FCID']) ?? FALSE;
-        if (strlen($FCID) == 2) {
-            $name = db::row("select name from `unofficial_competitors` WHERE id = $competitorId")->name ?? false;
-            $FCIDs = db::rows("select FCID from `unofficial_competitors` where FCID like '$FCID%' and name='$name'");
-            if (sizeof($FCIDs) >= 1 and $FCIDs[0]->FCID ?? false) {
-                $FCID = $FCIDs[0]->FCID;
-            } else {
-                $FCID = db::row("select CONCAT(left(max(FCID),2),right(CONCAT('00',right(max(FCID),2)+1),2))  FCID from `unofficial_competitors` where FCID like '$FCID%'")->FCID ?? "{$FCID}01";
+        if ($registration['FCID'] ?? false) {
+            $FCID = strip_tags($registration['FCID']);
+            if (strlen($FCID) == 2) {
+                $name = db::row("select name from `unofficial_competitors` WHERE id = $competitorId")->name ?? false;
+                $FCIDs = db::rows("select FCID from `unofficial_competitors` where FCID like '$FCID%' and name='$name'");
+                if (sizeof($FCIDs) >= 1 and $FCIDs[0]->FCID ?? false) {
+                    $FCID = $FCIDs[0]->FCID;
+                } else {
+                    $FCID = db::row("select CONCAT(left(max(FCID),2),right(CONCAT('00',right(max(FCID),2)+1),2))  FCID from `unofficial_competitors` where FCID like '$FCID%'")->FCID ?? "{$FCID}01";
+                }
+                db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
             }
-            db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
-        }
-        if (strlen($FCID) == 4) {
-            db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
-        }
-        if (!$FCID) {
-            db::exec("UPDATE IGNORE unofficial_competitors SET FCID = null WHERE id = $competitorId ");
+            if (strlen($FCID) == 4) {
+                db::exec("UPDATE IGNORE unofficial_competitors SET FCID = '$FCID' WHERE id = $competitorId ");
+            }
+            if (!$FCID) {
+                db::exec("UPDATE IGNORE unofficial_competitors SET FCID = null WHERE id = $competitorId ");
+            }
         }
     }
 }

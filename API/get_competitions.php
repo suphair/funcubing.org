@@ -13,6 +13,7 @@ function get_competitions($id = false) {
         'to_date' => ['type' => 'date', 'compare' => 'earlier', 'key' => 'end_date'],
         'is_ranked' => ['type' => 'boolean'],
         'is_publish' => ['type' => 'boolean'],
+        'is_approved' => ['type' => 'boolean'],
     ];
 
     filter($competitions, $filters);

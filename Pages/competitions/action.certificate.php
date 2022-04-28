@@ -10,7 +10,10 @@ if (!isset($comp)) {
     }
 }
 $RU = t(false, true);
-$comp_api = api\competitions($comp->secret)[$comp->id];
+$comp_api = api\competitions($comp->secret)[$comp->id] ?? false;
+if (!$comp_api) {
+    exit();
+}
 
 $organisers = [];
 $judges = [];
@@ -68,28 +71,26 @@ foreach ($competitors as $competitor_name => $results) {
         if (sizeof($judges)) {
             if ($RU) {
                 $html .= '<b>' . implode(" и ", $judges) . '</b>'
-                        . ', от имени <span class="nobr"><b>Fun&nbsp;Cubing</b></span>, и ';
+                        . ', от имени <span class="nobr"><b>Fun&nbsp;Cubing</b></span>';
             } else {
                 $html .= '<b>' . implode(" and ", $judges) . '</b>'
-                        . ', on behalf of the <span class="nobr"><b>Fun&nbsp;Cubing</b></span>, and ';
+                        . ', on behalf of the <span class="nobr"><b>Fun&nbsp;Cubing</b></span>';
             }
         }
         if (sizeof($organisers)) {
             if ($RU) {
-                $html .= '<b>' . implode(" и ", $organisers) . '</b>'
+                $html .= ', и <b>' . implode(" и ", $organisers) . '</b>'
                         . ', от имени команды организаторов, подтвержают что';
             } else {
-                $html .= '<b>' . implode(" and ", $organisers) . '</b>'
+                $html .= ', and <b>' . implode(" and ", $organisers) . '</b>'
                         . ', on behalf of the organization team, certify that';
             }
         }
 
         if ($RU) {
-            $text = 'принимал участие в <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, получив
-следующие результаты:';
+            $html .= ', подтвержают что';
         } else {
-            $text = 'has participated in the <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b>, obtaining the
-following results:';
+            $html .= ', certify that';
         }
 
         $mpdf->WriteHTML($html . '</span></div><div style="text-align:center"><h1>' . $competitor_name . '</h1></div>'

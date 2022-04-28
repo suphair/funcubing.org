@@ -30,10 +30,12 @@
         <?php }
         ?>
     <?php } ?>
-    <?= $ranked_icon ?>
-    <a href="<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>">
-        <?= t('Event rankings', 'Рейтинг дисциплины') ?>
-    </a>
+    <?php if ($comp->ranked) { ?>
+        <?= $ranked_icon ?>
+        <a href="<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>">
+            <?= t('Event rankings', 'Рейтинг дисциплины') ?>
+        </a>
+    <?php } ?>
 </p>
 <br>
 <p>

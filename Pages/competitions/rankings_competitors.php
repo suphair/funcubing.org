@@ -23,9 +23,9 @@ usort($competitors_holder_records, function($a, $b) {
     <thead>
         <tr>
             <td><?= t('Name', 'Имя') ?> </td>
-            <td>FC ID</td>
             <td align="center"><?= t('Single', 'Лучшая') ?></td>
             <td align="center"><?= t('Average', 'Среднее') ?></td>
+            <td align="center">WCA ID</td>
         </tr>
 
     </thead>
@@ -42,9 +42,6 @@ usort($competitors_holder_records, function($a, $b) {
                             <?= $competitor->name ?>
                         </a>
                     </td>
-                    <td>
-                        <?= $competitor->FCID ?>
-                    </td>
                     <td align="center">
                         <?php foreach ($holder_records_best as $record) { ?>
                             <i class="<?= $events_dict[$record->event_id]->image ?>"></i>
@@ -56,7 +53,13 @@ usort($competitors_holder_records, function($a, $b) {
                         <?php } ?>
                     </td>
                     <td align="center">
-
+                        <?php if ($competitor->wcaid) { ?>
+                            <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
+                                <?= $competitor->wcaid ?>
+                            </a>
+                        <?php } elseif ($competitor->nonwca) { ?>
+                            <?= t('none','нет') ?>
+                        <?php } ?>
                     </td>
                 </tr>
 
@@ -75,8 +78,8 @@ usort($competitors_holder_records, function($a, $b) {
     <thead>
         <tr>
             <td><?= t('Name', 'Имя') ?></td>
-            <td>FC ID</td>
             <td><?= t('Competitions', 'Соревнований') ?></td>
+            <td align='center'>WCA ID</td>
         </tr>
     </thead>
     <tbody>
@@ -87,11 +90,17 @@ usort($competitors_holder_records, function($a, $b) {
                         <?= $competitor->name ?>
                     </a>
                 </td>
-                <td>
-                    <?= $competitor->FCID ?>
-                </td>
                 <td align="center">
                     <?= $competitor->competitions ?>
+                </td>
+                <td align="center">
+                    <?php if ($competitor->wcaid) { ?>
+                        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
+                            <?= $competitor->wcaid ?>
+                        </a>
+                    <?php } elseif ($competitor->nonwca) { ?>
+                            <?= t('none','нет') ?>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>

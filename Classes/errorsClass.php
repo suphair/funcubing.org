@@ -13,6 +13,7 @@ class errors {
     const DIR = 'errors';
 
     static function handler($errno, $errstr, $errfile, $errline) {
+        http_response_code(500);
         $errorCodes = [
             E_ERROR => 'Error',
             E_WARNING => 'Warning',

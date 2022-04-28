@@ -18,7 +18,9 @@ function results($competition_id) {
                 result.attempt5,
                 result.mean,
                 result.average,
-                result.best
+                result.best,
+                wca.wcaid,
+                wca.nonwca
         from `unofficial_competitors_result` result
         join `unofficial_competitors_round` round on result.competitor_round=round.id
         join `unofficial_competitors` competitor on competitor.id = round.competitor
@@ -26,42 +28,26 @@ function results($competition_id) {
         join `unofficial_events` event on event.id = rounds.event
         join `unofficial_events_dict` event_dict on event_dict.id=event.event_dict 
         join `unofficial_competitions` competition on competition.id=event.competition
+        LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = competitor.FCID
         where lower('$competition_id') in (lower(competition.secret), lower(competition.rankedID), '')
         order by event_dict.order, rounds.round, result.place
             ");
     $results_key = [];
     foreach ($results as $result) {
-        /*
-          $results = [];
-          $results['place'] = $competitor->place + 0;
-          if ($comp->ranked and $competitor->FCID) {
-          $results['FCID'] = $competitor->FCID;
-          }
-          $results['name'] = $competitor->name;
-          foreach ($formats as $format) {
-          $result_format = str_replace('-cutoff', '', $competitor->$format);
-          $results['display'][$format] = $result_format;
-          $results[$format] = attempt_centiseconds($result_format);
-          }
-          foreach (range(1, $event->attempts) as $i) {
-          if ($competitor->$format != '-cutoff' or $competitor->{"attempt$i"} != 'dns') {
-          $attempt = str_replace(['(', ')'], ['', ''], $competitor->{"attempt$i"});
-          $results['display']['attempts'][] = $competitor->{"attempt$i"};
-          $results['attempts'][] = attempt_centiseconds($attempt);
-          }
-          }
-          $export[] = $results;
-          } */
-
         $result_key = new \stdClass();
         $result_key->id = $result->id + 0;
         $result_key->competition_id = $competition_id;
         $result_key->event_id = "{$result->event}_{$result->round}";
         $result_key->round = $result->round + 0;
         $result_key->pos = $result->pos + 0;
-        $result_key->name = $result->name;
-        if ($result->FCID) {
-            $result_key->FCID = $result->FCID;
+        $result_key->name = trim($result->name);
+        $result_key->fc_id = $result->FCID;
+        if ($result->nonwca) {
+            $result_key->wca_id = false;
+        } elseif (!$result->wcaid) {
+            $result_key->wca_id = null;
+        } else {
+            $result_key->wca_id = $result->wcaid;
         }
         $result_key->attempts = [
             attempt_centiseconds($result->attempt1),
@@ -82,4 +68,3 @@ function results($competition_id) {
 
     return $results_key;
 }
-

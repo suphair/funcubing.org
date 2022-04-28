@@ -38,18 +38,25 @@ if (!($me->wca_id ?? FALSE)) {
 <hr>
 <p> <?= $ranked_icon ?> 
     <a href="<?= PageIndex() ?>competitions/rankings"> 
-        <?= t('Go to the rankings', 'Перейти в рейтинг') ?>
+        <?= t('Go to the rankings ', 'Перейти в рейтинг') ?>
     </a>
     -
     <?=
-    t(
-            'includes only competitions held at the highest level.',
-            'участвуют только проведённые на высшем уровне соревнования.')
+    t('only Speedcubing Federation competitions are included.',
+            'участвуют только соревнования под эгидой  Федерации Спидкубинга.')
     ?>
 </p>
 <br>
 <?php $mine = ($me and filter_input(INPUT_GET, 'show') == 'mine'); ?>
-<?php $competitions = unofficial\getCompetitions($me, $mine); ?>
+<?php $ranked = filter_input(INPUT_GET, 'show') == 'ranked'; ?>
+<?php $competitions = unofficial\getCompetitions($me, $mine, $ranked); ?>
+<h2>
+    <a href="?show=all" class="<?= ($mine or $ranked) ? '' : 'select' ?>"><?= t('All', 'Все') ?></a>
+    <?php if ($me) { ?>
+        &nbsp;&nbsp;&nbsp;<a href="?show=mine" class="<?= $mine ? 'select' : '' ?>"><?= t('My competition', 'Мои соревнования') ?></a>
+    <?php } ?>
+    &nbsp;&nbsp;&nbsp;<a href="?show=ranked" class="<?= $ranked ? 'select' : '' ?>"><?= t("Speedcubing Federation Competitions", 'Соревнования Федерации Спидкубинга') ?></a>
+</h2>
 <?php
 $owners = [];
 foreach ($competitions as $competition) {
@@ -58,26 +65,21 @@ foreach ($competitions as $competition) {
 asort($owners);
 ?>
 <p>
-    <?php if ($mine) { ?>
-        <i class="far fa-eye"></i>
-        <a href="?show=all">
-            <?= t('Show all', 'Показать все') ?>
-        </a>
-    <?php } elseif ($me) { ?>
-        <i class="fas fa-crown"></i>
-        <a href="?show=mine"><?= t('Show only mine', 'Показать только мои') ?></a>&nbsp;
-    <?php } ?>
-    <?php if (!$mine) { ?>
-        <i class="fas fa-user-tie"></i>
-        <select data-owner-select>
-            <option value='0' selected><?= t('All organizers', 'Все организаторы') ?></option>
-            <?php foreach ($owners as $id => $name) { ?>
+    <i class="fas fa-user-tie"></i>
+    <select data-owner-select>
+        <option value='0' selected><?= t('All organizers', 'Все организаторы') ?></option>
+        <?php
+        foreach ($owners as $id => $name) {
+            if ($name) {
+                ?>
                 <option value='<?= $id ?>'>
                     <?= $name ?>
                 </option>    
-            <?php } ?>
-        </select>
-    <?php } ?>
+                <?php
+            }
+        }
+        ?>
+    </select>
 </p>
 <table class='table_new'>
     <thead>
@@ -110,13 +112,20 @@ asort($owners);
                         <i class="far fa-eye-slash"></i>
                     <?php } ?>
                     <?= ($competition->without_FCID and $competition->ranked and unofficial\admin()) ? '<span style="color:red"><i class="fas fa-user-check"></i></span>' : '' ?>
-                    <?php if ($competition->my) { ?>
-                        <i class="fas fa-crown"></i>
-                    <?php } elseif ($competition->organizer) { ?>
-                        <i class="fas fa-user-tie"></i>
-                    <?php } ?>
                     <?php if ($competition->ranked) { ?>
                         <?= $ranked_icon ?>
+                    <?php } ?>
+                    <?php if ($competition->approved) { ?>
+                        <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
+                    <?php } ?>
+                    <?php if ($competition->is_judge) { ?>
+                        <i title="<?= t('Judge', 'Судья') ?>" class="fas fa-signature"></i>
+                    <?php } ?>
+                    <?php if ($competition->is_organizer) { ?>
+                        <i title="<?= t('Organizer', 'Организатор') ?>" class="fas fa-user-tie"></i>
+                    <?php } ?>
+                    <?php if ($competition->is_competitor) { ?>
+                        <i title="<?= t('Competitor', 'Участник') ?>" class="fas fa-user"></i>
                     <?php } ?>
                 </td>
                 <td>

@@ -20,6 +20,8 @@ if (!$select) {
     $select = 'event';
 }
 
+change_title(t('Speecubing Federation','Федерация Спидкубинга'));
+
 $type = db::escape(request(3)) == 'average' ? 'average' : 'best';
 list('current' => $ratings, 'history' => $history) = unofficial\getRankedRatings();
 
@@ -60,9 +62,8 @@ foreach (['average', 'best'] as $type_att) {
 }
 ?>
 <p> <?= $ranked_icon ?> <?=
-    t(
-            'The rankings includes only competitions held at the highest level.',
-            'В рейтинге участвуют только проведённые на высшем уровне соревнования.')
+        t('In the rankings only <a href="http://CubingRF.org">Speedcubing Federation</a> competitions are included.',
+            'В рейтинге участвуют только соревнования под эгидой <a href="http://CubingRF.org">Федерации Спидкубинга</a>.')
     ?>
 </p>
 <hr>

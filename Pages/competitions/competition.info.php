@@ -12,7 +12,15 @@
         <?php } ?>
         <td width="30%" valign="top">
             <table class="table_info">
-                <?php if ($comp->my) { ?>
+                <?php if (unofficial\federation()) { ?>
+                    <tr>
+                        <td><?= $ranked_icon ?></td>
+                        <td>
+                            <a href="<?= PageIndex() . "competitions/$comp->secret/ranking" ?>">Настройки ФС</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                <?php if ($comp->my and!$comp->approved) { ?>
                     <tr>
                         <td><i class="fas fa-cog"></i></td>
                         <td>
@@ -20,7 +28,7 @@
                         </td>
                     </tr>
                 <?php } ?>
-                <?php if ($comp->my or $comp->organizer) { ?>
+                <?php if (($comp->my or $comp->organizer) and!$comp->approved) { ?>
                     <tr>
                         <td><i class="fas fa-users-cog"></i></td>
                         <td>
@@ -90,31 +98,39 @@
                 ?>
                 <?php if ($comp->ranked) { ?>
                     <tr><td colspan="2"><hr></td></tr>
-                    <tr>
-                        <td><?= $ranked_icon ?></td>
-                        <td><a href="<?= PageIndex() . "competitions/rankings" ?>"><?= t('Included in the rankings', 'Участвует в рейтинге') ?></a></td>
-                    </tr>
-
-                    <?php
-                    $judges = [];
-                    if ($comp->rankedJudgeSenior_name) {
-                        $judges[] = $comp->rankedJudgeSenior_name;
-                    }
-                    if ($comp->rankedJudgeJunior_name) {
-                        $judges[] = $comp->rankedJudgeJunior_name;
-                    }
-                    $j = 0;
-                    foreach ($judges as $judge) {
-                        if ($judge) {
-                            ?>
-                            <tr>
-                                <td><?php if (!$j++) { ?> <?= t('Judge', 'Судья') ?><?php } ?></td>  
-                                <td><i class="fas fa-signature"></i> <?= $judge ?></td>
-                            </tr>
-                            <?php
-                        }
-                    }
-                    ?>
+                    <?php if ($comp->approved) { ?>
+                        <tr>
+                            <td><?= $ranked_icon ?> <i class="fas fa-check"></i></td>
+                            <td>
+                                <a href="<?= PageIndex() . "competitions/rankings" ?>">
+                                    <?= t('Confirmed by the Speedcubing&nbsp;Federation', 'Подтверждено Федерацией&nbsp;Спидкубинга') ?>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } else { ?>
+                        <tr>
+                            <td><?= $ranked_icon ?></td>
+                            <td>
+                                <a href="<?= PageIndex() . "competitions/rankings" ?>">
+                                    <?= t('Conducted by the Speedcubing&nbsp;Federation', 'Проводится Федерацией&nbsp;Спидкубинга') ?>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                    <?php foreach ($comp_data->judges as $judge) { ?>
+                        <tr>
+                            <td><?= $judge->role ?></td>  
+                            <td><i class="fas fa-signature"></i> <?= $judge->name ?></td>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($comp->my or $comp->organizer or unofficial\federation()) { ?>
+                        <tr>
+                            <td><?= $wca_icon ?></td>
+                            <td>
+                                <a href="<?= PageIndex() . "competitions/$comp->secret/wcaid" ?>"><?= t('Binding to WCA', 'Привязка к WCA') ?></a>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 <?php } ?>
                 <tr><td colspan="2"><hr></td></tr>
                 <tr>
@@ -138,7 +154,7 @@
                     <td></td>
                     <td>
                         <i class="fas fa-users"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/registrations"><?= t('Registrations', 'Регистраци') ?></a>
+                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/registrations"><?= t('Registrations', 'Регистрации') ?></a>
                     </td>
                 </tr>
                 <tr>

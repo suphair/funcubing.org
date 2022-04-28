@@ -89,7 +89,8 @@ usort($competitors_sort, function($a, $b) {
             <p><?= $event->cutoff ? ('<i class="fas fa-cut"></i> ' . t('Cutoff', 'Катофф') . ' ' . $event->cutoff ) : '' ?></p>
             <p><?= ($event->time_limit and!$event->cumulative) ? ('<i class="fas fa-stop-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit ) : '' ?></p>
             <p><?= ($event->time_limit and $event->cumulative) ? ('<i class="fas fa-plus-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit . ' ' . t('cumulative', 'суммарно') ) : '' ?></p>
-
+            <p><b>DNF</b>: f, F, /, -, d, D.</p>
+            <p><b>DNS</b>: s, S, *.</p>
         </td>
         <td width="50%" valign='top'>
             <table class="table_new">

@@ -1,6 +1,6 @@
 <h2>
     <i class="fas fa-trophy"></i> 
-    <?= t('Updated records', 'Обновлённые рекорды') ?></h2>
+    <?= t('Updated records of Speedcubing Federation', 'Обновлённые рекорды Федерации Спидкубинга') ?></h2>
 <table class="table_new">
     <thead>
         <tr>

@@ -30,15 +30,15 @@
                     <br>
                     <?php foreach ($comp_data->events as $event) { ?>
                         <p class="registration_event" onclick="
-                                var el = $('form textarea[name=competitors]');
-                                var s = el[0].selectionStart;
-                                var val = el.val();
-                                var val_s = val.substring(0, s);
-                                var val_e = val.substring(s);
-                                var code = ' <?= $events_dict[$event->event_dict]->code ?> ';
-                                el.val(val_s + code + val_e);
-                                el.focus();
-                                el[0].setSelectionRange(s + code.length, s + code.length);
+                                    var el = $('form textarea[name=competitors]');
+                                    var s = el[0].selectionStart;
+                                    var val = el.val();
+                                    var val_s = val.substring(0, s);
+                                    var val_e = val.substring(s);
+                                    var code = ' <?= $events_dict[$event->event_dict]->code ?> ';
+                                    el.val(val_s + code + val_e);
+                                    el.focus();
+                                    el[0].setSelectionRange(s + code.length, s + code.length);
                            ">
                             <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
                             [<b><?= $events_dict[$event->event_dict]->code ?></b>]
@@ -65,10 +65,15 @@
                 <thead>
                     <tr>
                         <td>#</td>
+                        <?php if ($comp->ranked) { ?>
+                            <td><i class="flag-icon flag-icon-ru"></i></td>
+                        <?php } ?>
                         <td style='color:var(--red)'>
                             <i class="fas fa-user-slash"></i>
                         </td>
-                        <td>Competitor</td>
+                        <td>
+                            Competitor
+                        </td>
                         <?php foreach ($comp_data->events as $event) { ?>
                             <td>
                                 <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>    
@@ -84,6 +89,9 @@
                     <?php foreach ($comp_data->competitors as $competitor) { ?>
                         <tr data-registration>                        
                             <td data-num></td>
+                            <?php if ($comp->ranked) { ?>
+                                <td><input type="checkbox" name="registrations[<?= $competitor->id ?>][non_resident]" <?= $competitor->non_resident ? '' : 'checked' ?>></td>
+                            <?php } ?>
                             <td>
                                 <?php if ($competitor->delete) { ?>
                                     <input data-competitor-delete style='background-color: red' name='registrations_delete[<?= $competitor->id ?>]' type='checkbox'>
@@ -91,14 +99,14 @@
                                     <i class="fas fa-lock"></i>
                                 <?php } ?>    
                             </td>
-                            <td data-competitor-name>
+                            <td data-competitor-name >
                                 <?php if (!$competitor->FCID) { ?>
-                                    <input name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
+                                    <input data-competitor-hide name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
                                 <?php } ?>
                                 <?= $competitor->name ?>
                             </td>
                             <?php foreach ($comp_data->events as $event) { ?>
-                                <td data-competitor-event>
+                                <td data-competitor-hide>
                                     <?php if ($competitor->events[$event->event_dict] ?? FALSE) { ?>
                                         <?php if ($competitor->events[$event->event_dict]->result) { ?>
                                             <i class="fas fa-check"></i>
@@ -113,13 +121,14 @@
                                     <?php } ?>    
                                 </td>    
                             <?php } ?>
-                            <?php if ($comp->ranked) { ?>
-                                <td>
+                            <?php if ($comp->ranked and!$competitor->non_resident) { ?>
+                                <td data-competitor-hide>
                                     <?php
                                     if (unofficial\admin()) {
                                         $name1 = mb_substr(explode(' ', $competitor->name)[0] ?? false, 0, 1, "UTF-8");
                                         $name2 = mb_substr(explode(' ', $competitor->name)[1] ?? false, 0, 1, "UTF-8");
                                         $FCID_preinput = unofficial\rus_lat($name1) . unofficial\rus_lat($name2);
+                                        $competitor->FCID_candidates = array_unique($competitor->FCID_candidates);
                                         ?>
                                         <?php if (sizeof($competitor->FCID_candidates) == 1) { ?>
                                             <input readonly maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID_candidates[0] ?>'>
@@ -250,15 +259,16 @@ if (sizeof($competitors)) {
     });
     $('[data-competitor-delete]').change(function () {
         var name = $(this).closest('tr').find('[data-competitor-name]');
-        var events = $(this).closest('tr').find('[data-competitor-event]');
+        var events = $(this).closest('tr').find('[data-competitor-hide]');
+
         if ($(this).prop("checked")) {
             name.css('text-decoration', 'line-through');
             name.css('color', 'var(--red)');
-            events.hide('slow');
+            events.hide('');
         } else {
             name.css('text-decoration', 'none');
             name.css('color', 'var(--black)');
-            events.show('slow');
+            events.show('');
         }
     });
 </script>

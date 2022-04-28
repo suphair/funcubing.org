@@ -25,7 +25,7 @@ RewriteCond %{REQUEST_URI} !^/index\.php
 #RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !^/Classes/errors/
+RewriteCond %{REQUEST_URI} !/Classes/errors/
 RewriteRule .* index.php [L,QSA]
 
 php_value session.gc_maxlifetime 172800

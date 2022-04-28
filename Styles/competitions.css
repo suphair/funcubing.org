@@ -16,7 +16,8 @@
 }
 
 .podium{
-    color: darkgreen;
+    color: var(--red);
+    font-weight: bold;
 }
 
 .record{

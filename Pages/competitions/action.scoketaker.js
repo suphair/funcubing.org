@@ -2,6 +2,8 @@ var format_result = $('[data-event-result]').data('event-result');
 var is_time = (format_result === 'time');
 var is_amount_asc = (format_result === 'amount_asc');
 var is_amount_desc = (format_result === 'amount_desc');
+const DNF = ['f', 'F', '/', '-', 'd', 'D'];
+const DNS = ['s', 'S', '*'];
 
 $('[data-competitor-chosen]').change(function () {
     var val = $(this).val().toString();
@@ -109,7 +111,7 @@ $('[data-results]').submit(function () {
     }
 
     if (complete == 3) {
-        mean = Math.round((sum) / 3, 2);
+        mean = Math.round(sum * 100 / 3, 0) / 100;
     }
 
     if (is_amount_desc) {
@@ -149,8 +151,8 @@ $('[data-results]').submit(function () {
         $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
     } else {
         $('[data-results-attempts-best]').val(result_format_amount(best));
-        $('[data-results-attempts-average]').val(result_format_amount(average));
-        $('[data-results-attempts-mean]').val(result_format_amount(mean));
+        $('[data-results-attempts-average]').val(result_format_amount_100(average));
+        $('[data-results-attempts-mean]').val(result_format_amount_100(mean));
     }
 
     var competitor = $('[data-results]').data('result-competitor-id');
@@ -178,22 +180,31 @@ function result_format_amount(val) {
     val = val.toString();
     if (val === '') {
         return  '';
-    } else if (val.slice(-1) == 'd' || val.slice(-1) == 'D' || val.slice(-1) == 'f' || val.slice(-1) == 'F') {
+    } else if (DNF.indexOf(val.slice(-1)) !== -1) {
         return 'DNF';
-    } else if (val.slice(-1) == 's' || val.slice(-1) == 'S') {
+    } else if (DNS.indexOf(val.slice(-1)) !== -1) {
         return  'DNS';
     }
     return val.replace(/[^+\d]/g, '');
 }
+
+function result_format_amount_100(val) {
+    if (val.toString().indexOf('.') !== -1) {
+        return result_format_amount(val) / 100;
+    }
+    return result_format_amount(val);
+}
+
+
 
 function input_to_centisecond(val) {
     var centisecond;
     value = val.toString().replace(/[\.\:]/g, '');
     if (value === '') {
         centisecond = 0;
-    } else if (value.slice(-1) == 'd' || value.slice(-1) == 'D' || value.slice(-1) == 'f' || value.slice(-1) == 'F') {
+    } else if (DNF.indexOf(value.slice(-1)) !== -1) {
         centisecond = -1;
-    } else if (value.slice(-1) == 's' || value.slice(-1) == 'S') {
+    } else if (DNS.indexOf(value.slice(-1)) !== -1) {
         centisecond = -2;
     } else {
         value = value.replace(/\D+/g, '');

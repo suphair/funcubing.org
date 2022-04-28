@@ -11,9 +11,18 @@ if ($secret) {
         if (filter_input(INPUT_GET, 'registration_delete') !== NULL) {
             include 'post.registration.delete.php';
         }
+        if (filter_input(INPUT_GET, 'ranking_competitors') !== NULL) {
+            include 'post.ranking_competitors.php';
+        }
     } else {
-        if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and unofficial\admin()) {
-            include 'post.competition.ranking_competitor.php';
+        if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and unofficial\federation()) {
+            include 'post.ranking_competitor.php';
+        }
+        if (filter_input(INPUT_GET, 'ranking_judge') !== NULL and unofficial\federation()) {
+            include 'post.ranking_judge.php';
+        }
+        if (filter_input(INPUT_GET, 'ranking_judge_add') !== NULL and unofficial\federation()) {
+            include 'post.ranking_judge_add.php';
         }
     }
 }
@@ -28,6 +37,13 @@ if ($me->wca_id ?? FALSE) {
     if ($secret) {
 
         $comp = unofficial\getCompetition($secret, $me);
+        if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and unofficial\federation()) {
+            include 'post.competition.rankings_settings.php';
+        }
+
+        if (filter_input(INPUT_GET, 'organizer_rename') !== NULL and unofficial\federation()) {
+            include 'post.organizer_rename.php';
+        }
         if ($comp->my ?? FALSE) {
 
             if (filter_input(INPUT_GET, 'setting') !== NULL) {
@@ -40,10 +56,6 @@ if ($me->wca_id ?? FALSE) {
 
             if (filter_input(INPUT_GET, 'organizer_remove') !== NULL) {
                 include 'post.competition.organizer.remove.php';
-            }
-
-            if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and unofficial\admin()) {
-                include 'post.competition.rankings_settings.php';
             }
 
             if (filter_input(INPUT_GET, 'rounds') !== NULL) {
@@ -89,7 +101,7 @@ if ($me->wca_id ?? FALSE) {
             if (filter_input(INPUT_GET, 'results_add') !== NULL) {
                 include 'post.results.add.php';
             }
-            
+
             if (filter_input(INPUT_GET, 'close_round') !== NULL) {
                 include 'post.results.close_round.php';
             }

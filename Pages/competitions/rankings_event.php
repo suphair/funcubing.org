@@ -25,6 +25,7 @@
             <?php if ($type == 'average') { ?>
                 <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
             <?php } ?>
+            <td align="center">WCA ID</td>
         </tr>
     </thead>
     <tbody>
@@ -57,6 +58,15 @@
                         </td>
                     <?php } ?>
                 <?php } ?>
+                <td align="center">
+                    <?php if ($rating->wcaid) { ?>
+                        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $rating->wcaid ?>'>
+                            <?= $rating->wcaid ?>
+                        </a>
+                    <?php } elseif ($rating->nonwca) { ?>
+                            <?= t('none','нет') ?>
+                        <?php } ?>
+                </td>
             </tr>
         <?php } ?>
     </tbody>

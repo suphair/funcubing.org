@@ -6,6 +6,17 @@
     Sign out
 </a>
 <br>
+<?php if (unofficial\admin()) { ?>
+    <i class="fas fa-user-tag"></i> Admin
+<?php } elseif (unofficial\federation()) { ?>
+    <i class="fas fa-user-tag"></i> Federation
+<?php } ?>
+<?php if ($comp->my ?? false) { ?>
+    <i class="fas fa-user-tag"></i> Main Organizer
+<?php } elseif ($comp->organizer ?? false) { ?>
+    <i class="fas fa-user-tag"></i> Organizer
+<?php } ?>
+&nbsp;&nbsp;
 <?php $lang = $_SESSION['lang'] ?>
 <?php if ($lang == 'RU') { ?>
     <i class="flag-icon flag-icon-ru"></i> <b>Ру</b> | <a href="<?= PageIndex() ?>competitor/?action=language&lang=EN">En</a>

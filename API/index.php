@@ -49,7 +49,8 @@ if ($method == 'get' and!$request_1) {
                 'from_date',
                 'to_date',
                 'is_ranked',
-                'is_publish'
+                'is_publish',
+                'is_approved'
             ]
         ],
         [
@@ -89,6 +90,10 @@ if ($method == 'get' and!$request_1) {
             'method' => 'get'
         ]
     ];
+}
+
+if ($json != ['error' => 'method not found']) {
+    http_response_code(200);
 }
 
 echo json_encode($json,

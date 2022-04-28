@@ -24,6 +24,9 @@ foreach ($events_dict as $event) {
     <thead>
         <tr>
             <td>
+                <?= $ranked_icon ?>
+            </td>
+            <td>
                 <?= t('Competition', 'Наименование') ?>
             </td>
             <td>
@@ -41,6 +44,11 @@ foreach ($events_dict as $event) {
     <tbody>
         <?php foreach ($competitions as $competition) { ?>
             <tr>   
+                <td>
+                    <?php if ($competition->approved) { ?>
+                        <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
+                    <?php } ?>
+                </td>
                 <td>                    
                     <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
                 </td>

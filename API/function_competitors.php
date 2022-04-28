@@ -7,7 +7,7 @@ function competitors($competitor_id = false) {
     $competitors = \db::rows("
         SELECT 
             c.name,
-            c.FCID,
+            c.FCID fc_id,
             c.FCID is not null as is_ranked,
             c.competition,
             comp.name competition_name,
