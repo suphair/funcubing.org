@@ -12,12 +12,12 @@
 }
 
 .next_round{
-    color: darkgreen;
+    color: var(--green);
 }
 
 .podium{
     color: var(--red);
-    font-weight: bold;
+    font-weight:bold;
 }
 
 .record{
@@ -52,9 +52,7 @@ span.checked{
     border-right: 1px solid var(--light_gray);
 }
 
-.exclude::before{
-    content: '(';
-}
-.exclude::after{
-    content: ')';
+.wca_beat{
+    color:var(--gray);
+    text-decoration: line-through;
 }

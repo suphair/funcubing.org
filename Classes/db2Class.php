@@ -1,8 +1,6 @@
 <?php
 
-class db {
-
-    const VERSION = '1.1.0';
+class db2 {
 
     protected static $_instance;
     protected static $connection;

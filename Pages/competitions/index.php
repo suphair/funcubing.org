@@ -1,4 +1,4 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?3" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?4" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));

@@ -274,7 +274,18 @@ if ($comp_data->competition->events) {
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td  colspan="6" style="font-weight: bold">
+                        <a target="_blank"  href="https://worldcubeassociation.org/">
+                            WORLD CUBE ASSOCIATION 
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </td>
+                </tr>
                 <?php
+                $is_special = false;
+                $is_etraevents = false;
+
                 foreach ($events_dict as $eventId => $event_dict) {
 
                     $event_data = $comp_data->events[$eventId] ?? FALSE;
@@ -284,6 +295,31 @@ if ($comp_data->competition->events) {
                     $result = $event_data->result_dict ?? $event_dict->result_dict;
                     $name = $event_data->name ?? $event_dict->name;
                     ?>
+                    <?php
+                    if (!$is_etraevents and $event_dict->extraevents) {
+                        $is_etraevents = true;
+                        ?>
+                        <tr>
+                            <td colspan="6" style="font-weight: bold">
+                                <a target="_blank" href="https://extraevents.org/">
+                                    EXTRA EVENTS 
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+
+                    <?php
+                    if (!$is_special and strpos($event_dict->image, 'fas ') !== false) {
+                        $is_special = true;
+                        ?>
+                        <tr>
+                            <td  colspan="6" style="font-weight: bold">
+                                SPECIAL EVENTS
+                            </td>
+                        </tr>
+                    <?php } ?>
+
                     <tr>
                         <?php foreach (array_merge(['0' => (object) ['id' => 0, 'name' => 0]], $rounds_dict) as $roundId => $round) { ?>
                             <td align='center'>
@@ -321,7 +357,7 @@ if ($comp_data->competition->events) {
                         <?php } ?>
                         <?php foreach ($results_dict as $resultId => $result_dict) { ?>
                             <td align="center">
-                                <?php if (!$event_dict->special or $withResult) { ?>
+                                <?php if (!$event_dict->special or $withResult or $event_dict->extraevents !== false) { ?>
                                     <?php if ($resultId == $result) { ?>
                                         <i class="far fa-dot-circle"></i>
                                     <?php } ?>

@@ -11,8 +11,8 @@
         <?= $wca_icon ?>
         <a href="<?= PageIndex() . "competitions/$comp->secret/wcaid" ?>"><?= t('Binding to WCA', 'Привязка к WCA') ?></a>
     <?php } ?>
+    <br>
 <?php } ?>
-<br>
 <table class="table_new">
     <thead>
         <tr>

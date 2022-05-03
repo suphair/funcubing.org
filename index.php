@@ -14,10 +14,16 @@ include_once 'vendor/autoload.php';
 config::init('Config');
 errors::register(config::isLocalhost());
 
-$get = function($key) {
-    return config::get('DB', $key);
+$get = function($instance = false) {
+    $keys = ['host', 'username', 'password', 'schema', 'port'];
+    foreach ($keys as $key) {
+        $values[$key] = config::get('DB' . $instance, $key);
+    }
+    return $values;
 };
-db::set($get('host'), $get('username'), $get('password'), $get('schema'), $get('port'));
+
+db::set($get());
+db2::set($get(2));
 
 wcaapi::setConnection(db::connection());
 
@@ -27,6 +33,10 @@ $request_2 = request(2);
 $request_3 = request(3);
 $request_4 = request(4);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
+
+if (filter_input(INPUT_GET, 'language')) {
+    $_SESSION['user_lang'] = strtoupper(filter_input(INPUT_GET, 'language'));
+}
 
 if ($_SESSION['user_lang'] ?? false) {
     $_SESSION['lang'] = $_SESSION['user_lang'];
@@ -94,9 +104,10 @@ $title = [
             <title>Fun Cubing</title>
             <link rel="icon" href="<?= PageLocal() ?>Pages/index.png" >
         <?php } ?>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?2" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?1" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/icons-extra-event/css/Extra-Events.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
         <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
         <script src="<?= PageLocal() ?>jQuery/chosen_v1/chosen.jquery.js?2" type="text/javascript"></script>

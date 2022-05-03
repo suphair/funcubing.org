@@ -1,4 +1,4 @@
-<link href="<?= PageIndex() ?>Styles/mosaic.css" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/mosaic.css?1" rel="stylesheet">
 <?php
 mosaic\cron();
 mosaic\value::init();

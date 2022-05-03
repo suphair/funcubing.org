@@ -63,7 +63,7 @@ usort($competitors_sort, function($a, $b) {
                     <input hidden data-results-exclude name='exclude'><br>
                     <?php foreach (range(1, $event->attempts) as $i) { ?>
                         <font style='font-family:monospace;font-size:40px'><?= $i ?> </font>
-                        <input data-oversecond autocomplete=off data-results-attempt="<?= $i ?>" name='attempt[<?= $i ?>]' id='attempt_<?= $i ?>' style="width:200px; font-family:monospace;text-align:right;font-size:40px"><br>
+                        <input autocomplete=off data-results-attempt="<?= $i ?>" name='attempt[<?= $i ?>]' id='attempt_<?= $i ?>' style="width:200px; font-family:monospace;text-align:right;font-size:40px"><br>
                     <?php } ?>
                     <font style='font-family:monospace;font-size:40px'>&nbsp; </font>
                     <button hidden style='font-size:40px' id='submit_results'>

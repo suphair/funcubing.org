@@ -1,11 +1,17 @@
 <?php
 
-function dateRange($start, $end = null) {
-    $parse = function($date) {
+function dateRange($start, $end = null, $month_full = false) {
+    $parse = function($date, $month_full) {
         $time = strtotime($date);
         return [
     'year' => date("Y", $time),
-    'month' => t(
+    'month' =>
+    $month_full ?
+    t(
+            date("F", $time),
+            ['', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сенябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+            [date("n", $time)]
+    ) : t(
             date("M", $time),
             ['', 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
             [date("n", $time)]
@@ -14,8 +20,8 @@ function dateRange($start, $end = null) {
         ];
     };
 
-    $s = $parse($start);
-    $e = $parse($end ?? $start);
+    $s = $parse($start, $month_full);
+    $e = $parse($end ?? $start, $month_full);
 
     if ($s['year'] != $e['year']) {
         return "{$s['month']} {$s['day']}, {$s['year']} - {$e['month']} {$e['day']}, {$e['year']}";

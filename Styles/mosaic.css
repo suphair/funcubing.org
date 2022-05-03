@@ -45,12 +45,6 @@ div.wrapper_img img.images, div.wrapper_img img.images_src{
     height: auto;
 }
 
-div.wrapper>div{
-    text-align: center;
-}
-
-
-
 div.custom_schema{
     height:120px;
 }

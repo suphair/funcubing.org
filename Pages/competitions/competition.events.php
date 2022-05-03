@@ -20,7 +20,7 @@ if ($comp_data->competition->events) {
                 <td></td>
                 <td></td>
                 <td>
-                    <?= t('Events', 'Дисцплины') ?>
+                    <?= t('Events', 'Дисциплины') ?>
                 </td>  
                 <td>
                     <?= t('Round', 'Раунд') ?>

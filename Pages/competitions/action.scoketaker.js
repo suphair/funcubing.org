@@ -111,7 +111,11 @@ $('[data-results]').submit(function () {
     }
 
     if (complete == 3) {
-        mean = Math.round(sum * 100 / 3, 0) / 100;
+        if (is_time) {
+            mean = Math.round(sum / 3, 2);
+        } else {
+            mean = Math.round(sum * 100 / 3, 0) / 100;
+        }
     }
 
     if (is_amount_desc) {
@@ -170,6 +174,13 @@ $('[data-results]').submit(function () {
 
 function result_format(value) {
     if (is_time) {
+        var second_first = value.toString().slice(-5)[0];
+        if ((second_first == '6' ||
+                second_first == '7' ||
+                second_first == '8' ||
+                second_first == '9') && value.length >= 5) {
+            return value;
+        }
         return result_format_enter(input_to_centisecond(value));
     } else {
         return result_format_amount(value);

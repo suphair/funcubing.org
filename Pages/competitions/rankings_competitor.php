@@ -17,21 +17,47 @@ $wca = unofficial\get_wca($FCID);
 ?>
 <h1>
     <i class="fas fa-user"></i>
-    <?= $competitor->name ?>
+    <?= $competitor->name ?> [<?= $competitor->FCID ?>]
 </h1> 
-<h2>
-    <?= $competitor->FCID ?>
-    <?php if ($wca->id ?? false) { ?>
-        &bull;
-        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
-            <?= $wca->id ?>
-            <i class="fas fa-external-link-alt"></i>
-        </a>
-    <?php } elseif ($wca->nonwca) { ?>
-        &bull;
-        <?= t('no WCA ID', 'нет WCA ID') ?>
-    <?php } ?>
-</h2>
+
+<?php if ($wca->id ?? false) { ?>
+    <p>
+        <?php
+        $wca_person = \db2::row("
+            select name, countryId, id, gender from Persons where lower(id) = lower('$wca->id')
+            order by subid desc limit 1");
+        $wca_results = [];
+        foreach (\db2::rows("
+            select eventId, best, 'single' type from RanksSingle where lower(personId) = lower('$wca->id')
+            union
+            select eventId, best, 'average' type from RanksAverage where lower(personId) = lower('$wca->id')") as $row) {
+            if ($row->eventId == '333fm' and $row->type == 'single') {
+                $row->format = $row->best;
+            } else {
+                $row->format = santiceconds_to_string($row->best);
+            }
+            $wca_results[$row->eventId][$row->type] = $row;
+        }
+        if ($wca_person) {
+            ?>
+            <?= $wca->id ?>:
+            <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
+                <?= $wca_person->name ?>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+            <?= $wca_person->countryId ?> (<?= $wca_person->gender ?>)
+        <?php } else { ?>
+            <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
+                <?= $wca->id ?>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        <?php } ?>
+    </p>
+<?php } elseif ($wca->nonwca ?? false) { ?>
+    <p>
+        <?= t('No WCA ID', 'Нет WCA ID') ?>
+    </p>
+<?php } ?>
 <?php
 $results = unofficial\getResutsByCompetitorRankings($competitor->FCID);
 $results_events = [];
@@ -100,6 +126,10 @@ foreach ($results as $result) {
             <td><?= t('Event', 'Дисциплина') ?></td>
             <td><?= t('Rank', 'Рейтинг') ?></td>
             <td><?= t('Single', 'Лучшая') ?></td>
+            <?php if ($wca->id ?? false) { ?>
+                <td  style='color:var(--gray)'><?= t('WCA Single', 'WCA Лучшая') ?></td>
+                <td  style='color:var(--gray)'><?= t('WCA Average', 'WCA Среднее') ?></td>
+            <?php } ?>
             <td><?= t('Average', 'Среднее') ?></td>
             <td><?= t('Rank', 'Рейтинг') ?></td>
         <tr>
@@ -107,28 +137,58 @@ foreach ($results as $result) {
     <tbody>
         <?php
         foreach ($events_dict as $event_att) {
-            $rating_best = $ratings[$event_att->id]['best'][$FCID] ?? false;
-            $rating_average = $ratings[$event_att->id]['average'][$FCID] ?? false;
-            $top_rating_best = ($rating_best->order ?? false) <= 10;
-            $top_rating_average = ($rating_average->order ?? false) <= 10;
-            ?>
-            <?php if ($rating_best or $rating_average) { ?>
-                <tr>
-                    <td>
-                        <i class="<?= $event_att->image ?>"></i>
-                        <?= $event_att->name ?>
-                    </td>
-                    <td align='center' class="<?= $top_rating_best ? 'podium' : '' ?>">
-                        <?= $rating_best->order ?? false ?>
-                    </td>
-                    <td align='center' > <?= $rating_best->result ?? false ?></td>
-                    <td align='center' > <?= $rating_average->result ?? false ?></td>
-                    <td align='center' class="<?= $top_rating_average ? 'podium' : '' ?>">
-                        <?= $rating_average->order ?? false ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        <?php } ?>
+            if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
+                $rating_best = $ratings[$event_att->id]['best'][$FCID] ?? false;
+                $rating_average = $ratings[$event_att->id]['average'][$FCID] ?? false;
+                $top_rating_best = ($rating_best->order ?? false) <= 10;
+                $top_rating_average = ($rating_average->order ?? false) <= 10;
+                ?>
+                <?php
+                if ($rating_best or $rating_average or $wca_results[$event_att->code] ?? false) {
+                    if ($wca->id ?? false) {
+                        $wca_single_beat = false;
+                        $wca_average_beat = false;
+                        $wca_record_single = $wca_results[$event_att->code]['single']->best ?? false;
+                        $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
+                        if ($fc_record_single > 0 and ($fc_record_single < $wca_record_single or $wca_record_single <= 0)) {
+                            $wca_single_beat = true;
+                        }
+                        $wca_record_average = $wca_results[$event_att->code]['average']->best ?? false;
+                        $fc_record_average = string_to_santiceconds($rating_average->result ?? false);
+                        if ($fc_record_average > 0 and ($fc_record_average < $wca_record_average or $wca_record_average <= 0)) {
+                            $wca_average_beat = true;
+                        }
+                    }
+                    ?>
+                    <tr>
+                        <td>
+                            <i class="<?= $event_att->image ?>"></i>
+                            <?= $event_att->name ?>
+                        </td>
+                        <td align='center' class="<?= $top_rating_best ? 'podium' : '' ?>">
+                            <?= $rating_best->order ?? false ?>
+                        </td>
+                        <td align='center' >
+                            <?= $rating_best->result ?? false ?>
+                        </td>
+                        <?php if ($wca->id ?? false) { ?>
+                            <td align='center' class='<?= $wca_single_beat ? 'wca_beat' : '' ?>'>
+                                <?= $wca_results[$event_att->code]['single']->format ?? false ?>
+                            </td>
+                            <td align='center' class='<?= $wca_average_beat ? 'wca_beat' : '' ?>'>
+                                <?= $wca_results[$event_att->code]['average']->format ?? false ?>
+                            </td>
+                        <?php } ?>
+                        <td align='center' > <?= $rating_average->result ?? false ?></td>
+                        <td align='center' class="<?= $top_rating_average ? 'podium' : '' ?>">
+                            <?= $rating_average->order ?? false ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+                <?php
+            }
+        }
+        ?>
 
     </tbody>
 </table>
@@ -252,3 +312,35 @@ foreach ($results as $result) {
     </tbody>
 </table> 
 
+<?php
+
+function santiceconds_to_string($input) {
+    if ($input) {
+        $minute = floor($input / 6000);
+        $second = floor(($input - $minute * 6000) / 100);
+        $centisecond = $input - $minute * 6000 - $second * 100;
+        $format = '';
+        if ($minute) {
+            $format .= $minute;
+        }
+        if ($format) {
+            $format .= ":" . substr('0' . $second, -2);
+        } else {
+            $format .= $second;
+        }
+        $format .= "." . substr('0' . $centisecond, -2);
+        return $format;
+    } else {
+        return "DNF";
+    }
+}
+
+function string_to_santiceconds($input) {
+    $input = str_replace(['(', ' ', '(', 'dnf', 'dns', '-', 'cutoff', '.', ':'], '', strtolower($input));
+    $input = substr('000000' . $input, -6);
+    $minute = substr($input, 0, 2);
+    $second = substr($input, 2, 2);
+    $centisecond = substr($input, 4, 2);
+    return $minute * 60 * 100 + $second * 100 + $centisecond;
+}
+?>

@@ -143,14 +143,15 @@ function getEventsDict() {
     $rows = \db::rows("SELECT "
                     . " unofficial_events_dict.id id,"
                     . " unofficial_events_dict.image, "
-                    . " unofficial_events_dict.name$RU name,"
+                    . " coalesce(unofficial_events_dict.name$RU,unofficial_events_dict.name) name,"
                     . " unofficial_events_dict.code,"
                     . " unofficial_events_dict.result_dict,"
                     . " unofficial_events_dict.special"
                     . " FROM unofficial_events_dict "
-                    . " ORDER BY id");
+                    . " ORDER BY `order`");
     $events_dict = [];
     foreach ($rows as $row) {
+        $row->extraevents = (strpos($row->image, 'ee-') !== false);
         $events_dict[$row->id] = $row;
     }
     return $events_dict;
@@ -207,7 +208,7 @@ function getEvents($id) {
     return \db::rows("SELECT "
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_events_dict.code code,"
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name,"
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name,"
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict,"
                     . " unofficial_events.id, "
                     . " unofficial_events.rounds, "
@@ -215,7 +216,7 @@ function getEvents($id) {
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
                     . " WHERE unofficial_events.competition = $id "
-                    . " ORDER BY  unofficial_events_dict.id");
+                    . " ORDER BY  unofficial_events_dict.`order`");
 }
 
 function getEventsRounds($id) {
@@ -300,10 +301,11 @@ function getCompetitionData($id) {
                     . " unofficial_events.rounds event_rounds, "
                     . " unofficial_events.id,"
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict, "
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name "
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name "
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
-                    . " WHERE unofficial_events.competition = $id");
+                    . " WHERE unofficial_events.competition = $id"
+                    . " ORDER BY unofficial_events_dict.`order` ");
     $data->events = [];
     foreach ($events as $event) {
         $data->events[$event->event_dict] = $event;
@@ -333,7 +335,7 @@ function getCompetitionData($id) {
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.event = unofficial_events.id"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
                     . " WHERE unofficial_events.competition = $id"
-                    . " ORDER by unofficial_events_dict.order, unofficial_events_rounds.round");
+                    . " ORDER by unofficial_events_dict.`order`, unofficial_events_rounds.round");
     $data->rounds = [];
     $data->event_rounds = [];
     foreach ($rounds as $round) {
@@ -414,7 +416,7 @@ function getCompetitionData($id) {
     $event_dicts = \db::rows("SELECT "
                     . " unofficial_events_dict.id,"
                     . " unofficial_events_dict.image, "
-                    . " unofficial_events_dict.name$RU name,"
+                    . " coalesce(unofficial_events_dict.name$RU, unofficial_events_dict.name) name,"
                     . " unofficial_events_dict.code,"
                     . " unofficial_events_dict.result_dict,"
                     . " unofficial_events_dict.special"
@@ -437,7 +439,7 @@ function getCompetitionData($id) {
 
     $judges = \db::rows("SELECT 
                             cj.judge wcaid,
-                            coalesce(dc.nameRU, dc.name) name,
+                            coalesce(dc.name$RU, dc.name) name,
                             coalesce(jrd.roleRU, jrd.role) role
                         FROM unofficial_competition_judges cj
                         JOIN unofficial_judge_roles_dict jrd on jrd.id=cj.dict_judge_role
@@ -474,7 +476,7 @@ function getEventByEventround($eventround) {
                     . " unofficial_formats_dict.cutoff_attempts, "
                     . " unofficial_events_dict.code, "
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final, "
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) name,"
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name,"
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_results_dict.name result_name,  "
                     . " unofficial_results_dict.code result_code  "
@@ -676,7 +678,7 @@ function getResutsByCompetitorMain($competitor_id) {
     $RU = t('', 'RU');
     return \db::rows("SELECT"
                     . " unofficial_events_dict.id event_dict,"
-                    . " unofficial_events_dict.name$RU event_name,"
+                    . " coalesce(unofficial_events.name,unofficial_events_dict.name$RU) event_name,"
                     . " unofficial_events_dict.image event_image,"
                     . " unofficial_events_rounds.round,"
                     . " unofficial_rounds_dict.smallName$RU round_name, "
@@ -720,7 +722,7 @@ function getResutsByCompetitor($competitor_id) {
     $RU = t('', 'RU');
     return \db::rows("SELECT"
                     . " unofficial_events_dict.id event_dict,"
-                    . " COALESCE(unofficial_events.name, unofficial_events_dict.name$RU) event_name,"
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) event_name,"
                     . " unofficial_events_dict.image event_image,"
                     . " unofficial_events_rounds.round,"
                     . " unofficial_competitors_result.place, "

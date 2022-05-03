@@ -47,7 +47,8 @@ foreach ($comp_data->event_rounds as $event_round) {
         </thead>
         <tbody>
             <?php
-            $competitors = unofficial\getCompetitorsByEventround($event_round->id);
+            $event = unofficial\getEventByEventround($event_round->id);
+            $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
             foreach ($competitors as $competitor) {
                 $modal = "<b>$competitor->name</b><br>";
                 $class = ($competitor->podium ? 'podium' : '') . ' ' . ($competitor->next_round ? 'next_round' : '' );

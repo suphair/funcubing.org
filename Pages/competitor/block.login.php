@@ -13,3 +13,10 @@ $url = wcaoauth::url();
     <i class="fas fa-sign-in-alt"></i>
     Sign in with WCA
 </a>
+<br>
+<?php $lang = $_SESSION['lang']??false ?>
+<?php if ($lang == 'RU') { ?>
+    <i class="flag-icon flag-icon-ru"></i> <b>Ру</b> | <a href="<?= PageIndex() ?>competitor/?action=language&lang=EN">En</a>
+<?php } else { ?>
+    <a href="<?= PageIndex() ?>competitor/?action=language&lang=RU">Ру</a> | <b>En</b> <i class="flag-icon flag-icon-gb"></i>
+<?php } ?>

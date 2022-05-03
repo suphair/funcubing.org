@@ -333,6 +333,10 @@ table.table_new  span.table_new_except::before, table.table_new  span.table_new_
     content: "\EA15"
 }
 
+.cubing-icon.event-333ft:before {
+    content: "\EA05"
+}
+
 .flag-icon {
     box-shadow: 0 0 8px rgba(34,34,34,0.3);
     background-color: rgba(34,34,34,0.2);

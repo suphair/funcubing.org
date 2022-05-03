@@ -193,6 +193,7 @@ function getRankedCompetitions($competitor_fcid = false) {
         ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id
     WHERE  unofficial_competitions.ranked = 1 
         and unofficial_competitions.show = 1
+        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")
         " . $where_fcid . "
     ORDER BY unofficial_competitions.date DESC
     ";
@@ -250,6 +251,7 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " AND unofficial_competitions.ranked = 1 "
                     . " AND unofficial_competitions.show = 1 "
                     . " AND unofficial_events_dict.special = 0 "
+                    . " AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")"
                     . " ORDER BY "
                     . " unofficial_events_dict.name,"
                     . " unofficial_events_rounds.round DESC");
