@@ -1,7 +1,8 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?4" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
+$admin = unofficial\admin();
 $ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
 $wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {
@@ -15,12 +16,15 @@ if ($secret == 'competitor') {
 } elseif ($secret == 'rankings') {
     $rounds_dict = unofficial\getRoundsDict();
     include 'rankings.php';
+} elseif ($secret == 'create') {
+    include 'competition.create.php';
 } elseif ($secret) {
+    $competition = api\get_competition($secret);
     $comp = unofficial\getCompetition($secret, $me);
     if ($comp->id ?? FALSE) {
-        change_title($comp->name);
-        $secret = $comp->secret;
-        $comp_data = unofficial\getCompetitionData($comp->id);
+        change_title($competition->name);
+        $secret = $competition->id;
+        $comp_data = unofficial\getCompetitionData($competition->local_id);
         $events_dict = unofficial\getEventsDict();
         $formats_dict = unofficial\getFormatsDict();
         $rounds_dict = unofficial\getRoundsDict();
@@ -38,14 +42,14 @@ if ($secret == 'competitor') {
                 }
                 break;
             case 'registrations':
-                if (($comp->my or $comp->organizer) and!$comp->approved) {
+                if ((($comp->my or $comp->organizer) and!$comp->approved) or $admin) {
                     $include = 'competition.registrations.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'setting':
-                if ($comp->my and!$comp->approved) {
+                if (($comp->my and!$comp->approved) or $admin) {
                     $include = 'competition.setting.php';
                 } else {
                     $include = 'competition.accessdenied.php';
@@ -79,6 +83,7 @@ if ($secret == 'competitor') {
             case 'competitors':
             case 'records':
             case 'events':
+            case 'points':
                 $event_round_this = false;
                 $include = 'competition.index.php';
                 break;
@@ -93,3 +98,6 @@ if ($secret == 'competitor') {
     include 'competitions.php';
 }
 ?><br>
+<script>
+    <?php include 'thead_stable.js' ?>
+</script>

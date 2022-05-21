@@ -1,6 +1,5 @@
 <?php
 
-$blank = filter_input(INPUT_GET, 'blank') ?? FALSE;
 $event_code = request(3);
 $round = request(4);
 $RU = t(false, true);
@@ -29,19 +28,16 @@ foreach ($events as $event) {
     $sizeX = $pdf->GetPageWidth() / 2 - 10;
     $sizeY = $pdf->GetPageHeight() / 2 - 10;
 
-    if ($blank !== FALSE) {
-        $list = 1;
-        $competitors = [];
-    } else {
-        $competitors = unofficial\getCompetitorsByEventround($event->id);
-        foreach ($competitors as $c => $competitor) {
-            if ($competitor->place and!$comp->ranked) {
-                unset($competitors[$c]);
-            }
+
+    $competitors = unofficial\getCompetitorsByEventround($event->id);
+    foreach ($competitors as $c => $competitor) {
+        if ($competitor->place and!$comp->ranked) {
+            unset($competitors[$c]);
         }
-        $competitors = array_values($competitors);
-        $list = ceil(max([sizeof($competitors), 1]) / 4);
     }
+    $competitors = array_values($competitors);
+    $list = ceil(sizeof($competitors) / 4) + 1;
+
     for ($l = 0; $l < $list; $l++) {
         $pdf->AddPage();
         $pdf->SetLineWidth(0.5);
@@ -125,15 +121,14 @@ foreach ($events as $event) {
                     }
                     $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, iconv('utf-8', 'windows-1251', $lat));
                     $pdf->Line($point[0], $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 25, $point[1] + $Ry + 0.8 + $k * 16);
-
                 }
             }
             if ($event->time_limit) {
                 $pdf->SetFont('msserif', '', 8);
                 if ($RU) {
-                $lat = 'Лимит по времени ' . $event->time_limit . ($event->cumulative ? ' суммарно' : '');
-                }else{
-                $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');    
+                    $lat = 'Лимит по времени ' . $event->time_limit . ($event->cumulative ? ' суммарно' : '');
+                } else {
+                    $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');
                 }
                 $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, iconv('utf-8', 'windows-1251', $lat));
             }

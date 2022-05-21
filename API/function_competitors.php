@@ -11,6 +11,7 @@ function competitors($competitor_id = false) {
             c.FCID is not null as is_ranked,
             c.competition,
             comp.name competition_name,
+            wca.wca_name name_EN,
             comp.id competition_id,
             c.id,
             coalesce(comp.rankedID,comp.secret) competition_id,
@@ -18,7 +19,9 @@ function competitors($competitor_id = false) {
             replace(replace(best,'.',''),':','') + 0 single_order,
             replace(replace(average,'.',''),':','') + 0 average_order,
             result.average,
-            ed.code event
+            ed.code event,
+            wca.wcaid,
+            wca.nonwca
         FROM unofficial_competitors c 
                 join unofficial_competitions comp on comp.id=c.competition
                 join `unofficial_competitors_round` round on round.competitor=c.id
@@ -26,6 +29,7 @@ function competitors($competitor_id = false) {
                 join `unofficial_events_rounds` r on r.id=round.round
                 join `unofficial_events` event on event.id=r.event
                 join `unofficial_events_dict` ed on ed.id=event.event_dict 
+                LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
         WHERE lower('$competitor_id') in (lower(coalesce(c.FCID,'XXXX')), lower(c.ID), '')
         and ed.special = false 
         ORDER BY c.name desc, comp.date desc, ed.order");
@@ -34,10 +38,20 @@ function competitors($competitor_id = false) {
     foreach ($competitors as $competitor) {
         $competitors_key[$competitor->name] ??= (object)
                 [
-                    'name' => $competitor->name
+                    'name' => $competitor->name,
+                    'wca_id' => null,
+                    'fc_id' => null,
         ];
         if ($competitor->is_ranked) {
-            $competitors_key[$competitor->name]->FCID = $competitor->FCID;
+            $competitors_key[$competitor->name]->fc_id = $competitor->fc_id;
+            $competitors_key[$competitor->name]->name = "$competitor->name_EN ($competitor->name)";
+            if ($competitor->nonwca) {
+                $competitors_key[$competitor->name]->wca_id = false;
+            } elseif (!$competitor->wcaid) {
+                $competitors_key[$competitor->name]->wca_id = null;
+            } else {
+                $competitors_key[$competitor->name]->wca_id = $competitor->wcaid;
+            }
         }
         if (!isset($competitors_key[$competitor->name]->competitions[$competitor->competition_id])) {
             $competition = (object) [

@@ -20,3 +20,7 @@ function get_competitions($id = false) {
     $json = array_values($competitions);
     return $json;
 }
+
+function get_competition($id) {
+    return get_competitions($id)[0] ?? null;
+}

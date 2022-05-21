@@ -20,25 +20,23 @@ foreach ($events_dict as $event) {
     <i title='Competitors' class="fas fa-cubes"></i>
     <?= t('Competitions', 'Соревнования') ?>  (<?= count($competitions) ?>)
 </h2>
-<table class='table_new'>
+<table class='table thead_stable'>
     <thead>
         <tr>
-            <td>
+            <th>
                 <?= $ranked_icon ?>
-            </td>
-            <td>
+            </th>
+            <th>
                 <?= t('Competition', 'Наименование') ?>
-            </td>
-            <td>
-                <i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i>
-            </td>
-            <td></td>
-            <td>
+            </th>
+            <th></th>
+            <th>
                 <?= t('Date', 'Дата') ?>
-            </td>
-            <td><?= t('Single Record', 'Рекорд лучшая') ?></td>
-            <td><?= t('Average Record', 'Рекорд среднее') ?></td>
-
+            </th>
+            <th><?= t('Events', 'Дисциплины') ?></th>
+            <th>
+                <?= t('Competitors', 'Участники') ?>
+            </th>
         </tr>    
     </thead>
     <tbody>
@@ -52,12 +50,10 @@ foreach ($events_dict as $event) {
                 <td>                    
                     <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
                 </td>
-                <td align="center">
-                    <?= $competition->competitors + 0 ?>
-                </td>      
                 <td>
+
                     <?php if ($competition->upcoming) { ?>
-                        <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                        <i class="fas fa-hourglass-start"></i>
                     <?php } ?>
                     <?php if ($competition->run) { ?>
                         <i style='color:var(--green)' class="fas fa-running"></i>
@@ -65,36 +61,33 @@ foreach ($events_dict as $event) {
                 <td>
                     <?= dateRange($competition->date, $competition->date_to) ?>
                 </td>
-                <?php foreach (['best', 'average'] as $type) { ?>
-                    <td>
+                <td>
+                    <?php
+                    foreach ($events_dict as $event) {
+                        if (!$event->special) {
+                            if (isset($comp_histoty_record[$competition->id]['best'][$event->id]) or
+                                    isset($comp_histoty_record[$competition->id]['average'][$event->id])) {
+                                $event = $events_dict[$event->id];
+                                ?>
+                                <i title=' <?= $event->name ?> - <?= t('Record', 'Рекорд') ?>'class="td_record <?= $events_dict[$event->id]->image ?>"></i>
+                                <?php
+                            } else {
+                                if (unofficial\existsCompetitionEvent($competition->id, $event->id)) {
+                                    ?>
+                                    <i title='<?= $event->name ?>' class="<?= $events_dict[$event->id]->image ?>"></i>    
+                                <?php } else { ?>
+                                    <i style="visibility: hidden" class="<?= $events_dict[$event->id]->image ?>"></i>
+                                <?php } ?>
 
-                        <?php
-                        foreach ($events_dict as $event) {
-                            if (!$event->special) {
-                                if (isset($comp_histoty_record[$competition->id][$type][$event->id])) {
-                                    $current = $comp_histoty_record[$competition->id][$type][$event->id];
-                                    if ($current) {
-                                        ?>
-                                        <i title='<?= t('Current Record', 'Текущий рекорд') ?>' style="color:rgb(0,100,0)" class="<?= $events_dict[$event->id]->image ?>"></i>
-                                    <?php } else { ?>
-                                        <i title='<?= t('History Record', 'Рекорд в истории') ?>' style="color:var(--black)" class="<?= $events_dict[$event->id]->image ?>"></i>
-                                        <?php
-                                    }
-                                } else {
-                                    if (unofficial\existsCompetitionEvent($competition->id, $event->id)) {
-                                        ?>
-                                        <i style="color:var(--light_gray)" class="<?= $events_dict[$event->id]->image ?>"></i>    
-                                    <?php } else { ?>
-                                        <i style="visibility: hidden" class="<?= $events_dict[$event->id]->image ?>"></i>
-                                    <?php } ?>
-
-                                    <?php
-                                }
+                                <?php
                             }
                         }
-                        ?>
-                    </td>
-                <?php } ?>
+                    }
+                    ?>
+                </td>
+                <td align="center">
+                    <?= $competition->competitors + 0 ?>
+                </td>      
             </tr>
         <?php } ?>
     </tbody>

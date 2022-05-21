@@ -27,3 +27,8 @@ if (!$ranked or!$rankedID) {
     db::exec("UPDATE unofficial_competitions SET rankedID = null, rankedApproved=0, ranked = 0 WHERE id = {$comp->id} ");
     db::exec("DELETE from unofficial_competition_judges WHERE competition_id = {$comp->id} ");
 }
+
+sendMail(
+        config::get('Admin', 'email'), "FunCubing: Rating Competition"
+        , print_r($_POST, true)
+);

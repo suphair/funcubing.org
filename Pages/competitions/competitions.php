@@ -1,150 +1,96 @@
-<br>
 <?php
-if (!($me->wca_id ?? FALSE)) {
-    ?>    
-    <h3>
-        <i class="error far fa-hand-paper"></i> 
-        <?=
-        t('To create competition you need to sign in with WCA and have a WCA ID.',
-                'Для создания соренования вам нужно войти через WCA и иметь WCA ID.')
-        ?>
-    </h3>
-<?php } else { ?>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script>
-        $(function () {
-            $("#datepicker").datepicker({dateFormat: "dd.mm.yy"});
-        });
-    </script>
+include 'competitions.menu.php';
+#$competitions = unofficial\getCompetitions($me, $mine, $ranked);
+$competitions = api\get_competitions(false);
 
-    <form method="POST" action="?create">
-        <b><?= t('Create competition', 'Создать соревнование') ?></b> 
-        <input required placeholder="RamenskoeMeeting #1" type="text" name="name" value="" />
-        <input style="width:140px" placeholder="<?= t('Select date', 'Выберите дату') ?>" required type="text" id="datepicker" name="date">
-        <button>
-            <i class="fas fa-plus-circle"></i> 
-            <?= t('Create', 'Создать') ?>
-        </button>
-    </form>
-    <i class="fas fa-info-circle"></i> <?=
-    t('Competitions is created privately.
-    You can make them public later in the settings.
-    Or leave them hidden for your testing or fun.',
-            'Соревнования создаются приватными. Вы можете сделать их публичными позже. 
-            Или оставить спрятанными для тестирования или развлечения.')
-    ?>
-<?php } ?>
-<hr>
-<p> <?= $ranked_icon ?> 
-    <a href="<?= PageIndex() ?>competitions/rankings"> 
-        <?= t('Go to the rankings ', 'Перейти в рейтинг') ?>
-    </a>
-    -
-    <?=
-    t('only Speedcubing Federation competitions are included.',
-            'участвуют только соревнования под эгидой  Федерации Спидкубинга.')
-    ?>
-</p>
-<br>
-<?php $mine = ($me and filter_input(INPUT_GET, 'show') == 'mine'); ?>
-<?php $ranked = filter_input(INPUT_GET, 'show') == 'ranked'; ?>
-<?php $competitions = unofficial\getCompetitions($me, $mine, $ranked); ?>
-<h2>
-    <a href="?show=all" class="<?= ($mine or $ranked) ? '' : 'select' ?>"><?= t('All', 'Все') ?></a>
-    <?php if ($me) { ?>
-        &nbsp;&nbsp;&nbsp;<a href="?show=mine" class="<?= $mine ? 'select' : '' ?>"><?= t('My competition', 'Мои соревнования') ?></a>
-    <?php } ?>
-    &nbsp;&nbsp;&nbsp;<a href="?show=ranked" class="<?= $ranked ? 'select' : '' ?>"><?= t("Speedcubing Federation Competitions", 'Соревнования Федерации Спидкубинга') ?></a>
-</h2>
-<?php
-$owners = [];
-foreach ($competitions as $competition) {
-    $owners[$competition->competitor] = $competition->competitor_name;
-}
-asort($owners);
-?>
-<p>
-    <i class="fas fa-user-tie"></i>
-    <select data-owner-select>
-        <option value='0' selected><?= t('All organizers', 'Все организаторы') ?></option>
-        <?php
-        foreach ($owners as $id => $name) {
-            if ($name) {
-                ?>
-                <option value='<?= $id ?>'>
-                    <?= $name ?>
-                </option>    
-                <?php
-            }
+foreach ($competitions as $c => $competition) {
+    foreach ($competition->organizers ?? [] as $organizer) {
+        if ($organizer->main ?? false) {
+            $competitions[$c]->main_organizer = $organizer;
         }
-        ?>
-    </select>
-</p>
-<table class='table_new'>
+    }
+    if ($show_hidden) {
+        if ($competition->is_publish) {
+            unset($competitions[$c]);
+        }
+    } else {
+        if ($mine and!in_array('true', array_values((array) $competition->my_roles ?? []))) {
+            unset($competitions[$c]);
+        }
+        if ($all and!in_array('true', array_values((array) $competition->my_roles ?? [])) and!$competition->is_publish) {
+            unset($competitions[$c]);
+        }
+        if ($ranked and!($competition->is_ranked and $competition->is_publish )) {
+            unset($competitions[$c]);
+        }
+    }
+}
+?>
+<table class='table thead_stable'>
     <thead>
         <tr>
-            <td/>
-            <td>
-                <?= t('Organizer', 'Организатор') ?>
-
-            </td>
-            <td>
-                <?= t('Competition', 'Наименование') ?>
-
-            </td>
-            <td/>
-            <td>
+            <th>
+                [<?= count($competitions); ?>]
+            </th>
+            <th>
                 <?= t('Date', 'Дата') ?>
-
-            </td>
-            <td>
-                <?= t('Web site', 'Сайт') ?>
-
-            </td>
+            </th>
+            <th>
+                <?= t('Competition', 'Наименование') ?>
+            </th>
+            <th>
+                <?= t('Organizer', 'Организатор') ?> <i class="fas fa-external-link-alt"></i>
+            </th>
+            <th>
+                <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
+            </th>
         </tr>    
     </thead>
     <tbody>
         <?php foreach ($competitions as $competition) { ?>
-            <tr data-owner='<?= $competition->competitor ?>'>   
-                <td align="left" >
-                    <?php if (!$competition->show) { ?>
-                        <i class="far fa-eye-slash"></i>
+            <tr>   
+                <td align="left">
+                    <?php if (!$competition->is_publish) { ?>
+                        <i title="<?= t('Hidden', 'Спрятано') ?>" class="far fa-eye-slash"></i>
                     <?php } ?>
-                    <?= ($competition->without_FCID and $competition->ranked and unofficial\admin()) ? '<span style="color:red"><i class="fas fa-user-check"></i></span>' : '' ?>
-                    <?php if ($competition->ranked) { ?>
+                    <?php if ($competition->is_ranked) { ?>
                         <?= $ranked_icon ?>
                     <?php } ?>
-                    <?php if ($competition->approved) { ?>
+                    <?php if ($competition->is_approved) { ?>
                         <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
                     <?php } ?>
-                    <?php if ($competition->is_judge) { ?>
+                    <?php if ($competition->my_roles->judge ?? false) { ?>
                         <i title="<?= t('Judge', 'Судья') ?>" class="fas fa-signature"></i>
                     <?php } ?>
-                    <?php if ($competition->is_organizer) { ?>
+                    <?php if ($competition->my_roles->organizer ?? false or $competition->my_roles->main_organizer ?? false) { ?>
                         <i title="<?= t('Organizer', 'Организатор') ?>" class="fas fa-user-tie"></i>
                     <?php } ?>
-                    <?php if ($competition->is_competitor) { ?>
+                    <?php if ($competition->my_roles->competitor ?? false) { ?>
                         <i title="<?= t('Competitor', 'Участник') ?>" class="fas fa-user"></i>
                     <?php } ?>
-                </td>
-                <td>
-                    <?= $competition->competitor_name ?>
-                </td>   
-                <td>                    
-                    <a href="<?= PageIndex() ?>competitions/<?= $competition->secret ?>"><?= $competition->name ?> </a>
-                </td>
-                <td>
-                    <?php if ($competition->upcoming) { ?>
-                        <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                    <?php if (strtotime($competition->start_date) > strtotime(date('Y-m-d'))) { ?>
+                        <i class="fas fa-hourglass-start"></i>
                     <?php } ?>
-                    <?php if ($competition->run) { ?>
+                    <?php
+                    if (strtotime($competition->start_date) >= strtotime(date('Y-m-d')) and
+                            strtotime($competition->end_date) <= strtotime(date('Y-m-d'))) {
+                        ?>
                         <i style='color:var(--green)' class="fas fa-running"></i>
                     <?php } ?>
                 </td>
                 <td>
-                    <?= dateRange($competition->date, $competition->date_to) ?>
+                    <?= dateRange($competition->start_date, $competition->end_date) ?>
+
                 </td>
+                <td>                    
+                    <a href="<?= PageIndex() ?>competitions/<?= $competition->id ?>"><?= $competition->name ?> </a>
+                </td>
+
+                <td>
+                    <a target="_blank" href="https://www.worldcubeassociation.org/persons/<?= $competition->main_organizer->wca_id ?>">
+                        <?= $competition->main_organizer->name ?>
+                    </a>
+                </td>   
                 <td>
                     <?php unofficial\getFavicon($competition->website, false) ?>
                 </td>
@@ -152,7 +98,11 @@ asort($owners);
         <?php } ?>
     </tbody>
 </table>  
-
-<script>
-<?php include 'competitions.js' ?>
-</script>
+<div class="details_footer">
+    <span><i class="fas fa-signature"></i> - <?= t('Judge', 'Судья') ?></span>
+    <span><i class="fas fa-user-tie"></i> - <?= t('Organizer', 'Организатор') ?></span>
+    <span><i class="fas fa-user"></i> - <?= t('Competitor', 'Участник') ?></span>
+    <span><?= $ranked_icon ?>  - <?= t('Speedcubing Federation', 'Федерация Спидкубинга') ?></span>
+    <span><i class="message fas fa-check"></i>  - <?= t('Confirmed by the Speedcubing Federation', 'Подтверждено Федерацией Спидкубинга') ?></span>
+    <span><i class="far fa-eye-slash"></i> - <?= t('Hidden', 'Спрятано') ?></span>
+</div>

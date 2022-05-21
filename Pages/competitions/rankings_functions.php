@@ -3,6 +3,7 @@
 namespace unofficial;
 
 function getRankedRatings() {
+    $RU = t('', 'RU');
     $sql_average = "
     select 
         unofficial_competitions.name competition_name,
@@ -10,7 +11,7 @@ function getRankedRatings() {
         coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) competition_secret,
         unofficial_competitions.date,
         unofficial_competitors.id competitor_id,
-        trim(unofficial_competitors.name) competitor_name,
+        case when 'RU'='$RU' then trim(unofficial_competitors.name) else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end competitor_name,
         unofficial_competitors.FCID FCID,
         unofficial_events_dict.id event_id,
         coalesce(unofficial_competitors_result.average,unofficial_competitors_result.mean) result,
@@ -33,7 +34,6 @@ function getRankedRatings() {
     join `unofficial_competitions` on unofficial_competitions.id=unofficial_events.competition
     LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID
     where unofficial_competitions.ranked = 1 
-        and unofficial_competitions.show = 1 
         and unofficial_events_dict.special = 0
         and coalesce(
             unofficial_competitors_result.average,
@@ -45,6 +45,7 @@ function getRankedRatings() {
             '-cutoff') <> '-cutoff'
         and (unofficial_competitors_result.average <>'' or unofficial_competitors_result.mean <>'' )
         and  coalesce(unofficial_competitors.FCID,'')<>''  
+        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_average_exclude') . ")
     order by unofficial_competitors_result.order,
         unofficial_competitions.date 
     ";
@@ -55,7 +56,7 @@ function getRankedRatings() {
         coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) competition_secret,
         unofficial_competitions.date,
         unofficial_competitors.id competitor_id,
-        trim(unofficial_competitors.name) competitor_name,
+        case when 'RU'='$RU' then trim(unofficial_competitors.name) else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end competitor_name,
         unofficial_competitors.FCID FCID,
         unofficial_events_dict.id event_id,
         unofficial_competitors_result.best result,
@@ -73,13 +74,13 @@ function getRankedRatings() {
     join `unofficial_competitions` on unofficial_competitions.id=unofficial_events.competition
     LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID
     where unofficial_competitions.ranked = 1 
-        and unofficial_competitions.show = 1
         and unofficial_events_dict.special = 0
         and coalesce(
             unofficial_competitors_result.best,
             'dnf') <> 'dnf'
         and unofficial_competitors_result.best <>''
         and coalesce(unofficial_competitors.FCID,'')<>''
+        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_best_exclude') . ")
     order by cast(replace(replace(best,'.',''),':','') as UNSIGNED),
         unofficial_competitions.date ";
 
@@ -190,9 +191,8 @@ function getRankedCompetitions($competitor_fcid = false) {
         FROM unofficial_competitors uc
         WHERE coalesce(uc.FCID,'')<>''
         GROUP BY uc.competition
-        ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id
+        ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id    
     WHERE  unofficial_competitions.ranked = 1 
-        and unofficial_competitions.show = 1
         AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")
         " . $where_fcid . "
     ORDER BY unofficial_competitions.date DESC
@@ -208,8 +208,10 @@ function getCompetitorRankings($competitor_fcid) {
     return \db::row("SELECT "
                     . " unofficial_competitors.ID, "
                     . " unofficial_competitors.name, "
+                    . " unofficial_fc_wca.wca_name, "
                     . " unofficial_competitors.FCID "
                     . " FROM unofficial_competitors"
+                    . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID"
                     . " WHERE upper(unofficial_competitors.FCID) = upper('$competitor_fcid') limit 1");
 }
 
@@ -227,7 +229,7 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret,"
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final,"
                     . " CASE WHEN unofficial_events.rounds = unofficial_events_rounds.round AND unofficial_competitors_result.place<=3 and upper(unofficial_competitors_result.best)!='DNF' THEN 1 ELSE 0 END podium,"
-                    . "unofficial_rounds_dict.name round_name,  "
+                    . " unofficial_rounds_dict.name round_name,  "
                     . " unofficial_competitors_result.attempt1, "
                     . " unofficial_competitors_result.attempt2, "
                     . " unofficial_competitors_result.attempt3, "
@@ -249,7 +251,6 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " JOIN unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
                     . " WHERE unofficial_competitors.FCID = '$competitor_fcid'"
                     . " AND unofficial_competitions.ranked = 1 "
-                    . " AND unofficial_competitions.show = 1 "
                     . " AND unofficial_events_dict.special = 0 "
                     . " AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")"
                     . " ORDER BY "
@@ -263,9 +264,12 @@ function getRankedCompetitionsbyCompetitor($competitor_fcid) {
 }
 
 function getRankedCompetitors() {
+    $RU = t('', 'RU');
     return \db::rows("SELECT"
-                    . " count(distinct unofficial_competitions.id) competitions, "
-                    . " min(unofficial_competitors.name) name, "
+                    . " GROUP_CONCAT(distinct coalesce(unofficial_competitions.rankedID,unofficial_competitions.secret) ORDER BY unofficial_competitions.date) competitions_secret, "
+                    . " GROUP_CONCAT(distinct unofficial_competitions.name ORDER BY unofficial_competitions.date) competitions_name, "
+                    . " case when 'RU'='$RU' then trim(unofficial_competitors.name) else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end name,"
+                    . " case when 'RU'!='$RU' then trim(unofficial_competitors.name) else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end name_other,"
                     . " unofficial_competitors.FCID, "
                     . " unofficial_fc_wca.wcaid, "
                     . " unofficial_fc_wca.nonwca "
@@ -274,8 +278,8 @@ function getRankedCompetitors() {
                     . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID "
                     . " WHERE unofficial_competitors.FCID is not null and  unofficial_competitors.FCID<>''"
                     . " AND unofficial_competitions.show = 1 and unofficial_competitions.ranked = 1 "
-                    . " GROUP BY unofficial_competitors.FCID, unofficial_fc_wca.wcaid "
-                    . " ORDER BY 2 ");
+                    . " GROUP BY unofficial_competitors.FCID, unofficial_fc_wca.wcaid, unofficial_competitors.name "
+                    . " ORDER BY 3 ");
 }
 
 function getFCIDlistbyName($name) {
@@ -299,10 +303,13 @@ function getRankedJudges($filter = null) {
         select     
             coalesce(dc.name$RU ,dc.name) name,
             dc.name nameEN,
-            dc.nameRU nameRU,   
+            dc.nameRU nameRU,
             j.rank$RU rank,
+            j.region$RU region,
             j.rank rankEN,
             j.rankRU rankRU,
+            j.region regionEN,
+            j.regionRU regionRU,
             j.is_archive,
             j.wcaid
             from `unofficial_judges` j

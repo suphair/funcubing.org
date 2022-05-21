@@ -8,10 +8,11 @@ if (!$event_round) {
     die("Round not found [$event_code] [$round]");
 }
 $event = unofficial\getEventByEventround($event_round->id);
+$round_name = $rounds_dict[$round == $event_round->rounds ? 0 : $round]->fullName;
 $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
 ?>
 <head>
-    <title><?= $event->name ?> / <?= $round ?></title>
+    <title><?= $event->name ?>, <?= $round_name ?></title>
     <link rel="icon" href="<?= PageLocal() ?>Pages/competitions/projector.png" >
     <link rel="stylesheet" href="<?= PageLocal() ?>jQuery/chosen_v1/chosen.css" type="text/css"/>
     <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
@@ -46,11 +47,13 @@ $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
     }
 
     .next_round{
-        background-color: var(--light_green);
+        background-color: lightgreen;
     }
 
     .podium{
-        background-color: var(--light_green);
+        background-color: darkgreen;
+        color: white;
+        border:1px solid #e9e9e9;
     }
 
     .back{
@@ -67,13 +70,11 @@ $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
                 <button class='back' onclick="window.location.href = location.protocol + '//' + location.host + location.pathname;">X</button>
             </td>
             <td  weight='20%' id='event_data' style='text-align:left'>
-                <?= $event->name; ?> - <?= $rounds_dict[$round == $event_round->rounds ? 0 : $round]->fullName ?>
+                <?= $event->name; ?>, <?= $round_name ?>
             </td> 
-            <?php for ($i = 1; $i <= $event->attempts; $i++) { ?>
-                <td  weight='10%' id='attempt_<?= $i ?>_data'>
-                    <?= $i ?>
-                </td>
-            <?php } ?>
+            <td  weight='10%' id='attempt_data' style='text-align:center' colspan="<?= $event->attempts ?>">
+                <?= t('Solves', 'Сборки'); ?>
+            </td>
             <?php if ($event->format == 'average') { ?>
                 <td  weight='10%' id='average_data' style='font-size: 1.3rem'>
                     <?= t('Average', 'Среднее'); ?>

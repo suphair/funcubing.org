@@ -1,7 +1,6 @@
 <?php
 
 $secret = db::escape(request(1));
-
 if ($secret) {
     $comp = unofficial\getCompetition($secret);
     if ($comp->id ?? FALSE) {
@@ -43,6 +42,10 @@ if ($me->wca_id ?? FALSE) {
 
         if (filter_input(INPUT_GET, 'organizer_rename') !== NULL and unofficial\federation()) {
             include 'post.organizer_rename.php';
+        }
+        
+        if (filter_input(INPUT_GET, 'text') !== NULL and unofficial\federation()) {
+            include 'post.text.php';
         }
         if ($comp->my ?? FALSE) {
 

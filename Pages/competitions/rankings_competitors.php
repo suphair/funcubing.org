@@ -19,15 +19,16 @@ usort($competitors_holder_records, function($a, $b) {
 });
 ?>
 
-<table class="table_new">
+<table class="table">
     <thead>
         <tr>
-            <td><?= t('Name', 'Имя') ?> </td>
-            <td align="center"><?= t('Single', 'Лучшая') ?></td>
-            <td align="center"><?= t('Average', 'Среднее') ?></td>
-            <td align="center">WCA ID</td>
+            <th><?= t('Name', 'Имя') ?> </th>
+            <th><?= t('Single', 'Лучшая') ?></th>
+            <th><?= t('Average', 'Среднее') ?></th>
+            <th>
+                WCA ID <i class="fas fa-external-link-alt"></i>
+            </th>
         </tr>
-
     </thead>
     <tbody>
         <?php
@@ -42,23 +43,33 @@ usort($competitors_holder_records, function($a, $b) {
                             <?= $competitor->name ?>
                         </a>
                     </td>
-                    <td align="center">
-                        <?php foreach ($holder_records_best as $record) { ?>
-                            <i class="<?= $events_dict[$record->event_id]->image ?>"></i>
+                    <td>
+                        <?php
+                        foreach ($holder_records_best as $record) {
+                            $event = $events_dict[$record->event_id];
+                            ?>
+                            <a title='<?= $event->name ?>' href='<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/best'>
+                                <nobr><i class="<?= $event->image ?>"></i> <?= $event->name ?></nobr>
+                            </a>
                         <?php } ?>
                     </td>
-                    <td align="center">
-                        <?php foreach ($holder_records_average as $record) { ?>
-                            <i class="<?= $events_dict[$record->event_id]->image ?>"></i>
+                    <td>
+                        <?php
+                        foreach ($holder_records_average as $record) {
+                            $event = $events_dict[$record->event_id];
+                            ?>
+                            <a title='<?= $event->name ?>' href='<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/average'>
+                                <nobr><i class="<?= $event->image ?>"></i> <?= $event->name ?></nobr>
+                            </a>
                         <?php } ?>
                     </td>
-                    <td align="center">
+                    <td>
                         <?php if ($competitor->wcaid) { ?>
                             <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
                                 <?= $competitor->wcaid ?>
                             </a>
                         <?php } elseif ($competitor->nonwca) { ?>
-                            <?= t('none','нет') ?>
+                            <?= t('none', 'нет') ?>
                         <?php } ?>
                     </td>
                 </tr>
@@ -74,12 +85,12 @@ usort($competitors_holder_records, function($a, $b) {
     <i title='Competitors' class="fas fa-users"></i>
     <?= t('Competitors', 'Участники') ?> (<?= count($competitors) ?>)
 </h2>
-<table class="table_new">
+<table class="table thead_stable">
     <thead>
         <tr>
-            <td><?= t('Name', 'Имя') ?></td>
-            <td><?= t('Competitions', 'Соревнований') ?></td>
-            <td align='center'>WCA ID</td>
+            <th><?= t('Name', 'Имя') ?></th>
+            <th><?= t('Competitions', 'Соревнования') ?></th>
+            <th>WCA ID <i class="fas fa-external-link-alt"></i></th>
         </tr>
     </thead>
     <tbody>
@@ -87,19 +98,25 @@ usort($competitors_holder_records, function($a, $b) {
             <tr>
                 <td>
                     <a href="<?= PageIndex() . "competitions/rankings/competitor/$competitor->FCID" ?>">
-                        <?= $competitor->name ?>
+                        <?= $competitor->name ?> (<?= $competitor->name_other ?>)
                     </a>
                 </td>
                 <td align="center">
-                    <?= $competitor->competitions ?>
+                    <?php
+                    $competitions = [];
+                    foreach (explode(',', $competitor->competitions_secret) as $c => $secret) {
+                        $competitions[] = "<a href='" . PageIndex() . "/competitions/$secret'>" . (explode(',', $competitor->competitions_name)[$c] ?? '???') . "</a>";
+                    }
+                    ?>
+                    <?= implode(', ', $competitions) ?>
                 </td>
-                <td align="center">
+                <td>
                     <?php if ($competitor->wcaid) { ?>
                         <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
                             <?= $competitor->wcaid ?>
                         </a>
                     <?php } elseif ($competitor->nonwca) { ?>
-                            <?= t('none','нет') ?>
+                        <?= t('none', 'нет') ?>
                     <?php } ?>
                 </td>
             </tr>

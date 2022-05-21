@@ -1,3 +1,11 @@
+
+<?php
+$admin = unofficial\admin();
+$main_organizer = ($competition->my_roles->main_organizer ?? false or $admin);
+$organizer = ($competition->my_roles->organizer ?? false or $admin);
+$federation = unofficial\federation();
+?>
+
 <h2>
     <i title="General info" class="fas fa-info-circle"></i>
     <?= t('General info', 'Информация'); ?>
@@ -5,47 +13,44 @@
 <br>
 <table width="100%" style="padding:0px; margin:0px">
     <tr>
-        <?php if ($comp->logo) { ?>
-            <td width="0%" valign="top">
-                <img src="<?= $comp->logo ?>" width="200px" style="padding-right: 20px;"/>
+        <td valign="top" align="center">
+            <?php if ($competition->logo) { ?>
+                <img src="<?= $competition->logo ?>" height="200px" style="padding-right: 20px;"/>
+
+            <?php } ?>
+            <?php if ($competition->details ?? '') { ?>
+                <br>
+            <?php } else { ?>
             </td>
-        <?php } ?>
-        <td width="30%" valign="top">
+            <td>
+            <?php } ?>
             <table class="table_info">
-                <?php if (unofficial\federation()) { ?>
+                <?php if ($federation or $admin) { ?>
                     <tr>
                         <td><?= $ranked_icon ?></td>
                         <td>
-                            <a href="<?= PageIndex() . "competitions/$comp->secret/ranking" ?>">Настройки ФС</a>
+                            <a href="<?= PageIndex() . "competitions/$competition->id/ranking" ?>"><?= t('Setting SF', 'Настройки ФС') ?></a>
                         </td>
                     </tr>
                 <?php } ?>
-                <?php if ($comp->my and!$comp->approved) { ?>
+                <?php if (($main_organizer and!$competition->is_approved) or $admin) { ?>
                     <tr>
                         <td><i class="fas fa-cog"></i></td>
                         <td>
-                            <a href="<?= PageIndex() . "competitions/$comp->secret/setting" ?>"><?= t('Setting', 'Настройки') ?></a>
+                            <a href="<?= PageIndex() . "competitions/$competition->id/setting" ?>"><?= t('Setting', 'Настройки') ?></a>
                         </td>
                     </tr>
                 <?php } ?>
-                <?php if (($comp->my or $comp->organizer) and!$comp->approved) { ?>
+                <?php if ((($main_organizer or $organizer) and!$competition->is_approved) or $admin) { ?>
                     <tr>
                         <td><i class="fas fa-users-cog"></i></td>
                         <td>
-                            <a href="<?= PageIndex() . "competitions/$comp->secret/registrations" ?>"><?= t('Registrations', 'Регистрации') ?></a> 
-                        </td>
-                    </tr>
-                <?php } ?>
-                <?php if ($comp->secretRegistration and $comp->shareRegistration) { ?>
-                    <tr>
-                        <td><i class="fas fa-user-plus"></i></td>
-                        <td>    
-                            <a href="<?= PageIndex() . "competitions/$comp->secret/registration/$comp->secretRegistration" ?>">Self-registration</a>
+                            <a href="<?= PageIndex() . "competitions/$competition->id/registrations" ?>"><?= t('Registrations', 'Регистрации') ?></a> 
                         </td>
                     </tr>
                 <?php } ?>
                 <tr>
-                    <?php if (!$comp->show) { ?>
+                    <?php if (!$competition->is_publish) { ?>
                         <td></td>
                         <td><i class="far fa-eye-slash"></i>
                             Private</td>
@@ -54,27 +59,27 @@
                 <tr>
                     <td><?= t('Date', 'Дата') ?></td>
                     <td><i class="far fa-calendar-alt"></i>
-                        <?= dateRange($comp->date, $comp->date_to) ?>    </td>
+                        <?= dateRange($competition->start_date, $competition->end_date) ?>    </td>
                 </tr>
-                <?php if ($comp->website) { ?>
+                <?php if ($competition->website) { ?>
                     <tr>
                         <td><?= t('Website', 'Сайт') ?></td>
                         <td>
-                            <?php unofficial\getFavicon($comp->website) ?>    </td>
+                            <?php unofficial\getFavicon($competition->website) ?>    </td>
                     </tr>
                 <?php } ?>
                 <?php
                 $o = 0;
-                foreach (array_merge([$comp], $comp_data->organizers) as $organizer) {
-                    if ($organizer->competitor_wcaid != $comp->competitor_wcaid or!$o) {
+                foreach ($competition->organizers as $organizer) {
+                    if ($organizer->wca_id or!$o) {
                         ?>
                         <tr>
                             <td><?php if (!$o++) { ?><?= t('Organizer', 'Организатор') ?><?php } ?></td>
                             <td>
                                 <i class="fas fa-user-tie"></i>
                                 <a target='_blank' 
-                                   href='https://www.worldcubeassociation.org/persons/<?= $organizer->competitor_wcaid ?>'>
-                                       <?= $organizer->competitor_name ?>
+                                   href='https://www.worldcubeassociation.org/persons/<?= $organizer->wca_id ?>'>
+                                       <?= $organizer->name ?>
                                 </a>   
                             </td>
                         </tr>
@@ -91,16 +96,15 @@
                             <td><?php if (!$s++) { ?><?= t('Special event', 'Специальные') ?><?php } ?></td>  
                             <td style='white-space:nowrap;'><i class="<?= $event->image ?>"></i> <?= $event->name ?></td>
                         </tr>
-
                         <?php
                     }
                 }
                 ?>
-                <?php if ($comp->ranked) { ?>
+                <?php if ($competition->is_ranked) { ?>
                     <tr><td colspan="2"><hr></td></tr>
-                    <?php if ($comp->approved) { ?>
+                    <?php if ($competition->is_approved) { ?>
                         <tr>
-                            <td><?= $ranked_icon ?> <i class="fas fa-check"></i></td>
+                            <td><?= $ranked_icon ?> <i class="message fas fa-check"></i></td>
                             <td>
                                 <a href="<?= PageIndex() . "competitions/rankings" ?>">
                                     <?= t('Confirmed by the Speedcubing&nbsp;Federation', 'Подтверждено Федерацией&nbsp;Спидкубинга') ?>
@@ -117,17 +121,17 @@
                             </td>
                         </tr>
                     <?php } ?>
-                    <?php foreach ($comp_data->judges as $judge) { ?>
+                    <?php foreach ($competition->judges ?? [] as $judge) { ?>
                         <tr>
                             <td><?= $judge->role ?></td>  
                             <td><i class="fas fa-signature"></i> <?= $judge->name ?></td>
                         </tr>
                     <?php } ?>
-                    <?php if ($comp->my or $comp->organizer or unofficial\federation()) { ?>
+                    <?php if ($main_organizer or $organizer or $federation) { ?>
                         <tr>
                             <td><?= $wca_icon ?></td>
                             <td>
-                                <a href="<?= PageIndex() . "competitions/$comp->secret/wcaid" ?>"><?= t('Binding to WCA', 'Привязка к WCA') ?></a>
+                                <a href="<?= PageIndex() . "competitions/$competition->id/wcaid" ?>"><?= t('Binding to WCA', 'Привязка к WCA') ?></a>
                             </td>
                         </tr>
                     <?php } ?>
@@ -147,34 +151,36 @@
                     </td>
                     <td>
                         <i class="fas fa-info-circle"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>"><?= t('Competition info', 'Информация') ?></a>
+                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>"><?= t('Competition info', 'Информация') ?></a>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <i class="fas fa-users"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/registrations"><?= t('Registrations', 'Регистрации') ?></a>
+                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/registrations"><?= t('Registrations', 'Регистрации') ?></a>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <i class="fas fa-newspaper"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/events"><?= t('Events', 'Дисциплины') ?></a>
+                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/events"><?= t('Events', 'Дисциплины') ?></a>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <i class="fas fa-list-alt"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $comp->secret ?>/results"><?= t('Results', 'Результаты') ?></a>
+                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/results"><?= t('Results', 'Результаты') ?></a>
                     </td>
                 </tr>
             </table>
         </td>
-        <td width="60%" valign="top" align="left">
-            <?= markdown::convertToHtml($comp->details ?? ''); ?>
-        </td>
+        <?php if ($competition->details ?? '') { ?>
+            <td width="60%" valign="top" align="left">
+                <?= markdown::convertToHtml($competition->details ?? ''); ?>
+            </td>
+        <?php } ?>
     </tr>
 </table>

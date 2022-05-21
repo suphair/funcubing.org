@@ -15,8 +15,8 @@ function federation() {
 }
 
 function getCompetitions($me, $mine, $ranked_only = false) {
-    $me_id = ($me->id ?? -1);
-    $me_wcaid = ($me->wca_id ?? -1);
+    $me_id = ($me->id ?? -2);
+    $me_wcaid = ($me->wca_id ?? -2);
     $admin = admin();
     $federation = federation();
     $RU = t('', 'RU');
@@ -26,12 +26,19 @@ function getCompetitions($me, $mine, $ranked_only = false) {
     $organizer_ids = [];
     $judge_ids = [];
     $competitor_ids = [];
+
     if ($me_wcaid) {
-        foreach (\db::rows(" select distinct c.id from `unofficial_competitions` c
+        foreach (\db::rows(" 
+                select distinct c.id from `unofficial_competitions` c
                 join `unofficial_organizers` o on o.competition=c.id
-                where c.competitor=$me_id or lower(o.wcaid)=lower('$me_wcaid') ") as $row) {
+                where lower(o.wcaid)=lower('$me_wcaid') 
+                union 
+                select distinct c.id from `unofficial_competitions` c
+                where c.competitor = $me_id 
+                ") as $row) {
             $organizer_ids[] = $row->id;
         }
+
 
         foreach (\db::rows(" select distinct c.id from `unofficial_competitions` c
                 join `unofficial_competition_judges` j on j.competition_id=c.id
@@ -65,7 +72,7 @@ function getCompetitions($me, $mine, $ranked_only = false) {
             from `unofficial_competitions` c
             where 1=1 " . (($admin or $federation) ? "" : "and c.show"));
 
-        $ids = [];
+        $ids = $organizer_ids;
         foreach ($competition_ids as $competition_id) {
             $ids[] = $competition_id->id;
         }
@@ -88,6 +95,7 @@ function getCompetitions($me, $mine, $ranked_only = false) {
         or date(unofficial_competitions.date_to) = current_date) run,
         coalesce(dict_competitors.name$RU, dict_competitors.name) competitor_name,
         dict_competitors.country competitor_country,
+        dict_competitors.wcaid competitor_wcaid,
         without_FCID.count without_FCID,
         unofficial_competitions.id in ('" . implode("','", $judge_ids) . "') is_judge,
         unofficial_competitions.id in ('" . implode("','", $organizer_ids) . "') is_organizer,
@@ -130,7 +138,7 @@ function getCompetition($secret, $me = FALSE) {
         (unofficial_competitions.competitor = $me_id OR $admin) my,
         unofficial_organizers.id > 0 organizer
     FROM unofficial_competitions
-    JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
+    LEFT OUTER JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
     LEFT OUTER JOIN unofficial_organizers 
     ON unofficial_organizers.competition = unofficial_competitions.id and unofficial_organizers.wcaid='$me_wcaid' 
     WHERE  (unofficial_competitions.secret = '$secret' or upper(unofficial_competitions.rankedID) = upper('$secret'))
@@ -363,7 +371,7 @@ function getCompetitionData($id) {
                     . " unofficial_events_rounds.event,"
                     . " unofficial_events_rounds.round,"
                     . " unofficial_competitors.id competitor,"
-                    . " unofficial_competitors.name,"
+                    . " case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end name,"
                     . " unofficial_competitors.FCID,"
                     . " unofficial_competitors.card, "
                     . " unofficial_competitors.id, "
@@ -440,7 +448,7 @@ function getCompetitionData($id) {
     $judges = \db::rows("SELECT 
                             cj.judge wcaid,
                             coalesce(dc.name$RU, dc.name) name,
-                            coalesce(jrd.roleRU, jrd.role) role
+                            coalesce(jrd.role$RU, jrd.role) role
                         FROM unofficial_competition_judges cj
                         JOIN unofficial_judge_roles_dict jrd on jrd.id=cj.dict_judge_role
                         JOIN dict_competitors dc on dc.wcaid=cj.judge 
@@ -489,9 +497,10 @@ function getEventByEventround($eventround) {
 }
 
 function getCompetitorsByEventround($eventround, $event = null) {
+    $RU = t('', 'RU');
     $competitors = [];
     foreach (\db::rows("SELECT"
-            . " unofficial_competitors.name, "
+            . " case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end name,"
             . " unofficial_competitors.FCID, "
             . " unofficial_competitors.id, "
             . " unofficial_competitors.card, "
@@ -515,6 +524,7 @@ function getCompetitorsByEventround($eventround, $event = null) {
             . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
             . " LEFT OUTER JOIN unofficial_events_rounds events_rounds_next ON events_rounds_next.event = unofficial_events.id AND events_rounds_next.round = unofficial_events_rounds.round + 1"
             . " LEFT OUTER JOIN unofficial_competitors_round competitors_round_next ON competitors_round_next.round =  events_rounds_next.id AND competitors_round_next.competitor = unofficial_competitors.id"
+            . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID"
             . " WHERE unofficial_events_rounds.id = $eventround"
             . " ORDER by COALESCE(unofficial_competitors_result.place,9999),"
             . " unofficial_competitors.name") as $competitor) {
@@ -762,25 +772,13 @@ function getFavicon($website, $hide_block = true) {
         preg_match('/https?:\/\/(?:www\.|)([\w.-]+).*/', $website, $matches);
 
         if (isset($ban[1])) {
-            if (!$hide_block) {
-                ?>
-                <i class="fas fa-ban"></i>
-                blocked 
-                <?php
-            }
-        } elseif (isset($matches[1])) {
-            ?> 
-            <img src="<?= "http://www.google.com/s2/favicons?domain=$matches[1]" ?>">
-            <a target="_blank" href="<?= $website ?>">
-                <?= $matches[1] ?>
-            </a> 
-        <?php } else { ?>
-            <i class="fas fa-link"></i>
-            <a target="_blank" href="<?= $website ?>">
-                <?= $website ?>
-            </a> 
-            <?php
+            return;
         }
+        ?> 
+        <a target="_blank" href="<?= $website ?>">
+            <?= $matches[1] ?? $website ?>
+        </a> 
+        <?php
     }
 }
 
@@ -826,7 +824,7 @@ function getBestAttempts($comp_id) {
     foreach ($attempts as $attempt) {
         if (!isset($best_order[$attempt->code][$attempt->round])
                 or $best_order[$attempt->code][$attempt->round] > $attempt->order) {
-            if ($attempt->average and!in_array(strtolower($attempt->average), ['dnf', 'dns'])) {
+            if ($attempt->best and!in_array(strtolower($attempt->average), ['dnf', 'dns'])) {
                 $results[$attempt->code][$attempt->round]['best'] = str_replace(['(', ')'], '', $attempt->best);
                 $best_order[$attempt->code][$attempt->round] = $attempt->order;
             }
@@ -844,4 +842,15 @@ function getBestAttempts($comp_id) {
     }
 
     return $results;
+    
+   
+}
+
+function getText($code){
+    $text= \db::row("select text from unofficial_text where code='$code' and is_archive!=1")->text??false;
+    if(!$text){
+        $L = t('EN', 'RU');
+        $text= \db::row("select text from unofficial_text where code='$code$L' and is_archive!=1")->text??false;    
+    }
+    return $text;
 }

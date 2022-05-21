@@ -1,17 +1,16 @@
-
 <h2>
     <i class="fas fa-trophy"></i> 
     <?= t('Records', 'Рекорды') ?>
 </h2>
-<table class='table_new'>
+<table class='table thead_stable'>
     <thead>
         <tr>
-            <td><?= t('Event', 'Дисцпилина') ?></td>
-            <td><?= t('Type', 'Тип') ?></td>
-            <td><?= t('Name', 'Имя') ?></td>
-            <td class="attempt"><?= t('Result', 'Результат') ?></td>
-            <td><?= t('Competition', 'Соревнование') ?></td>
-            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
+            <th><?= t('Event', 'Дисцпилина') ?></th>
+            <th><?= t('Type', 'Тип') ?></th>
+            <th><?= t('Competitor', 'Участник') ?></th>
+            <th class="attempt"><?= t('Result', 'Результат') ?></th>
+            <th><?= t('Competition', 'Соревнование') ?></th>
+            <th><?= t('Solves', 'Сборки') ?></th>
         </tr>
     </thead>
     <tbody>
@@ -36,19 +35,27 @@
                                 <?= $record->competitor_name ?>
                             </a>
                         </td>
-                        <td class='record'>
+                        <td class='td_record'>
                             <?= $record->result ?>
                         </td>
                         <td>
-                            <a href="<?= PageIndex() ?>competitions/<?= $record->competition_secret ?>">
+                            <?php if (in_array($record->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
                                 <?= $record->competition_name ?>
-                            </a>
+                            <?php } else { ?>
+                                <a href="<?= PageIndex() ?>competitions/<?= $record->competition_secret ?>">
+                                    <?= $record->competition_name ?>
+                                </a>
+                            <?php } ?>
                         </td>
-                        <?php foreach (range(1, 5) as $i) { ?>
-                            <td class='attempt'>
-                                <?= $record->{"attempt$i"} ?? false ?>
-                            </td>
-                        <?php } ?>
+                        <?php
+                        $solves = [];
+                        foreach (range(1, 5) as $i) {
+                            $solves[] = $record->{"attempt$i"} ?? false;
+                        }
+                        ?>
+                        <td class='solves'>
+                            <?= implode(' ', $solves) ?>
+                        </td>
                     </tr>
                     <?php
                 }
@@ -62,15 +69,15 @@
     <i class="fas fa-history"></i>
     <?= t('History of records', 'История рекордов') ?>
 </h2>
-<table class='table_new'>
+<table class='table'>
     <thead>
         <tr>
-            <td><?= t('Event', 'Дисциплина') ?></td>
-            <td class="attempt"><?= t('Single', 'Лучшая') ?></td>
-            <td class="attempt"><?= t('Average', 'Среднее') ?></td>            
-            <td><?= t('Name', 'Имя') ?></td>
-            <td><?= t('Competition', 'Соревнование') ?></td>
-            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
+            <th><?= t('Event', 'Дисциплина') ?></th>
+            <th class="attempt"><?= t('Single', 'Лучшая') ?></th>
+            <th class="attempt"><?= t('Average', 'Среднее') ?></th>            
+            <th><?= t('Name', 'Имя') ?></th>
+            <th><?= t('Competition', 'Соревнование') ?></th>
+            <th><?= t('Solves', 'Сборки') ?></th>
         </tr>
     </thead>
     <tbody>
@@ -84,10 +91,10 @@
                             <i class='<?= $event->image ?>'></i>
                             <?= $event->name ?>
                         </td>
-                        <td class="<?= (!$r and$type_att == 'best' ) ? 'record' : 'attempt' ?>">
+                        <td class="attempt <?= (!$r and$type_att == 'best' ) ? 'td_record' : '' ?>">
                             <?= $type_att == 'best' ? $row->result : '' ?>
                         </td>
-                        <td class="<?= (!$r and$type_att == 'average' ) ? 'record' : 'attempt' ?>">
+                        <td class="attempt <?= (!$r and$type_att == 'average' ) ? 'td_record' : '' ?>">
                             <?= $type_att == 'average' ? $row->result : '' ?>
                         </td>
                         <td>
@@ -96,15 +103,23 @@
                             </a>
                         </td>
                         <td>
-                            <a href="<?= PageIndex() ?>competitions/<?= $row->competition_secret ?>">
+                            <?php if (in_array($row->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
                                 <?= $row->competition_name ?>
-                            </a>
+                            <?php } else { ?>
+                                <a href="<?= PageIndex() ?>competitions/<?= $row->competition_secret ?>">
+                                    <?= $row->competition_name ?>
+                                </a>
+                            <?php } ?>
                         </td>
-                        <?php foreach (range(1, 5) as $i) { ?>
-                            <td class='attempt'>
-                                <?= $row->{"attempt$i"} ?? false ?>
-                            </td>
-                        <?php } ?>
+                        <?php
+                        $solves = [];
+                        foreach (range(1, 5) as $i) {
+                            $solves[] = $row->{"attempt$i"} ?? false;
+                        }
+                        ?>
+                        <td class='solves'>
+                            <?= implode(' ', $solves) ?>
+                        </td>
                     </tr>
                     <?php
                 }

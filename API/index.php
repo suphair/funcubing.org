@@ -74,7 +74,9 @@ if ($method == 'get' and!$request_1) {
             'method' => 'get',
             'query' => [
                 'is_ranked',
-                'name'
+                'name',
+                'fc_id',
+                'wca_id'
             ]
         ],
         [

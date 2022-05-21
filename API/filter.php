@@ -34,67 +34,6 @@ function filter(&$data, $filters) {
                 }
             }
         }
-
-        /*
-
-          $type = $filter['type'];
-          $array = $filter['array'] ?? false;
-          $value = $filter['value'] ?? false;
-          if ($input and $array and $value) {
-          foreach ($data as $c => $element) {
-          $array = $filter['array'];
-          $value = $filter['value'];
-          $find = false;
-          foreach ($element->$array ?? [] as $object) {
-          if ($type == 'equal' and strtolower($input) == strtolower($object->$value)) {
-          $find = true;
-          }
-          if ($type == 'substring' and strpos(strtolower($object->$value), strtolower($input)) === false) {
-          $find = true;
-          }
-          if ($type == 'boolean' and ($object->$value ?? false) == ($input == 'true')) {
-          $find = true;
-          }
-          }
-          if (!$find) {
-          unset($data[$c]);
-          }
-          }
-          }
-          if ($input and $type == 'boolean') {
-          foreach ($data as $c => $element) {
-          if (($element->$key ?? false) != ($input == 'true')) {
-          unset($data[$c]);
-          }
-          }
-          }
-          if ($input and $type == 'substring') {
-          foreach ($data as $c => $element) {
-          if (strpos(strtolower($element->$key), strtolower($input)) === false) {
-          unset($data[$c]);
-          }
-          }
-          }
-          if ($input and $type == 'equal') {
-          foreach ($data as $c => $element) {
-          if (strtolower($element->$key) != strtolower($input)) {
-          unset($data[$c]);
-          }
-          }
-          }
-          if ($input and $type == 'date') {
-          $compare = $filter['compare'];
-          foreach ($data as $c => $element) {
-          if ($compare == 'earlier' and strtotime($element->$key) > strtotime($input)) {
-          unset($data[$c]);
-          }
-          if ($compare == 'later' and strtotime($element->$key) < strtotime($input)) {
-          unset($data[$c]);
-          }
-          }
-          }
-
-         */
     }
 }
 

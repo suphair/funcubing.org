@@ -11,10 +11,10 @@ $url = wcaoauth::url();
 ?>
 <a href="<?= $url ?>">
     <i class="fas fa-sign-in-alt"></i>
-    Sign in with WCA
+    <?= t('Sign in with WCA', 'Авторизоваться на WCA') ?>
 </a>
 <br>
-<?php $lang = $_SESSION['lang']??false ?>
+<?php $lang = $_SESSION['lang'] ?? false ?>
 <?php if ($lang == 'RU') { ?>
     <i class="flag-icon flag-icon-ru"></i> <b>Ру</b> | <a href="<?= PageIndex() ?>competitor/?action=language&lang=EN">En</a>
 <?php } else { ?>

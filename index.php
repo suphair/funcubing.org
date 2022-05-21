@@ -33,6 +33,9 @@ $request_2 = request(2);
 $request_3 = request(3);
 $request_4 = request(4);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
+if (!$request_0) {
+    $request_0 = 'competitions';
+}
 
 if (filter_input(INPUT_GET, 'language')) {
     $_SESSION['user_lang'] = strtoupper(filter_input(INPUT_GET, 'language'));
@@ -104,7 +107,8 @@ $title = [
             <title>Fun Cubing</title>
             <link rel="icon" href="<?= PageLocal() ?>Pages/index.png" >
         <?php } ?>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css?1" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/fc2205.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/icons-extra-event/css/Extra-Events.css" type="text/css"/>
@@ -121,9 +125,7 @@ $title = [
                     <tbody>
                         <tr>
                             <td class="header" width="50%" style="white-space: nowrap">
-                                <a href="<?= PageIndex() ?>">Fun Cubing</a>
                                 <?php if ($title) { ?>
-                                    &bull;   
                                     <a href="<?= PageIndex() ?><?= $request_0 ?>"><?= $title ?></a>
                                     <span hidden id="sub_navigation_separator">&bull;</span>
                                     <span id="sub_navigation"></span>

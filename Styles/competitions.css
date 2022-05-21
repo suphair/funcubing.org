@@ -53,6 +53,6 @@ span.checked{
 }
 
 .wca_beat{
-    color:var(--gray);
+    color:gray;
     text-decoration: line-through;
 }

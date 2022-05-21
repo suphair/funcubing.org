@@ -1,7 +1,6 @@
 <h2>
     <i class="<?= $event_select->image ?>"></i> <?= $event_select->name ?>
-</h2>
-<h2>
+    &bull; 
     <?php if (isset($ratings[$event_select->id]['best'])) { ?>
         <a 
             class='<?= $type == 'best' ? 'select' : '' ?>' 
@@ -15,17 +14,21 @@
             <?= t('Average', 'Среднее') ?></a>
     <?php } ?>
 </h2>
-<table class='table_new'>
+<table class='table thead_stable'>
     <thead>
         <tr>
-            <td>#</td>
-            <td><?= t('Name', 'Имя') ?></td>
-            <td class="attempt"><?= t('Result', 'Результат') ?></td>
-            <td><?= t('Competition', 'Соревнование') ?></td>
+            <th>[<?= count($ratings[$event_select->id][$type] ?? []); ?>]</th>
+            <th><?= t('Name', 'Имя') ?></th>
+            <th class="attempt">
+                <?= t('Result', 'Результат') ?>
+            </th>
+            <th><?= t('Competition', 'Соревнование') ?></th>
             <?php if ($type == 'average') { ?>
-                <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
+                <th><?= t('Solves', 'Сборки') ?></th>
             <?php } ?>
-            <td align="center">WCA ID</td>
+            <th>
+                WCA ID <i class="fas fa-external-link-alt"></i>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -43,20 +46,28 @@
                         <?= $rating->competitor_name ?>
                     <?php } ?>
                 </td>
-                <td class="<?= $rating->order == 1 ? 'record' : 'attempt' ?>">
-                    <b><?= $rating->result ?></b>
+                <td class="attempt <?= $rating->order == 1 ? 'td_record' : '' ?>">
+                    <?= $rating->result ?>
                 </td>
                 <td>
-                    <a href="<?= PageIndex() ?>competitions/<?= $rating->competition_secret ?>">
+                    <?php if (in_array($rating->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
                         <?= $rating->competition_name ?>
-                    </a>
+                    <?php } else { ?>
+                        <a href="<?= PageIndex() ?>competitions/<?= $rating->competition_secret ?>">
+                            <?= $rating->competition_name ?>
+                        </a>
+                    <?php } ?>
                 </td>
                 <?php if ($type == 'average') { ?>
-                    <?php foreach (range(1, 5) as $i) { ?>
-                        <td class='attempt'>
-                            <?= $rating->{"attempt$i"} ?? false ?>
-                        </td>
-                    <?php } ?>
+                    <?php
+                    $solves = [];
+                    foreach (range(1, 5) as $i) {
+                        $solves[] = $rating->{"attempt$i"} ?? false;
+                    }
+                    ?>
+                    <td class='solves'>
+                        <?= implode(' ', $solves) ?>
+                    </td>
                 <?php } ?>
                 <td align="center">
                     <?php if ($rating->wcaid) { ?>
@@ -64,8 +75,8 @@
                             <?= $rating->wcaid ?>
                         </a>
                     <?php } elseif ($rating->nonwca) { ?>
-                            <?= t('none','нет') ?>
-                        <?php } ?>
+                        <?= t('none', 'нет') ?>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>

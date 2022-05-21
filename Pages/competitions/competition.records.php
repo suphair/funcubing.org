@@ -1,16 +1,14 @@
 <h2>
     <i class="fas fa-trophy"></i> 
     <?= t('Updated records of Speedcubing Federation', 'Обновлённые рекорды Федерации Спидкубинга') ?></h2>
-<table class="table_new">
+<table class="table">
     <thead>
         <tr>
-            <td></td>
-            <td><?= t('Event', 'Дисциплина') ?></td>
-            <td><?= t('Type', 'Тип') ?></td>
-            <td class='attempt'><?= t('Result', 'Результат') ?></td>
-            <td><?= t('Competitor', 'Имя') ?></td>
-            <td colspan='5' align='center'><?= t('Solves', 'Сборки') ?></td>
-            <td></td>
+            <th><?= t('Event', 'Дисциплина') ?></th>
+            <th><?= t('Type', 'Тип') ?></th>
+            <th class='attempt'><?= t('Record', 'Рекорд') ?></th>
+            <th><?= t('Competitor', 'Участник') ?></th>
+            <th><?= t('Solves', 'Сборки') ?></th>
         </tr>
     </thead>
     <tbody>
@@ -22,14 +20,12 @@
                     <tr>
                         <td>
                             <i class="<?= $event->image ?>"></i>
-                        </td>
-                        <td>
                             <?= $event->name ?>
                         </td>
                         <td>
                             <?= ['best' => t('Single', 'Лучшая'), 'average' => t('Average', 'Среднее')][$record->type] ?>
                         </td>
-                        <td class='record'>
+                        <td class='attempt td_record'>
                             <?= $record->result ?>
                         </td>
                         <td>
@@ -42,15 +38,14 @@
                                 <?= $record->competitor_name ?>
                             <?php } ?>
                         </td>
-                        <?php foreach (range(1, 5) as $i) { ?>
-                            <td class='attempt'>
-                                <?= $record->{"attempt$i"} ?? false ?>
-                            </td>
-                        <?php } ?>
-                        <td>
-                            <a href="<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/<?= $record->type ?>">
-                                <?= $ranked_icon ?> <?= t('Rankings', 'Рейтинг') ?>
-                            </a>
+                        <?php
+                        $solves = [];
+                        foreach (range(1, 5) as $i) {
+                            $solves[] = $record->{"attempt$i"} ?? false;
+                        }
+                        ?>
+                        <td class='solves'>
+                            <?= implode(' ', $solves); ?>
                         </td>
                     </tr>
                 <?php } ?>

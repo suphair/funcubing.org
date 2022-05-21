@@ -12,7 +12,7 @@
 }
 
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     color:rgb(51,51,51);
     padding:10px 100px;
     margin: 0 auto; 
@@ -64,7 +64,7 @@ table.inner_border>tbody td:first-child{
     border-left:0px;
 }
 
-td.attempt{
+tabel:not(.table) td.attempt{
     width: 70px;
     text-align:center;
 }
@@ -438,27 +438,27 @@ div.shadow_inline_current{
 
 html,
 body {
-	height: 100%;
-        padding:0px;
+    height: 100%;
+    padding:0px;
 }
 .wrapper {
-	position: relative;
-	min-height: 100%;
-        margin:0px;
-        width: 100%;
+    position: relative;
+    min-height: 100%;
+    margin:0px;
+    width: 100%;
 }
 .content {
-        margin:0px;
-        width: 100%;
-        margin-bottom: 15px;
+    margin:0px;
+    width: 100%;
+    margin-bottom: 15px;
 }
 .footer {
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-        padding:8px;
-        margin:0px;
-        margin-left: 30px;
-        height: 50px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding:8px;
+    margin:0px;
+    margin-left: 30px;
+    height: 50px;
 }

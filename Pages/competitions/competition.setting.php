@@ -360,6 +360,7 @@ if ($comp_data->competition->events) {
                                 <?php if (!$event_dict->special or $withResult or $event_dict->extraevents !== false) { ?>
                                     <?php if ($resultId == $result) { ?>
                                         <i class="far fa-dot-circle"></i>
+                                        <input type="hidden" value="<?= $result_dict->id ?>" name="events[<?= $eventId ?>][result]">
                                     <?php } ?>
                                 <?php } else { ?>            
                                     <input <?= $resultId == $result ? 'checked' : '' ?> type="radio" value="<?= $resultId ?>" name="events[<?= $eventId ?>][result]">

@@ -1,5 +1,6 @@
 <?php
 
+
 db::exec("DELETE IGNORE unofficial_competitors_round "
         . " FROM unofficial_competitors_round "
         . " JOIN unofficial_competitors "

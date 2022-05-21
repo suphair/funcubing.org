@@ -8,46 +8,38 @@ if ($comp_data->competition->events) {
         <i title='Events' class="fas fa-newspaper"></i>
         <?= t('Events', 'Дисциплины') ?>
     </h2>
-    <table class="table_new">
+    <table class="table thead_stable">
         <thead>
             <tr>
-                <td align="center">
-                    <i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i>
-                </td>
-                <td align="center">
-                    <i title='<?= t('Results', 'Результаты') ?>' class="fas fa-list-alt"></i>
-                </td>
-                <td></td>
-                <td></td>
-                <td>
-                    <?= t('Events', 'Дисциплины') ?>
-                </td>  
-                <td>
+                <th>
+                    <?= t('Event', 'Дисциплина') ?>
+                </th>  
+                <th>
                     <?= t('Round', 'Раунд') ?>
-                </td>  
-                <td>
+                </th>  
+                <th>
+                    <?= t('Res / Comp', 'Рез / Уч') ?>
+                </th>
+                <th>
                     <?= t('Format', 'Формат') ?>
-                </td>
-                <td>
-                    <i class="fas fa-cut"></i> <?= t('Cutoff', 'Катофф') ?>
-                </td>
-                <td>
-                    <i class="fas fa-stop-circle"></i> <?= t('Time limit', 'Лимит по времени') ?>
-                </td>
-                <td>
-                    <i class="fas fa-caret-square-right"></i> <?= t('Advance to next round', 'Проходят дальше') ?>
-                </td>
+                </th>
+                <th>
+                    <?= t('Cutoff', 'Катофф') ?>
+                </th>
+                <th>
+                    <?= t('Time limit', 'Лимит по времени') ?>
+                </th>
+                <th>
+                    <?= t('Advance to next round', 'Проходят дальше') ?>
+                </th>
                 <?php if ($comp->ranked) { ?>
-                    <td class="attempt">
+                    <th class="attempt">
                         <?= t('Best average', 'Лучшее среднее') ?>
-                    </td>
-                    <td class="attempt">
+                    </th>
+                    <th class="attempt">
                         <?= t('Best single', 'Лучшая сборка') ?>
-                    </td>
+                    </th>
                 <?php } ?>
-                <td hidden data-event-comment>
-                    <i class="fas fa-comment-dots"></i> Comment
-                </td>
             </tr>
         </thead>
         <tbody>
@@ -68,13 +60,16 @@ if ($comp_data->competition->events) {
                     $competitors_count = sizeof($comp_data->rounds[$event->event_dict][$event_round->round]->competitors ?? []);
                     ?>
                     <tr>
-                        <td align="center">
-                            <?= $competitors_count > 0 ? $competitors_count : '.' ?>
-                        </td>
-                        <td align="center">
-                            <?= $results_count > 0 ? $results_count : '.' ?>
+                        <td>
+                            <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
+                            <a href="<?= PageIndex() . "competitions/$secret/event/$event->code/$round" ?>">
+                                <?= $event->name ?>
+                            </a>
                         </td>
                         <td>
+                            <?= $rounds_dict[$event->rounds == $round ? 0 : $round]->smallName; ?>
+                        </td>
+                        <td><nobr>
                             <?php if ($results_count and $competitors_count == $results_count and $event->rounds == $round) { ?>
                                 <i style='color:var(--green)' class="fas fa-flag-checkered"></i>
                             <?php } ?>
@@ -85,23 +80,13 @@ if ($comp_data->competition->events) {
                                 <i   class="fas fa-running"></i>
                             <?php } ?>
                             <?php if (!$competitors_count and!$results_count) { ?>
-                                <i style='color:var(--gray)' class="fas fa-hourglass-start"></i>
+                                <i class="fas fa-hourglass-start"></i>
                             <?php } ?>
                             <?php if ($competitors_count and!$results_count) { ?>
-                                <i style='color:var(--gray)' class="fas fa-hourglass-half"></i>
+                                <i class="fas fa-hourglass-half"></i>
                             <?php } ?>
-                        </td>
-                        <td>
-                            <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
-                        </td>
-                        <td>
-                            <a href="<?= PageIndex() . "competitions/$secret/event/$event->code/$round" ?>">
-                                <?= $event->name ?>
-                            </a>
-                        </td>
-                        <td>
-                            <?= $rounds_dict[$event->rounds == $round ? 0 : $round]->smallName; ?>
-                        </td>
+                            <?= $results_count > 0 ? $results_count : '.' ?> / <?= $competitors_count > 0 ? $competitors_count : '.' ?>
+                        </nobr></td>
                         <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
                             <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
                             <?= $format_dict->name ?>
@@ -126,7 +111,7 @@ if ($comp_data->competition->events) {
                             ?>
                         </td>
                         <td class="attempt">
-                            <?= $cutoff ?>
+                            <?= $cutoff ? $cutoff : '-' ?>
                         </td>
                         <td class="attempt">
                             <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
@@ -168,8 +153,8 @@ if ($comp_data->competition->events) {
                                     if ($record->type == 'best' and $record->round == $round) {
                                         $record_exists = true;
                                         ?>
-                                        <span class="record">
-                                            <?= $record->result ?>
+                                        <span class="td_record">
+                                            <?= $record->result ?> R
                                         </span>
                                         <?php
                                     }
@@ -180,9 +165,6 @@ if ($comp_data->competition->events) {
                                 <?php } ?>
                             </td>
                         <?php } ?>
-                        <td align="left" hidden data-event-comment>
-                            <?= $event_round->comment; ?>
-                        </td>
                     </tr>    
                 <?php } ?>   
             <?php } ?>   

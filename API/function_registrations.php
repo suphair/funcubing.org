@@ -28,7 +28,7 @@ function registrations($competition_id) {
                         'competition_id' => $competition_id
             ];
             if ($registration->FCID) {
-                $registration_key->FCID = $registration->FCID;
+                $registration_key->fc_id = $registration->FCID;
             }
             $registration_key->name = $registration->name;
             $registration_key->event_ids = [];
