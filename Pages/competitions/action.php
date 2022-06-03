@@ -27,7 +27,9 @@ if (!$secret) {
     $events_dict = unofficial\getEventsDict();
     $formats_dict = unofficial\getFormatsDict();
     $results_dict = unofficial\getResultsDict();
-    if ($comp->my ?? FALSE or $comp->organizer ?? FALSE or $notAuthorized) {
+    if (!$comp) {
+        include 'action.competition.notfound.php';
+    } elseif ($comp->my ?? FALSE or $comp->organizer ?? FALSE or $notAuthorized) {
         switch ($action) {
             case 'cards':
                 include 'action.cards.php';
@@ -53,8 +55,6 @@ if (!$secret) {
             default:
                 include 'action.wrong.php';
         }
-    } elseif (!$comp) {
-        include 'action.competition.notfound.php';
     } else {
         include 'action.accessdenied.php';
     }

@@ -33,7 +33,18 @@ foreach ($events_dict as $event) {
             <th>
                 <?= t('Date', 'Дата') ?>
             </th>
-            <th><?= t('Events', 'Дисциплины') ?></th>
+            <th>
+                <?php
+                foreach ($events_dict as $event) {
+                    if (!$event->special) {
+                        $event = $events_dict[$event->id];
+                        ?>
+                        <i style='color:gray' title='<?= $event->name ?>' class="<?= $event->image ?>"></i>
+                        <?php
+                    }
+                }
+                ?>  
+            </th>
             <th>
                 <?= t('Competitors', 'Участники') ?>
             </th>
@@ -69,7 +80,7 @@ foreach ($events_dict as $event) {
                                     isset($comp_histoty_record[$competition->id]['average'][$event->id])) {
                                 $event = $events_dict[$event->id];
                                 ?>
-                                <i title=' <?= $event->name ?> - <?= t('Record', 'Рекорд') ?>'class="td_record <?= $events_dict[$event->id]->image ?>"></i>
+                                <i title=' <?= $event->name ?> - <?= t('Record', 'Рекорд') ?>'class="td_record <?= $event->image ?>"></i>
                                 <?php
                             } else {
                                 if (unofficial\existsCompetitionEvent($competition->id, $event->id)) {

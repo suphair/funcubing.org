@@ -9,6 +9,7 @@ function competitions($competition_id = false) {
     $competitions = \db::rows("SELECT 
                     c.id,
                     c.name,
+                    c.city,
                     coalesce(c.rankedID,c.secret) url,
                     c.website,
                     c.date start_date,
@@ -37,6 +38,7 @@ function competitions($competition_id = false) {
         $competition_key = new \stdClass();
         $competition_key->id = $competition->secret;
         $competition_key->name = $competition->name;
+        $competition_key->city = t(transliterate($competition->city), $competition->city);
         $competition_key->url = 'https:' . PageIndex() . 'competitions/' . $competition->url;
         $competition_key->local_id = $competition->id;
         $competition_key->website = $competition->website;
@@ -70,7 +72,7 @@ function competitions($competition_id = false) {
                             dc.wcaid,
                             coalesce(dc.name$RU, dc.name) name
                         FROM unofficial_organizers o
-                        JOIN dict_competitors dc on dc.wcaid=o.wcaid ");
+                        JOIN dict_competitors dc on o.wcaid in (dc.wcaid,dc.wid) ");
     foreach ($organizers as $organizer) {
         if ($competitions_key[$organizer->competition] ?? false) {
             $main_organizer = $competitions_key[$organizer->competition]->organizers[0]->wca_id;

@@ -1,6 +1,5 @@
 <?php
 include 'competitions.menu.php';
-#$competitions = unofficial\getCompetitions($me, $mine, $ranked);
 $competitions = api\get_competitions(false);
 
 foreach ($competitions as $c => $competition) {
@@ -20,7 +19,11 @@ foreach ($competitions as $c => $competition) {
         if ($all and!in_array('true', array_values((array) $competition->my_roles ?? [])) and!$competition->is_publish) {
             unset($competitions[$c]);
         }
-        if ($ranked and!($competition->is_ranked and $competition->is_publish )) {
+        if ($ranked and!($competition->is_ranked and
+                ($competition->is_publish or
+                $admin or
+                $federation or
+                in_array('true', array_values((array) $competition->my_roles ?? []))))) {
             unset($competitions[$c]);
         }
     }
@@ -34,6 +37,9 @@ foreach ($competitions as $c => $competition) {
             </th>
             <th>
                 <?= t('Date', 'Дата') ?>
+            </th>
+            <th>
+                <?= t('City', 'Город') ?>
             </th>
             <th>
                 <?= t('Competition', 'Наименование') ?>
@@ -50,9 +56,6 @@ foreach ($competitions as $c => $competition) {
         <?php foreach ($competitions as $competition) { ?>
             <tr>   
                 <td align="left">
-                    <?php if (!$competition->is_publish) { ?>
-                        <i title="<?= t('Hidden', 'Спрятано') ?>" class="far fa-eye-slash"></i>
-                    <?php } ?>
                     <?php if ($competition->is_ranked) { ?>
                         <?= $ranked_icon ?>
                     <?php } ?>
@@ -77,13 +80,19 @@ foreach ($competitions as $c => $competition) {
                         ?>
                         <i style='color:var(--green)' class="fas fa-running"></i>
                     <?php } ?>
+                    <?php if (!$competition->is_publish) { ?>
+                        <i title="<?= t('Hidden', 'Спрятано') ?>" class="far fa-eye-slash"></i>
+                    <?php } ?>
                 </td>
                 <td>
                     <?= dateRange($competition->start_date, $competition->end_date) ?>
 
                 </td>
+                <td>
+                    <?= str_replace(',', ',<br>', $competition->city) ?>
+                </td>
                 <td>                    
-                    <a href="<?= PageIndex() ?>competitions/<?= $competition->id ?>"><?= $competition->name ?> </a>
+                    <a href="<?= PageIndex() ?>competitions/<?= $competition->id ?>"><?= t(transliterate($competition->name), $competition->name); ?> </a>
                 </td>
 
                 <td>
@@ -91,8 +100,8 @@ foreach ($competitions as $c => $competition) {
                         <?= $competition->main_organizer->name ?>
                     </a>
                 </td>   
-                <td>
-                    <?php unofficial\getFavicon($competition->website, false) ?>
+                <td title="<?= $competition->website ?>">
+                    <?php unofficial\getFavicon($competition->website, true) ?>
                 </td>
             </tr>
         <?php } ?>

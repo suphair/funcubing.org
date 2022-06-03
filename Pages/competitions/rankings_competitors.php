@@ -105,21 +105,23 @@ usort($competitors_holder_records, function($a, $b) {
                     <?php
                     $competitions = [];
                     foreach (explode(',', $competitor->competitions_secret) as $c => $secret) {
-                        $competitions[] = "<a href='" . PageIndex() . "/competitions/$secret'>" . (explode(',', $competitor->competitions_name)[$c] ?? '???') . "</a>";
+                        if (!in_array($secret, explode(",", config::get('MISC', 'competition_exclude_secret')))) {
+                            $competitions[] = "<a href='" . PageIndex() . "/competitions/$secret'>" . (explode(',', $competitor->competitions_name)[$c] ?? '???') . "</a>";
+                        }
                     }
                     ?>
-                    <?= implode(', ', $competitions) ?>
-                </td>
-                <td>
-                    <?php if ($competitor->wcaid) { ?>
-                        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
-                            <?= $competitor->wcaid ?>
-                        </a>
-                    <?php } elseif ($competitor->nonwca) { ?>
-                        <?= t('none', 'нет') ?>
-                    <?php } ?>
-                </td>
-            </tr>
+        <nobr><?= implode(',</nobr> <nobr>', $competitions) ?></nobr>
+    </td>
+    <td>
+        <?php if ($competitor->wcaid) { ?>
+            <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $competitor->wcaid ?>'>
+                <?= $competitor->wcaid ?>
+            </a>
+        <?php } elseif ($competitor->nonwca) { ?>
+            <?= t('none', 'нет') ?>
         <?php } ?>
-    </tbody>
+    </td>
+    </tr>
+<?php } ?>
+</tbody>
 </table>

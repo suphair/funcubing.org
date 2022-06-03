@@ -1,9 +1,7 @@
 
 <?php
-$admin = unofficial\admin();
 $main_organizer = ($competition->my_roles->main_organizer ?? false or $admin);
 $organizer = ($competition->my_roles->organizer ?? false or $admin);
-$federation = unofficial\federation();
 ?>
 
 <h2>
@@ -56,6 +54,13 @@ $federation = unofficial\federation();
                             Private</td>
                     <?php } ?>
                 </tr>
+                <?php if ($competition->city) { ?>
+                    <tr>
+                        <td><?= t('City', 'Город') ?></td>
+                        <td><i class="fas fa-map-marker-alt"></i>
+                            <?= $competition->city ?></td>
+                    </tr>
+                <?php } ?>
                 <tr>
                     <td><?= t('Date', 'Дата') ?></td>
                     <td><i class="far fa-calendar-alt"></i>
@@ -64,30 +69,30 @@ $federation = unofficial\federation();
                 <?php if ($competition->website) { ?>
                     <tr>
                         <td><?= t('Website', 'Сайт') ?></td>
-                        <td>
-                            <?php unofficial\getFavicon($competition->website) ?>    </td>
+                        <td title="<?= $competition->website ?>">
+                            <?php unofficial\getFavicon($competition->website, false) ?>    </td>
                     </tr>
-                <?php } ?>
-                <?php
+                    <?php
+                }
                 $o = 0;
                 foreach ($competition->organizers as $organizer) {
-                    if ($organizer->wca_id or!$o) {
-                        ?>
-                        <tr>
-                            <td><?php if (!$o++) { ?><?= t('Organizer', 'Организатор') ?><?php } ?></td>
-                            <td>
-                                <i class="fas fa-user-tie"></i>
+                    ?>
+                    <tr>
+                        <td><?php if (!$o++) { ?><?= t('Organizer', 'Организатор') ?><?php } ?></td>
+                        <td>
+                            <i class="fas fa-user-tie"></i>
+                            <?php if ($organizer->wca_id) { ?>
                                 <a target='_blank' 
                                    href='https://www.worldcubeassociation.org/persons/<?= $organizer->wca_id ?>'>
                                        <?= $organizer->name ?>
                                 </a>   
-                            </td>
-                        </tr>
-                        <?php
-                    }
+                            <?php } else { ?>
+                                <?= $organizer->name ?>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    <?php
                 }
-                ?>
-                <?php
                 $s = 0;
                 foreach ($comp_data->events as $event) {
                     if ($event->special) {

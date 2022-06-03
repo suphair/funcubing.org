@@ -1,8 +1,9 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css?100" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
 $admin = unofficial\admin();
+$federation = unofficial\federation();
 $ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
 $wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {

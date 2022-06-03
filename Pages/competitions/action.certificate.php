@@ -135,7 +135,7 @@ following results:';
         }
 
         $mpdf->WriteHTML('</tbody></table>');
-        $mpdf->WriteHTML('<div style="padding:20px; text-align:center"><span style="font-size:18px;">' . dateRange($comp->date, $comp->date_to, true) . '</span></div>');
+        $mpdf->WriteHTML('<div style="padding:20px; text-align:center"><span style="font-size:18px;">' . ($comp_api->city ? "$comp_api->city, " : "") . dateRange($comp->date, $comp->date_to, true) . '</span></div>');
         if ($competitors_count != $r) {
             $mpdf->AddPage();
         }

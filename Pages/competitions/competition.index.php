@@ -45,10 +45,12 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 class="<?= $section == 'competitors' ? 'select' : '' ?>"
                 href="<?= PageIndex() . "competitions/$secret/competitors" ?>"
                 ><i title='<?= t('Competitors', 'Участники'); ?>' class="fas fa-users"></i></a>
-            <a 
-                class="<?= $section == 'points' ? 'select' : '' ?>"
-                href="<?= PageIndex() . "competitions/$secret/points" ?>"
-                ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="fas fa-star"></i></a>
+                <?php if (strtotime($competition->start_date) <= strtotime(date('Y-m-d'))) { ?>
+                <a 
+                    class="<?= $section == 'points' ? 'select' : '' ?>"
+                    href="<?= PageIndex() . "competitions/$secret/points" ?>"
+                    ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="fas fa-star"></i></a>
+                <?php } ?>
                 <?php if (sizeof($records)) { ?>
                 <a 
                     class="<?= $section == 'records' ? 'select' : '' ?>"

@@ -12,11 +12,12 @@ $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 if ($code and is_numeric($round)) {
-    $competitors_round = db::row("SELECT unofficial_results_dict.code FROM unofficial_competitors_round"
+    $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
-                    . " JOIN unofficial_results_dict on (unofficial_results_dict.id = unofficial_events.result_dict OR unofficial_results_dict.id = unofficial_events_dict.result_dict)"
+                    . " JOIN unofficial_results_dict results_dict_1  on results_dict_1.id = unofficial_events_dict.result_dict"
+                    . " LEFT OUTER JOIN unofficial_results_dict results_dict_2  on results_dict_2.id = unofficial_events.result_dict"
                     . " WHERE unofficial_competitors_round.id = $competitor_round "
                     . " AND unofficial_events_rounds.round = $round"
                     . " AND unofficial_events_dict.code = '$code'");
@@ -27,7 +28,9 @@ if ($code and is_numeric($round)) {
         } else {
             db::exec("INSERT IGNORE INTO unofficial_competitors_result (competitor_round) VALUES ($competitor_round)");
             foreach ($attempt_arr as $a => $attempt) {
-                $attempt = str_replace(['0:0', '0:'], '', $attempt);
+                if (substr($attempt, 0, 1) == '0') {
+                    $attempt = str_replace(['0:0', '0:'], '', $attempt);
+                }
 
                 if (is_numeric($a) and in_array($a, range(1, 5))) {
                     if (preg_match("/$a/", $exclude)) {

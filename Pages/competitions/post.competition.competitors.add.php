@@ -1,4 +1,5 @@
 <?php
+
 $competitors = explode(",", str_replace("\n", ",", filter_input(INPUT_POST, 'competitors')));
 
 foreach ($competitors as $competitor) {
@@ -24,6 +25,9 @@ foreach ($competitors as $competitor) {
 
     if ($name) {
         db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
+        if ($comp->ranked) {
+            unofficial\set_fc_id(db::id(), $name);
+        }
         unofficial\updateCompetitionCard($comp->id);
     }
 

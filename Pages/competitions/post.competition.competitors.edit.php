@@ -8,20 +8,21 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
         $registrations = [];
     }
 
+    if (sizeof($registrations)) {
+        $competitorId = array_keys($registrations)[0];
+        $ranked = db::row("select cn.ranked from unofficial_competitions cn join unofficial_competitors cr on cr.competition=cn.id where cr.id = $competitorId ")->ranked ?? false;
+    }
     foreach ($registrations as $competitorId => $registration) {
         unset($registration['FCID']);
+        $non_resident = isset($registration['non_resident']) ? 0 : 1;
+        unset($registration['non_resident']);
         if ($registration['name'] ?? false) {
             $name = strip_tags($registration['name']);
             unset($registration['name']);
-            db::exec("UPDATE IGNORE unofficial_competitors SET name = '$name' WHERE id = $competitorId ");
-        }
-
-        $non_resident = isset($registration['non_resident']) ? 0 : 1;
-        unset($registration['non_resident']);
-        if ($non_resident) {
-            db::exec("UPDATE IGNORE unofficial_competitors SET non_resident = $non_resident, FCID = null WHERE id = $competitorId ");
-        } else {
-            db::exec("UPDATE IGNORE unofficial_competitors SET non_resident = $non_resident WHERE id = $competitorId ");
+            db::exec("UPDATE IGNORE unofficial_competitors SET name = '$name',non_resident = $non_resident, FCID = null WHERE id = $competitorId and (name != '$name' or coalesce(non_resident,0) != $non_resident) ");
+            if ($ranked and!$non_resident) {
+                unofficial\set_fc_id($competitorId, $name);
+            }
         }
         if (!is_array($registration)) {
             $registration = [];

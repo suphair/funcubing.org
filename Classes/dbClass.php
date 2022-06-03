@@ -95,6 +95,10 @@ class db {
         return $result;
     }
 
+    static function exec_null($sql) {
+        return self::exec(str_replace(["'null'", "''"], "null", $sql));
+    }
+
     static function dump($dir) {
         $class = 'Ifsnop\Mysqldump\Mysqldump';
         if (class_exists($class)) {

@@ -1,5 +1,10 @@
 
 <?= trim(explode('(', $me->name)[0]) ?>
+<?php if (!$me->wca_id) { ?>
+    <sup style="color:green">
+        <?= $me->id ?>
+    </sup>
+<?php } ?>
 
 <a href="<?= PageIndex() ?>competitor/?action=logout">
     <i class="fas fa-sign-out-alt"></i>

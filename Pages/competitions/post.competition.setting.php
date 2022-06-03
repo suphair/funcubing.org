@@ -2,6 +2,7 @@
 
 $website = db::escape(filter_input(INPUT_POST, 'website'));
 $name = db::escape(filter_input(INPUT_POST, 'name'));
+$city = db::escape(filter_input(INPUT_POST, 'city'));
 $details = db::escape(filter_input(INPUT_POST, 'details'));
 $logo = db::escape(filter_input(INPUT_POST, 'logo'));
 $secret = db::escape(filter_input(INPUT_POST, 'secret'));
@@ -18,6 +19,7 @@ if (filter_input(INPUT_POST, 'registration') or $shareRegistration) {
 db::exec("  UPDATE  unofficial_competitions
             SET 
                 name = '$name',
+                city = '$city',
                 details = '$details',
                 logo = '$logo',
                 date = '$date',

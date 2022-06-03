@@ -24,31 +24,35 @@ $only_podium = isset($_GET['podium']);
             <?php
         }
     }
+
+    foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
+        $competitior_count_round[$event_round_id] = sizeof($comp_data->rounds[$event_round->event_dict][$event_round->round]->competitors ?? []);
+        if (!$competitior_count_round[$event_round_id]) {
+            unset($comp_data->event_rounds[$event_round_id]);
+        }
+    }
     ?>
 </div>
 <table class="table thead_stable">
     <thead>
         <tr>
             <th>
-                <?= !$only_podium ? sizeof($comp_data->competitors) : '' ?>
+                <?= !$only_podium ? ('[' . sizeof($comp_data->competitors) . ']') : '' ?>
             </th>
             <?php
-            $round_next_exists = false;
-            foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
-                if ($event_round->round > 1) {
-                    $round_next_exists = true;
-                }
-            }
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                 $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
                 if ($only_podium and $event_round->round != $rounds) {
                     continue;
                 }
+                $event = $events_dict[$event_round->event_dict];
                 ?>
-                <th class="center <?= ($event_round->round == $rounds) ? 'border_right' : '' ?>">
-                    <a  href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_round->event_dict]->code}/$event_round->round" ?> ">
-                        <i class="<?= $events_dict[$event_round->event_dict]->image ?>"></i>
-                    </a>
+                <th
+                    title="<?= $event->name ?>, <?= $rounds_dict[$rounds == $event_round->round ? 0 : $event_round->round]->fullName; ?>"
+                    class="center <?= ($event_round->round == 1) ? 'border_left' : '' ?>">
+                    <a 
+                        href="<?= PageIndex() . "competitions/$secret/event/{$event->code}/$event_round->round" ?> "
+                        ><i  class="<?= $event->image ?>"></i></a>
                 </th>
             <?php } ?>
         </tr>
@@ -78,21 +82,25 @@ $only_podium = isset($_GET['podium']);
                 ?>
                 <tr>
                     <td style='white-space:nowrap '>
-                        <?php if ($comp->ranked and $competitor->non_resident) { ?>
-                            <i class='fas fa-globe'></i>
-                            <?php
-                        }
+                        <?php
                         if ($comp->ranked and!$competitor->non_resident) {
                             $link = $competitor->FCID ? "rankings/competitor/$competitor->FCID" : false;
                         } else {
                             $link = "competitor/$competitor->id";
                         }
+                        $name = t(transliterate($competitor->name), $competitor->name);
                         if ($link) {
                             ?>
-                            <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $competitor->name ?></a>
+                            <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $name ?></a>
                         <?php } else { ?>
-                            <?= $competitor->name ?>
-                        <?php } ?>
+                            <?= $name ?>
+                            <?php
+                        }
+                        if ($comp->ranked and $competitor->non_resident) {
+                            ?>
+                            <i title = '<?= t('Non-resident', 'Нерезидент') ?>' class='fas fa-globe'></i>
+                        <?php }
+                        ?>
                     </td>
                     <?php
                     foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
@@ -107,7 +115,7 @@ $only_podium = isset($_GET['podium']);
                             center 
                             <?= $result->podium ?? false ? 'td_podium' : '' ?> 
                             <?= $result->next_round ?? false ? 'td_next_round' : '' ?> 
-                            <?= ($event_round->round == $rounds) ? 'border_right' : '' ?>
+                            <?= ($event_round->round == 1) ? 'border_left' : '' ?>
                             " >
                                 <?php if ($result and (!$only_podium or $result->podium ?? false)) { ?>
                                     <?php if ($result->place ?? FALSE) { ?>
@@ -135,9 +143,8 @@ $only_podium = isset($_GET['podium']);
                         continue;
                     }
                     ?>
-                    <td class="center <?= ($event_round->round == $rounds) ? 'border_right' : '' ?>">
-                        <?php $competitors_count = sizeof($comp_data->rounds[$event_round->event_dict][$event_round->round]->competitors ?? []) ?>
-                        <?= $competitors_count ?>
+                    <td class="center <?= ($event_round->round == 1) ? 'border_left' : '' ?>">
+                        <?= $competitior_count_round[$event_round_id] ?>
                         <?php
                         $results_count = 0;
                         foreach ($comp_data->competitors as $competitor_id => $competitor) {
@@ -152,3 +159,9 @@ $only_podium = isset($_GET['podium']);
         </tfoot>
     <?php } ?>
 </table>
+
+<?php if (!sizeof($comp_data->event_rounds)) { ?>
+    <div><?= t('No competitors', 'Нет участников') ?></div>
+    <?php
+}
+?>

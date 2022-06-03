@@ -27,7 +27,7 @@ if ($comp_data->competition->events) {
                     <?= t('Cutoff', 'Катофф') ?>
                 </th>
                 <th>
-                    <?= t('Time limit', 'Лимит по времени') ?>
+                    <?= t('Limit', 'Лимит') ?>
                 </th>
                 <th>
                     <?= t('Advance to next round', 'Проходят дальше') ?>

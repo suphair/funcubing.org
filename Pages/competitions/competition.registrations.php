@@ -74,15 +74,14 @@
                         <td>
                             Competitor
                         </td>
+                        <?php if ($comp->ranked) { ?>
+                            <td>FC ID</td>
+                        <?php } ?>
                         <?php foreach ($comp_data->events as $event) { ?>
                             <td>
                                 <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>    
                             </td>
                         <?php } ?>    
-
-                        <?php if ($comp->ranked) { ?>
-                            <td>FC ID</td>
-                        <?php } ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,12 +98,14 @@
                                     <i class="fas fa-lock"></i>
                                 <?php } ?>    
                             </td>
-                            <td data-competitor-name >
-                                <?php if (!$competitor->FCID) { ?>
-                                    <input data-competitor-hide name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
-                                <?php } ?>
-                                <?= $competitor->name ?>
+                            <td data-competitor-name >                                
+                                <input data-competitor-hide name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name ?>' ?>
                             </td>
+                            <?php if ($comp->ranked) { ?>
+                                <td>
+                                    <?= $competitor->FCID ? $competitor->FCID : '-' ?>
+                                </td>
+                            <?php } ?>
                             <?php foreach ($comp_data->events as $event) { ?>
                                 <td data-competitor-hide>
                                     <?php if ($competitor->events[$event->event_dict] ?? FALSE) { ?>
@@ -121,35 +122,12 @@
                                     <?php } ?>    
                                 </td>    
                             <?php } ?>
-                            <?php if ($comp->ranked and!$competitor->non_resident) { ?>
-                                <td data-competitor-hide>
-                                    <?php
-                                    if (unofficial\admin()) {
-                                        $name1 = mb_substr(explode(' ', $competitor->name)[0] ?? false, 0, 1, "UTF-8");
-                                        $name2 = mb_substr(explode(' ', $competitor->name)[1] ?? false, 0, 1, "UTF-8");
-                                        $FCID_preinput = unofficial\rus_lat($name1) . unofficial\rus_lat($name2);
-                                        $competitor->FCID_candidates = array_unique($competitor->FCID_candidates);
-                                        ?>
-                                        <?php if (sizeof($competitor->FCID_candidates) == 1) { ?>
-                                            <input readonly maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID_candidates[0] ?>'>
-                                        <?php } elseif ($competitor->FCID) { ?> 
-                                            <input readonly maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $competitor->FCID ?>'>
-                                        <?php } else { ?>
-                                            <input maxlength="4" name='registrations[<?= $competitor->id ?>][FCID]' value='<?= $FCID_preinput ?>'>
-                                            <?php if (!empty($competitor->FCID_candidates)) { ?>
-                                                {<?= implode(",", $competitor->FCID_candidates) ?>} 
-                                            <?php } ?>
-                                        <?php } ?>
-                                    <?php } ?>
-                                    <?= $competitor->FCID ? $competitor->FCID : '-' ?>
-                                </td>
-                            <?php } ?>
                         </tr>
                     <?php } ?>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td/><td/><td/>
+                        <td colspan="5"></td>
                         <?php foreach ($comp_data->events as $event) { ?>
                             <td>
                                 <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>    
@@ -157,8 +135,9 @@
                         <?php } ?>    
                     </tr> 
                     <tr>
-                        <td/><td/>
+                        <td colspan="3"></td>
                         <td>Total</td>
+                        <td></td>
                         <?php foreach ($comp_data->events as $event) { ?>
                             <td>
                                 <?= sizeof($comp_data->rounds[$event->event_dict][1]->competitors ?? []) ?>
@@ -171,13 +150,6 @@
                 <i class="far fa-save"></i>
                 Save registrations
             </button>
-            <?php if (unofficial\admin() and $comp->ranked) { ?>
-                <button name="button" value="FCID"> 
-                    <i class="far fa-save"></i>
-                    Save FC ID
-                </button>
-            <?php } ?>
-
         </form>
         <?php if (!$comp->ranked) { ?>
             <form action="?competitors_delete" method="POST"

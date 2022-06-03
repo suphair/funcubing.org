@@ -44,21 +44,26 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                     " >
                         <?= $competitor->place ?> 
                 </td>
-                <td>
+                <td style='white-space:nowrap '>
                     <?php
-                    if ($comp->ranked) {
+                    if ($comp->ranked and!$competitor->non_resident) {
                         $link = $competitor->FCID ? "rankings/competitor/$competitor->FCID" : false;
                     } else {
                         $link = "competitor/$competitor->id";
                     }
+                    $name = t(transliterate($competitor->name), $competitor->name);
+                    if ($link) {
+                        ?>
+                        <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $name ?></a>
+                    <?php } else { ?>
+                        <?= $name ?>
+                        <?php
+                    }
+                    if ($comp->ranked and $competitor->non_resident) {
+                        ?>
+                        <i title = '<?= t('Non-resident', 'Нерезидент') ?>' class='fas fa-globe'></i>
+                    <?php }
                     ?>
-                    <?php if ($link) { ?>
-                        <a href="<?= PageIndex() . "competitions/$link" ?>">
-                        <?php } ?>
-                        <?= $competitor->name ?>
-                        <?php if ($link) { ?>
-                        </a>
-                    <?php } ?>
                 </td>
                 <?php
                 foreach ($formats as $format) {

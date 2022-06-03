@@ -12,6 +12,7 @@ wcaoauth::out();
 $competitor = wcaoauth::authorize();
 if ($competitor) {
     competitor\actual($competitor);
+    competitor\login($competitor);
 }
 
 wcaoauth::location();

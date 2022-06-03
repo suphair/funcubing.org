@@ -32,6 +32,10 @@
                 <td><input required style="width:500px" type="text" name="name" value="<?= $comp->name ?>" /></td>
             </tr>
             <tr>
+                <td>City</td> 
+                <td><input style="width:500px" type="text" name="city" value="<?= $comp->city ?>" /></td>
+            </tr>
+            <tr>
                 <td>
                     Details
                 </td>
@@ -64,6 +68,7 @@
                 </td>
             </tr>
         </table>
+        <!--
         <input type="checkbox" <?= $comp->secretRegistration ? 'checked' : ''; ?> name="registration">
         <i class="fas fa-user-plus"></i> Open self-registration (competitors can register themselves)
         <?php
@@ -77,6 +82,7 @@
         <input type="checkbox" <?= $comp->shareRegistration ? 'checked' : ''; ?> name="shareRegistration">
         Publish a link for self-registration (this link will be published on the competition page)
         <br>
+        -->
         <button>
             <i class="fas fa-save"></i>
             Save
@@ -104,7 +110,8 @@
                     . " dict_competitors.name,"
                     . " unofficial_organizers.wcaid"
                     . " FROM unofficial_organizers"
-                    . " LEFT OUTER JOIN dict_competitors on unofficial_organizers.wcaid = dict_competitors.wcaid "
+                    . " LEFT OUTER JOIN dict_competitors "
+            . "             on unofficial_organizers.wcaid in (dict_competitors.wcaid,dict_competitors.wid) "
                     . " WHERE competition=$comp->id");
     foreach ($organizers as $organizer) {
         ?>
@@ -118,7 +125,7 @@
         </form>
     <?php } ?>
     <form method="POST" action="?organizer_add">
-        WCAID
+        WCAID (or id)
         <input name="wcaid" required="" value="">
         <button>
             <i class="fas fa-user-plus"></i>

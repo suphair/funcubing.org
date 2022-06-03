@@ -117,6 +117,7 @@ function getCompetition($secret, $me = FALSE) {
     $RU = t('', 'RU');
     $sql = "SELECT
         unofficial_competitions.website,
+        unofficial_competitions.city,
         unofficial_competitions.id,
         unofficial_competitions.show, 
         unofficial_competitions.competitor,
@@ -133,6 +134,8 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.rankedApproved approved,
         unofficial_competitions.rankedID,
         coalesce(dict_competitors.name$RU,dict_competitors.name) competitor_name,
+        dict_competitors.nameRU competitor_nameRU,
+        dict_competitors.name competitor_nameEN,
         dict_competitors.wcaid competitor_wcaid,
         dict_competitors.country competitor_country,
         (unofficial_competitions.competitor = $me_id OR $admin) my,
@@ -358,9 +361,10 @@ function getCompetitionData($id) {
                 . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor"
                 . " LEFT OUTER JOIN unofficial_competitors_result on unofficial_competitors_result.competitor_round = unofficial_competitors_round.id "
                 . " JOIN unofficial_events_rounds ON unofficial_competitors_round.round = unofficial_events_rounds.id"
+                . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID"
                 . " WHERE unofficial_events_rounds.event = $round->event "
                 . "AND unofficial_events_rounds.round = $round->round "
-                . "ORDER BY unofficial_competitors.name") as $competitor) {
+                . "ORDER BY case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end") as $competitor) {
             $data->rounds[$round->event_dict][$round->round]->competitors[$competitor->id] = $competitor;
         }
     }
@@ -487,12 +491,13 @@ function getEventByEventround($eventround) {
                     . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name,"
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_results_dict.name result_name,  "
-                    . " unofficial_results_dict.code result_code  "
+                    . " coalesce(event_unofficial_results_dict.code, unofficial_results_dict.code) result_code  "
                     . " FROM unofficial_events_rounds "
                     . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict"
                     . " JOIN unofficial_results_dict on (unofficial_results_dict.id = unofficial_events.result_dict OR unofficial_results_dict.id = unofficial_events_dict.result_dict)"
-                    . " JOIN unofficial_formats_dict on unofficial_formats_dict.id = unofficial_events.format_dict"
+                    . " JOIN unofficial_formats_dict on unofficial_formats_dict.id = unofficial_events.format_dict "
+                    . " LEFT OUTER JOIN unofficial_results_dict event_unofficial_results_dict on event_unofficial_results_dict.id = unofficial_events.result_dict"
                     . " WHERE unofficial_events_rounds.id = $eventround");
 }
 
@@ -504,6 +509,7 @@ function getCompetitorsByEventround($eventround, $event = null) {
             . " unofficial_competitors.FCID, "
             . " unofficial_competitors.id, "
             . " unofficial_competitors.card, "
+            . " unofficial_competitors.non_resident, "
             . " unofficial_competitors_result.place, "
             . " unofficial_competitors_round.id competitor_round, "
             . " unofficial_competitors_result.attempts, "
@@ -766,7 +772,7 @@ function getResutsByCompetitor($competitor_id) {
                     . " unofficial_events_rounds.round DESC");
 }
 
-function getFavicon($website, $hide_block = true) {
+function getFavicon($website, $only_domen) {
     if ($website) {
         preg_match('/.*(instagram|facebook).*/', $website, $ban);
         preg_match('/https?:\/\/(?:www\.|)([\w.-]+).*/', $website, $matches);
@@ -774,9 +780,15 @@ function getFavicon($website, $hide_block = true) {
         if (isset($ban[1])) {
             return;
         }
+        if ($only_domen) {
+            $results = array_reverse(explode(".", $matches[1]));
+            $result = $results[1] . "." . $results[0];
+        } else {
+            $result = $matches[1];
+        }
         ?> 
         <a target="_blank" href="<?= $website ?>">
-            <?= $matches[1] ?? $website ?>
+            <?= $result ?? $website ?>
         </a> 
         <?php
     }
@@ -842,15 +854,107 @@ function getBestAttempts($comp_id) {
     }
 
     return $results;
-    
-   
 }
 
-function getText($code){
-    $text= \db::row("select text from unofficial_text where code='$code' and is_archive!=1")->text??false;
-    if(!$text){
+function getText($code) {
+    $text = \db::row("select text from unofficial_text where code='$code' and is_archive!=1")->text ?? false;
+    if (!$text) {
         $L = t('EN', 'RU');
-        $text= \db::row("select text from unofficial_text where code='$code$L' and is_archive!=1")->text??false;    
+        $text = \db::row("select text from unofficial_text where code='$code$L' and is_archive!=1")->text ?? false;
     }
     return $text;
+}
+
+function getCompetitionPoints($competition_id) {
+    $RU = t('', 'RU');
+    $rows = \db::rows("
+        select 
+            ed.id event_id,
+            e.rounds,
+            count_competitor.count,
+            c.id competitor_id,
+            c.name competitor_name,
+            c.FCID competitor_FCID,
+            c_result.place,
+            count + 1 - c_result.place point
+        from `unofficial_events` e 
+        join `unofficial_events_rounds` er on er.event=e.id and er.round=e.rounds
+        join `unofficial_events_dict` ed on ed.id=e.event_dict
+        join (
+                select count(*) count,round.round
+                        from `unofficial_competitors_round` round
+                        join `unofficial_competitors_result` result on result.competitor_round=round.id 
+                        join `unofficial_events_rounds` er on er.id = round.round
+                        join `unofficial_events` e on e.id=er.event
+                where best!='DNF' or e.rounds >1
+                group by round
+        ) count_competitor on count_competitor.round=er.id
+        join `unofficial_competitors_round` c_round on c_round.round = er.id
+        join `unofficial_competitors_result` c_result on c_result.competitor_round = c_round.id 
+        join `unofficial_competitors` c on c.id = c_round.competitor 
+        where e.competition = $competition_id
+            and ed.special = 0
+        order by ed.order");
+    $results = (object) ['head' => [], 'competitors' => []];
+    foreach ($rows as $row) {
+        if (!isset($results->head[$row->event_id])) {
+            $results->head[$row->event_id] = (object) [
+                        'count' => $row->count,
+                        'rounds' => $row->rounds
+            ];
+        }
+        if (!isset($results->competitors[$row->competitor_id])) {
+            $results->competitors[$row->competitor_id] = (object) [
+                        'points' => 0,
+                        'name' => $row->competitor_name,
+                        'id' => $row->competitor_id,
+                        'FCID' => $row->competitor_FCID,
+                        'events' => [],
+            ];
+        }
+        if ($row->point) {
+            $results->competitors[$row->competitor_id]->points += $row->point;
+        }
+        $results->competitors[$row->competitor_id]->events[$row->event_id] = (object) [
+                    'point' => $row->point,
+                    'place' => $row->place
+        ];
+    }
+
+    usort($results->competitors, function($a, $b) {
+        if ($a->points != $b->points) {
+            return $a->points < $b->points;
+        }
+        return $a->name > $b->name;
+    });
+
+    return $results;
+}
+
+function set_fc_id($id, $name) {
+
+    $name1 = mb_substr(explode(' ', $name)[0] ?? false, 0, 1, "UTF-8");
+    $name2 = mb_substr(explode(' ', $name)[1] ?? false, 0, 1, "UTF-8");
+    $preinput = rus_lat($name1) . rus_lat($name2);
+    $competitor_find = \db::row(
+                    "select  distinct
+                            cr.name,
+                            cr.FCID,
+                            case when cr.name='$name' then cr.FCID 
+                            else concat('$preinput',right(concat('00',right(FCID,2)+1),2))
+                            end FCID_set
+                    from `unofficial_competitors` cr
+                            join `unofficial_competitions` cn on cr.competition=cn.id
+                    where cn.ranked=1 
+                        and (left(FCID,2)='$preinput' or cr.name='$name')
+                        and FCID is not null    
+                    order by cr.name='$name' desc, FCID desc 
+            ");
+
+    if ($competitor_find->FCID_set ?? false) {
+        $FCID_set = $competitor_find->FCID_set;
+    } else {
+        $FCID_set = $preinput . "01";
+    }
+    \db::exec("update `unofficial_competitors` set FCID='$FCID_set' where id=$id");
 }

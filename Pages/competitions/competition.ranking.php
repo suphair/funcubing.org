@@ -113,7 +113,14 @@ $judge_roles = unofficial\getJudgeRolesDict();
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($comp_data->organizers as $organizer) { ?>
+        <?php
+        $comp_data->organizers[] = (object) [
+                    'competitor_nameEN' => $comp->competitor_nameEN,
+                    'competitor_nameRU' => $comp->competitor_nameRU,
+                    'competitor_wcaid' => $comp->competitor_wcaid
+        ];
+        foreach ($comp_data->organizers as $organizer) {
+            ?>
         <form method='POST' action='?organizer_rename'>
             <tr>
                 <td>

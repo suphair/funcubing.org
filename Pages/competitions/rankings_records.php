@@ -5,7 +5,7 @@
 <table class='table thead_stable'>
     <thead>
         <tr>
-            <th><?= t('Event', 'Дисцпилина') ?></th>
+            <th><?= t('Event', 'Дисциплина') ?></th>
             <th><?= t('Type', 'Тип') ?></th>
             <th><?= t('Competitor', 'Участник') ?></th>
             <th class="attempt"><?= t('Result', 'Результат') ?></th>

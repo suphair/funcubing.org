@@ -13,6 +13,9 @@
 .table .border_right{
     border-right: 1px solid var(--light_gray);
 }
+.table .border_left{
+    border-left: 1px solid var(--light_gray);
+}
 
 .table tfoot td{
     font-weight: normal;
@@ -123,4 +126,12 @@ table.table thead th{
     background: var(--gray);
     white-space: nowrap;
     border-bottom: 3px solid white;
+}
+
+.event_image{
+    font-size:24px;
+}
+
+.personal_best{
+    color:#fc4a0a;
 }

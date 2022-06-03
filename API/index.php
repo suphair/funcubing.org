@@ -80,7 +80,7 @@ if ($method == 'get' and!$request_1) {
             ]
         ],
         [
-            'url' => 'api/competitors/$FCID',
+            'url' => 'api/competitors/$fc_id',
             'method' => 'get'
         ],
         [

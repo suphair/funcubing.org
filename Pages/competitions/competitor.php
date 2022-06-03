@@ -17,7 +17,7 @@ asort($organizers);
         ?>
         <div class="shadow2" >
             <?= $ranked_icon ?>
-            <?= t('View in Rankings', 'Посмотреть в рейтинге') ?>: 
+            <?= t('View in Federation Rankings', 'Посмотреть в рейтинге Федерации') ?>: 
             <?php foreach ($FCIDlist as $FCID) { ?>
                 <a href="<?= PageIndex() . "competitions/rankings/competitor/$FCID" ?>"><?= $FCID ?></a>
             <?php } ?>

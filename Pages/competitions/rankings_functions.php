@@ -132,7 +132,7 @@ function getRankedRatings() {
 
     foreach ($history_average as $row) {
         if (!isset($result_history[$row->event_id]['average'][$row->date])
-                and $row->order < ($orders[$row->event_id]['average'] ?? 99999)) {
+                and $row->order < ($orders[$row->event_id]['average'] ?? 99999999999999)) {
             $orders[$row->event_id]['average'] = $row->order;
             $result_history[$row->event_id]['average'][$row->date] = $row;
             $row->type = 'average';
@@ -142,14 +142,14 @@ function getRankedRatings() {
     }
     foreach ($history_best as $row) {
         if (!isset($result_history[$row->event_id]['best'][$row->date])
-                and $row->order < ($orders[$row->event_id]['best'] ?? 99999)) {
+                and $row->order < ($orders[$row->event_id]['best'] ?? 99999999999999)) {
             $orders[$row->event_id]['best'] = $row->order;
             $result_history[$row->event_id]['best'][$row->date] = $row;
             $row->type = 'best';
             $result_record_competition[$row->competition_id][$row->event_id][] = $row;
         }
     }
-
+    
     return[
         'current' => $result_current,
         'history' => $result_history,
@@ -193,6 +193,7 @@ function getRankedCompetitions($competitor_fcid = false) {
         GROUP BY uc.competition
         ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id    
     WHERE  unofficial_competitions.ranked = 1 
+        AND unofficial_competitions.show = 1
         AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")
         " . $where_fcid . "
     ORDER BY unofficial_competitions.date DESC
@@ -254,7 +255,8 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " AND unofficial_events_dict.special = 0 "
                     . " AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")"
                     . " ORDER BY "
-                    . " unofficial_events_dict.name,"
+                    . " unofficial_events_dict.order,"
+                    . " unofficial_competitions.date desc,"
                     . " unofficial_events_rounds.round DESC");
 }
 
@@ -277,14 +279,14 @@ function getRankedCompetitors() {
                     . " JOIN unofficial_competitors ON unofficial_competitors.competition = unofficial_competitions.id "
                     . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID "
                     . " WHERE unofficial_competitors.FCID is not null and  unofficial_competitors.FCID<>''"
-                    . " AND unofficial_competitions.show = 1 and unofficial_competitions.ranked = 1 "
+                    . " AND unofficial_competitions.ranked = 1 "
                     . " GROUP BY unofficial_competitors.FCID, unofficial_fc_wca.wcaid, unofficial_competitors.name "
                     . " ORDER BY 3 ");
 }
 
 function getFCIDlistbyName($name) {
     $FCIDlist = [];
-    foreach (\db::rows("select FCID "
+    foreach (\db::rows("select distinct FCID "
             . "from `unofficial_competitors` "
             . "where upper(trim(name)) = upper(trim('$name')) "
             . "and coalesce(FCID,'')<>''") as $FCID) {

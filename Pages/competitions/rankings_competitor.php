@@ -1,6 +1,7 @@
 <?php
 $FCID = strtoupper(db::escape(request(3)));
 $competitor = unofficial\getCompetitorRankings($FCID);
+$current_event = filter_input(INPUT_GET, 'event');
 if (!$competitor) {
     ?>
     <div class="shadow" >
@@ -12,12 +13,13 @@ if (!$competitor) {
     <?php
     exit();
 }
-change_title($competitor->name);
+$wca_name = $competitor->wca_name ? $competitor->wca_name : transliterate($competitor->name);
+change_title(t($wca_name, $competitor->name));
 $wca = unofficial\get_wca($FCID);
 ?>
 <h1>
     <i class="fas fa-user"></i>
-    <?= t($competitor->wca_name, $competitor->name) ?> (<?= t($competitor->name, $competitor->wca_name) ?>) <?= $competitor->FCID ?> 
+    <?= t($wca_name, $competitor->name) ?> (<?= t($competitor->name, $wca_name) ?>) <?= $competitor->FCID ?> 
 </h1> 
 
 <?php if ($wca->id ?? false) { ?>
@@ -38,6 +40,7 @@ $wca = unofficial\get_wca($FCID);
             }
             $wca_results[$row->eventId][$row->type] = $row;
         }
+
         if ($wca_person) {
             ?>
             <?= $wca->id ?>:
@@ -119,7 +122,7 @@ foreach ($results as $result) {
 <h2>
     <?= t('Personal Records', 'Текущие личные рекорды') ?>
 </h2>
-<table class="table" data-showing>
+<table class="table">
     <thead>
         <tr>
             <th><?= t('Event', 'Дисциплина') ?></th>
@@ -138,91 +141,138 @@ foreach ($results as $result) {
         foreach ($events_dict as $event_att) {
             if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
                 $rating_best = $ratings[$event_att->id]['best'][$FCID] ?? false;
-                $rating_average = $ratings[$event_att->id]['average'][$FCID] ?? false;
-                $top_rating_best = ($rating_best->order ?? false) <= 10;
-                $top_rating_average = ($rating_average->order ?? false) <= 10;
-                ?>
-                <?php
-                if ($rating_best or $rating_average or $wca_results[$event_att->code] ?? false) {
-                    if ($wca->id ?? false) {
-                        $wca_single_beat = false;
-                        $wca_average_beat = false;
-                        $wca_record_single = $wca_results[$event_att->code]['single']->best ?? false;
-                        $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
-                        if ($fc_record_single > 0 and ($fc_record_single < $wca_record_single or $wca_record_single <= 0)) {
-                            $wca_single_beat = true;
-                        }
-                        $wca_record_average = $wca_results[$event_att->code]['average']->best ?? false;
-                        $fc_record_average = string_to_santiceconds($rating_average->result ?? false);
-                        if ($fc_record_average > 0 and ($fc_record_average < $wca_record_average or $wca_record_average <= 0)) {
-                            $wca_average_beat = true;
-                        }
-                    }
-                    ?>
-                    <tr>
-                        <td>
-                            <i class="<?= $event_att->image ?>"></i>
-                            <?= $event_att->name ?>
-                        </td>
-                        <td class='attempt <?= $top_rating_best ? 'podium' : '' ?>'">
-                            <?= $rating_best->order ?? false ?>
-                        </td>
-                        <td class='attempt' >
-                            <?= $rating_best->result ?? '-' ?>
-                        </td>
-                        <?php if ($wca->id ?? false) { ?>
-                            <td class='attempt <?= $wca_single_beat ? 'wca_beat' : '' ?>'>
-                                <?= $wca_results[$event_att->code]['single']->format ?? false ?>
-                            </td>
-                            <td class='attempt' <?= $wca_average_beat ? 'wca_beat' : '' ?>'>
-                                <?= $wca_results[$event_att->code]['average']->format ?? false ?>
-                            </td>
-                        <?php } ?>
-                        <td class='attempt' > <?= $rating_average->result ?? '-' ?></td>
-                        <td class='attempt <?= $top_rating_average ? 'podium' : '' ?>'>
-                            <?= $rating_average->order ?? false ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-                <?php
+            } else {
+                $rating_best = false;
             }
+            if (!in_array($ratings[$event_att->id]['average'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
+                $rating_average = $ratings[$event_att->id]['average'][$FCID] ?? false;
+            } else {
+                $rating_average = false;
+            }
+            $top_rating_best = ($rating_best->order ?? false) <= 10;
+            $top_rating_average = ($rating_average->order ?? false) <= 10;
+            ?>
+            <?php
+            if ($rating_best or $rating_average or $wca_results[$event_att->code] ?? false) {
+                if ($wca->id ?? false) {
+                    $wca_single_beat = false;
+                    $wca_average_beat = false;
+                    $wca_record_single = $wca_results[$event_att->code]['single']->best ?? false;
+                    $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
+                    if ($fc_record_single > 0 and ($fc_record_single < $wca_record_single or $wca_record_single <= 0)) {
+                        $wca_single_beat = true;
+                    }
+                    $wca_record_average = $wca_results[$event_att->code]['average']->best ?? false;
+                    $fc_record_average = string_to_santiceconds($rating_average->result ?? false);
+                    if ($fc_record_average > 0 and ($fc_record_average < $wca_record_average or $wca_record_average <= 0)) {
+                        $wca_average_beat = true;
+                    }
+                }
+                ?>
+                <tr>
+                    <td 
+                    <?php if (sizeof($results_events[$event_att->id] ?? [])) { ?>
+                            data-event-record="<?= $event_att->code ?>"
+                        <?php } ?>>
+                        <i class="<?= $event_att->image ?>"></i>
+                        <?= $event_att->name ?>
+                    </td>
+                    <td class='attempt <?= $top_rating_best ? 'podium' : '' ?>'">
+                        <?= $rating_best->order ?? false ?>
+                    </td>
+                    <td class='attempt' >
+                        <?= $rating_best->result ?? '-' ?>
+                    </td>
+                    <?php if ($wca->id ?? false) { ?>
+                        <td class='attempt <?= $wca_single_beat ? 'wca_beat' : '' ?>'>
+                            <?= $wca_results[$event_att->code]['single']->format ?? false ?>
+                        </td>
+                        <td class='attempt <?= $wca_average_beat ? 'wca_beat' : '' ?>'>
+                            <?= $wca_results[$event_att->code]['average']->format ?? false ?>
+                        </td>
+                    <?php } ?>
+                    <td class='attempt' > <?= $rating_average->result ?? '-' ?></td>
+                    <td class='attempt <?= $top_rating_average ? 'podium' : '' ?>'>
+                        <?= $rating_average->order ?? false ?>
+                    </td>
+                </tr>
+            <?php } ?>
+            <?php
         }
         ?>
 
     </tbody>
 </table>
 <br>
-<h2><?= t('Results', 'Результаты') ?></h2>
-<table class="table" data-showing>
-    <thead>
-        <tr>
-            <th><?= t('Event', 'Дисциплина') ?></th>
-            <th><?= t('Competition', 'Соревнование') ?></th>
-            <th><?= t('Round', 'Раунд') ?></th>
-            <th class="attempt">
-                <?= t('Single', 'Лучшая') ?>
-            </th>
-            <th class="attempt">
-                <?= t('Average', 'Среднее') ?>
-            </th>
-            <th class='center'><?= t('Place', 'Место') ?></th>
-            <th>
-                <?= t('Solves', 'Сборки') ?>
-            </th>
-        <tr>
-    </thead>
-    <tbody>
-        <?php
-        foreach ($events_dict as $event_dict) {
+<h2><?= t('Results', 'Результаты') ?>
+    <font size='5'>
+    <?php
+    $need_results_scroll = (bool) $current_event;
+    foreach (array_keys($results_events) as $event_id) {
+        $event_dict = $events_dict[$event_id];
+        if (!$current_event) {
+            $current_event = $event_dict->code;
+        }
+        ?>
+        <a data-event-select="<?= $event_dict->code ?>" href="?event=<?= $event_dict->code ?>">
+            <i title='<?= $event_dict->name ?>' 
+               class='<?= $current_event == $event_dict->code ? 'select' : '' ?> <?= $event_dict->image ?>'></i></a>
+        <?php } ?>
+    </font>
+</h2>
+<span  data-results-scroll="<?= $need_results_scroll ?>"></span>
+<?php foreach ($events_dict as $event_dict) { ?>    
+    <table class="table" 
+           data-results-event="<?= $event_dict->code ?>" 
+           <?= $event_dict->code != $current_event ? 'hidden' : '' ?>>
+        <thead>
+            <tr>
+                <th>
+                    <i class="<?= $event_dict->image ?>"></i>
+                    <?= $event_dict->name ?>
+                </th>
+                <th><?= t('Round', 'Раунд') ?></th>
+                <th class="attempt">
+                    <?= t('Single', 'Лучшая') ?>
+                </th>
+                <th class="attempt">
+                    <?= t('Average', 'Среднее') ?>
+                </th>
+                <th class='center'><?= t('Place', 'Место') ?></th>
+                <th>
+                    <?= t('Solves', 'Сборки') ?>
+                </th>
+            <tr>
+        </thead>
+        <tbody>
+            <?php
+            $results_events_reverse = array_reverse($results_events[$event_dict->id] ?? [], true);
+            $prev_single = str_replace(['.', ':'], '', $wca_results[$event_dict->code]['single']->format ?? false);
+            $prev_average = str_replace(['.', ':'], '', $wca_results[$event_dict->code]['average']->format ?? false);
+            foreach ($results_events_reverse as $r => $result) {
+                $current_single = str_replace(['.', ':'], '', $result->best);
+                $current_average = str_replace(['.', ':'], '', $result->average . $result->mean);
+                if (!is_numeric($current_single)) {
+                    $current_single = false;
+                }
+                if (!is_numeric($current_average)) {
+                    $current_average = false;
+                }
+                if (!$prev_single or ($current_single and $current_single < $prev_single)) {
+                    $results_events[$event_dict->id][$r]->pb_single = true;
+                    $prev_single = $current_single;
+                }
+                if (!$prev_average or ($current_average and $current_average < $prev_average)) {
+                    $results_events[$event_dict->id][$r]->pb_average = true;
+                    $prev_average = $result->average . $result->mean;
+                }
+            }
+
             foreach ($results_events[$event_dict->id] ?? [] as $result) {
                 $record_best = in_array($result->result_id, $competitor_history_record[$competitor->FCID]['best'] ?? []);
                 $record_average = in_array($result->result_id, $competitor_history_record[$competitor->FCID]['average'] ?? []);
                 ?>
                 <tr>
-                    <td>
-                        <i class="<?= $result->event_image ?>"></i>
-                        <?= $result->event_name ?>
-                    </td>
                     <td>
                         <a href="<?= PageIndex() . "competitions/$result->secret" ?>">
                             <?= $result->competition_name ?>
@@ -231,10 +281,10 @@ foreach ($results as $result) {
                     <td>
                         <?= $rounds_dict[$result->final ? 0 : $result->round]->smallName; ?>
                     </td>
-                    <td class='attempt <?= $record_best ? 'record' : '' ?>' >
+                    <td class='attempt <?= $record_best ? 'record' : '' ?>  <?= ($result->pb_single ?? false) ? 'personal_best' : '' ?>'>
                         <?= strtoupper($result->best); ?>
                     </td>
-                    <td class='attempt <?= $record_average ? 'record' : '' ?>' >
+                    <td class='attempt <?= $record_average ? 'record' : '' ?> <?= ($result->pb_average ?? false) ? 'personal_best' : '' ?>'>
                         <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->average)); ?>
                         <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean)); ?>
                     </td>
@@ -251,8 +301,30 @@ foreach ($results as $result) {
                         <?= implode(' ', $solves) ?>
                     </td>
                 </tr>    
-            <?php } ?>
-        <?php } ?>
+                <?php
+            }
+            $wca_record_single = $wca_results[$event_dict->code]['single']->format ?? false;
+            $wca_record_average = $wca_results[$event_dict->code]['average']->format ?? false;
+            if ($wca_record_single or $wca_record_average) {
+                ?>
+                <tr>
+                    <td>
+                        WCA Personal Best
+                    </td>
+                    <td/>
+                    <td class="attempt personal_best">
+                        <?= $wca_record_single ?>
+                    </td>
+                    <td class="attempt personal_best">
+                        <?= $wca_record_average ?>
+                    </td>
+                    <td/>
+                    <td/>
+                </tr>
+                <?php
+            }
+        }
+        ?>
     </tbody>
 </table>
 <br>
@@ -301,7 +373,7 @@ foreach ($results as $result) {
                     <?= $competition->competitor_name ?>
                 </td>      
                 <td>
-                    <?php unofficial\getFavicon($competition->website) ?>
+                    <?php unofficial\getFavicon($competition->website, true) ?>
                 </td>
                 <td>
                     <?php if ($competitor_ids[$competition->id] ?? false) { ?>
@@ -348,3 +420,7 @@ function string_to_santiceconds($input) {
     return $minute * 60 * 100 + $second * 100 + $centisecond;
 }
 ?>
+
+<script>
+<?php include 'rankings_competitor.js' ?>
+</script>

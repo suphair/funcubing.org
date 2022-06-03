@@ -51,6 +51,9 @@ span.checked{
 .border_right{
     border-right: 1px solid var(--light_gray);
 }
+.border_left{
+    border-left: 1px solid var(--light_gray);
+}
 
 .wca_beat{
     color:gray;

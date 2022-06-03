@@ -118,7 +118,7 @@ $('[data-results]').submit(function () {
         }
     }
 
-    if (is_amount_desc) {
+    if (is_amount_desc && worst) {
         var t = best;
         var t_i = best_i;
         best = worst;
