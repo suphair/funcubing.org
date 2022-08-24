@@ -31,7 +31,7 @@ class config {
 
     static function init($dir) {
         self::$dir = $dir;
-        self::$server = str_replace("www.","",strtolower(filter_input(INPUT_SERVER, 'SERVER_NAME')));
+        self::$server = str_replace("www.", "", strtolower(filter_input(INPUT_SERVER, 'SERVER_NAME')));
 
         if (!file_exists($dir)) {
             trigger_error("config: direcory [$dir] is not exists", E_USER_ERROR);
@@ -62,9 +62,19 @@ class config {
         return self::$server == 'localhost';
     }
 
-    static function get($section, $param) {
+    static function get($section, $param = false) {
         $configDefault = parse_ini_file(self::$configDefault, true);
         $configServer = parse_ini_file(self::$configServer, true);
+
+        if (!$param) {
+            if (isset($configDefault[$section])) {
+                return $configDefault[$section];
+            } elseif (isset($configServer[$section])) {
+                return $configServer[$section];
+            } else {
+                trigger_error("config: section $section not found", E_USER_ERROR);
+            }
+        }
 
         if (isset($configDefault[$section][$param])) {
             return trim($configDefault[$section][$param]);

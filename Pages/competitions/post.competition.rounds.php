@@ -14,7 +14,6 @@ foreach ($events as $event_dict => $event) {
     $name = db::escape($event['name'] ?? $events_dict[$event_dict]->name);
     $rounds = $rounds_dict[$event['rounds'] ?? -1]->id ?? 0;
     $result = $results_dict[$event['result'] ?? -1]->id ?? 0;
-    var_dump($event);
 
     if ($rounds) {
         db::exec("INSERT IGNORE INTO unofficial_events (competition, event_dict) VALUES ($comp->id, $event_dict)");

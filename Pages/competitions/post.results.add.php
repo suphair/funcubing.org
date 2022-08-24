@@ -23,7 +23,7 @@ if ($code and is_numeric($round)) {
                     . " AND unofficial_events_dict.code = '$code'");
     if ($competitors_round) {
 
-        if (!$attempts) {
+        if ($attempts=='') {
             db::exec("DELETE FROM unofficial_competitors_result WHERE competitor_round = $competitor_round");
         } else {
             db::exec("INSERT IGNORE INTO unofficial_competitors_result (competitor_round) VALUES ($competitor_round)");

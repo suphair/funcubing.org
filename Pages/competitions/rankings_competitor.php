@@ -25,34 +25,43 @@ $wca = unofficial\get_wca($FCID);
 <?php if ($wca->id ?? false) { ?>
     <p>
         <?php
+        db2::set($get(2));
+        db3::set($get(3));
         $wca_person = \db2::row("
             select name, countryId, id, gender from Persons where lower(id) = lower('$wca->id')
             order by subid desc limit 1");
-        $wca_results = [];
+        $outer_results = [];
         foreach (\db2::rows("
-            select eventId, best, 'single' type from RanksSingle where lower(personId) = lower('$wca->id')
+            select 'WCA' source, eventId, best, 'single' type from RanksSingle where lower(personId) = lower('$wca->id')
             union
-            select eventId, best, 'average' type from RanksAverage where lower(personId) = lower('$wca->id')") as $row) {
+            select 'WCA' source, eventId, best, 'average' type from RanksAverage where lower(personId) = lower('$wca->id')") as $row) {
             if ($row->eventId == '333fm' and $row->type == 'single') {
                 $row->format = $row->best;
             } else {
                 $row->format = santiceconds_to_string($row->best);
             }
-            $wca_results[$row->eventId][$row->type] = $row;
+            $outer_results[$row->eventId][$row->type] = $row;
+        }
+        $ee_person_exists = false;
+        foreach (\db3::rows("
+            select 'EE' source, event_id eventId, result best,result_type type from ranks where lower(person) = lower('$wca->id') ") as $row) {
+            $row->format = santiceconds_to_string($row->best);
+            if ($outer_results[$row->eventId][$row->type] ?? 99999 > $row->best) {
+                $ee_person_exists = true;
+                $outer_results[$row->eventId][$row->type] = $row;
+            }
         }
 
         if ($wca_person) {
             ?>
-            <?= $wca->id ?>:
             <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
-                <?= $wca_person->name ?>
-                <i class="fas fa-external-link-alt"></i></a>
-            <?= $wca_person->countryId ?>
-        <?php } else { ?>
-            <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
-                <?= $wca->id ?>
-                <i class="fas fa-external-link-alt"></i>
-            </a>
+                <?= t('WCA profile','Профиль WCA') ?> <?= $wca->id ?> <i class="fas fa-external-link-alt"></i></a>
+        <?php } ?>
+        <?php if ($ee_person_exists) {
+            ?>
+            &bull;
+            <a target='_blank' href='https://www.extraevents.org/persons/<?= $wca->id ?>'>
+                <?= t('Extra Events profile','Профиль Extra Events') ?> <i class="fas fa-external-link-alt"></i></a>
         <?php } ?>
     </p>
 <?php } elseif ($wca->nonwca ?? false) { ?>
@@ -69,7 +78,7 @@ foreach ($results as $result) {
     $results_events[$result->event_dict][] = $result;
 }
 ?>
-<?php if (unofficial\federation()) { ?>
+<?php if (api\get_me()->is_federation ?? false or api\get_me()->is_admin ?? false) { ?>
     <h2>Управление</h2>
     <form method="POST" action="?ranking_competitor">    
         <table class='table_info'>
@@ -129,8 +138,8 @@ foreach ($results as $result) {
             <th class='attempt'><?= t('Rank', 'Рейтинг') ?></th>
             <th class='attempt'><?= t('Single', 'Лучшая') ?></th>
             <?php if ($wca->id ?? false) { ?>
-                <th class='attempt' style='color:gray'><?= t('WCA Single', 'WCA Лучшая') ?></th>
-                <th class='attempt' style='color:gray'><?= t('WCA Average', 'WCA Среднее') ?></th>
+                <th class='attempt' style='color:gray'>WCA / EE<sup>*</sup></th>
+                <th class='attempt' style='color:gray'>WCA / EE<sup>*</sup></th>
             <?php } ?>
             <th class='attempt'><?= t('Average', 'Среднее') ?></th>
             <th class='attempt'><?= t('Rank', 'Рейтинг') ?></th>
@@ -139,6 +148,9 @@ foreach ($results as $result) {
     <tbody>
         <?php
         foreach ($events_dict as $event_att) {
+            if ($event_att->special and!$event_att->extraevents) {
+                continue;
+            }
             if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
                 $rating_best = $ratings[$event_att->id]['best'][$FCID] ?? false;
             } else {
@@ -153,16 +165,16 @@ foreach ($results as $result) {
             $top_rating_average = ($rating_average->order ?? false) <= 10;
             ?>
             <?php
-            if ($rating_best or $rating_average or $wca_results[$event_att->code] ?? false) {
+            if ($rating_best or $rating_average or $outer_results[$event_att->code] ?? false) {
                 if ($wca->id ?? false) {
                     $wca_single_beat = false;
                     $wca_average_beat = false;
-                    $wca_record_single = $wca_results[$event_att->code]['single']->best ?? false;
+                    $wca_record_single = $outer_results[$event_att->code]['single']->best ?? false;
                     $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
                     if ($fc_record_single > 0 and ($fc_record_single < $wca_record_single or $wca_record_single <= 0)) {
                         $wca_single_beat = true;
                     }
-                    $wca_record_average = $wca_results[$event_att->code]['average']->best ?? false;
+                    $wca_record_average = $outer_results[$event_att->code]['average']->best ?? false;
                     $fc_record_average = string_to_santiceconds($rating_average->result ?? false);
                     if ($fc_record_average > 0 and ($fc_record_average < $wca_record_average or $wca_record_average <= 0)) {
                         $wca_average_beat = true;
@@ -185,10 +197,18 @@ foreach ($results as $result) {
                     </td>
                     <?php if ($wca->id ?? false) { ?>
                         <td class='attempt <?= $wca_single_beat ? 'wca_beat' : '' ?>'>
-                            <?= $wca_results[$event_att->code]['single']->format ?? false ?>
+                            <?php $r = $outer_results[$event_att->code]['single'] ?? false ?>
+                            <?php if ($r) { ?>
+                                <?= $r->format ?? false ?>
+                                <?= $r->source == 'EE' ? '<sup>*</sup>' : '' ?>
+                            <?php } ?>
                         </td>
                         <td class='attempt <?= $wca_average_beat ? 'wca_beat' : '' ?>'>
-                            <?= $wca_results[$event_att->code]['average']->format ?? false ?>
+                            <?php $r = $outer_results[$event_att->code]['average'] ?? false ?>
+                            <?php if ($r) { ?>
+                                <?= $r->format ?? false ?>
+                                <?= $r->source == 'EE' ? '<sup>*</sup>' : '' ?>
+                            <?php } ?>
                         </td>
                     <?php } ?>
                     <td class='attempt' > <?= $rating_average->result ?? '-' ?></td>
@@ -208,10 +228,20 @@ foreach ($results as $result) {
     <font size='5'>
     <?php
     $need_results_scroll = (bool) $current_event;
+    $ee = true;
     foreach (array_keys($results_events) as $event_id) {
         $event_dict = $events_dict[$event_id];
+        if ($event_dict->special and!$event_dict->extraevents) {
+            continue;
+        }
         if (!$current_event) {
             $current_event = $event_dict->code;
+        }
+        ?>
+        <?php if ($event_dict->extraevents and $ee) { ?>
+            |
+            <?php
+            $ee = false;
         }
         ?>
         <a data-event-select="<?= $event_dict->code ?>" href="?event=<?= $event_dict->code ?>">
@@ -221,7 +251,12 @@ foreach ($results as $result) {
     </font>
 </h2>
 <span  data-results-scroll="<?= $need_results_scroll ?>"></span>
-<?php foreach ($events_dict as $event_dict) { ?>    
+<?php
+foreach ($events_dict as $event_dict) {
+    if ($event_dict->special and!$event_dict->extraevents) {
+        continue;
+    }
+    ?>    
     <table class="table" 
            data-results-event="<?= $event_dict->code ?>" 
            <?= $event_dict->code != $current_event ? 'hidden' : '' ?>>
@@ -285,8 +320,8 @@ foreach ($results as $result) {
                         <?= strtoupper($result->best); ?>
                     </td>
                     <td class='attempt <?= $record_average ? 'record' : '' ?> <?= ($result->pb_average ?? false) ? 'personal_best' : '' ?>'>
-                        <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->average)); ?>
-                        <?= strtoupper(str_replace(['dns', '-cutoff'], ['', 'dnf'], $result->mean)); ?>
+                        <?= $result->average; ?>
+                        <?= $result->mean; ?>
                     </td>
                     <td  class="center <?= $result->podium ? 'podium' : '' ?>">
                         <?= $result->place ?> 

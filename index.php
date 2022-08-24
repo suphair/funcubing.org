@@ -23,7 +23,6 @@ $get = function($instance = false) {
 };
 
 db::set($get());
-db2::set($get(2));
 
 wcaapi::setConnection(db::connection());
 
@@ -102,13 +101,17 @@ $title = [
         <meta name="Description" content="Fun Cubing">
         <?php if ($title) { ?>
             <title><?= $title ?></title>
-            <link rel="icon" href="<?= PageLocal() ?>Pages/<?= $request_0 ?>/icon.png" >
+            <?php if (config::isLocalhost() and file_exists("Pages/$request_0/icon_localhost.svg")) { ?>
+                <link rel="icon" href="<?= PageLocal() ?>Pages/<?= $request_0 ?>/icon_localhost.svg" >
+            <?php } else { ?>
+                <link rel="icon" href="<?= PageLocal() ?>Pages/<?= $request_0 ?>/icon.svg" >
+            <?php } ?>
         <?php } else { ?>
             <title>Fun Cubing</title>
-            <link rel="icon" href="<?= PageLocal() ?>Pages/index.png" >
+            <link rel="icon" href="<?= PageLocal() ?>Pages/icon.png" >
         <?php } ?>
         <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css" type="text/css"/>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/fc2205.css" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/fc2205.css?1" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/icons-extra-event/css/Extra-Events.css" type="text/css"/>
@@ -126,6 +129,7 @@ $title = [
                         <tr>
                             <td class="header" width="50%" style="white-space: nowrap">
                                 <?php if ($title) { ?>
+                                    <a href="<?= PageIndex() ?><?= $request_0 ?>"><img align="top" style="padding-top:3px" height="24" src="<?= PageLocal() ?>Pages/<?= $request_0 ?>/icon.svg" ></img></a>
                                     <a href="<?= PageIndex() ?><?= $request_0 ?>"><?= $title ?></a>
                                     <span hidden id="sub_navigation_separator">&bull;</span>
                                     <span id="sub_navigation"></span>
@@ -179,6 +183,34 @@ $title = [
                         <i class="fas fa-wrench"></i>
                         Api Information
                     </a> 
+                    <?php
+                    $roles = [];
+                    if ($grand ?? false) {
+                        if ($grand->admin) {
+                            $roles[] = 'A';
+                        }
+                        if ($grand->federation) {
+                            $roles[] = 'F';
+                        }
+                        if ($grand->setting) {
+                            $roles[] = 'S';
+                        }
+                        if ($grand->edit) {
+                            $roles[] = 'E';
+                        }
+                    } else {
+                        if ($admin ?? false) {
+                            $roles[] = 'A';
+                        }
+                        if ($federation ?? false) {
+                            $roles[] = 'F';
+                        }
+                    }
+                    ?>
+
+                    <?php if (sizeof($roles)) { ?>
+                        {<?= implode($roles) ?>}
+                    <?php } ?>                    
                 </p>
             </div>
         </div>

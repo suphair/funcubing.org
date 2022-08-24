@@ -1,0 +1,21 @@
+.event_checked{
+    color:black;
+}
+.event_checked_new{
+    color:green;
+}
+.event_unchecked{
+    color:lightgray;
+}
+.event_unchecked_new{
+    color:red;
+}
+.event_icon{
+    font-size:24px;
+}
+.event_icon:hover{
+    cursor: pointer;
+}
+.non_resident{
+    opacity: 0.1;
+}

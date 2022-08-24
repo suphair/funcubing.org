@@ -34,13 +34,11 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
             <a 
                 class="<?= $section == 'info' ? 'select' : '' ?>"
                 href="<?= PageIndex() . "competitions/$secret" ?>"
-                >
-                <i title="<?= t('General info', 'Информация'); ?>" class="fas fa-info-circle"></i>
-            </a>
+                ><i title="<?= t('General info', 'Информация'); ?>" class="fas fa-info-circle"></i></a>
             <a 
                 class="<?= $section == 'events' ? 'select' : '' ?>"
                 href="<?= PageIndex() . "competitions/$secret/events" ?>"
-                ><i title='<?= t('Events', 'Дисцпилины'); ?>' class="fas fa-newspaper"></i></a>
+                ><i title='<?= t('Events', 'Дисциплины'); ?>' class="fas fa-newspaper"></i></a>
             <a 
                 class="<?= $section == 'competitors' ? 'select' : '' ?>"
                 href="<?= PageIndex() . "competitions/$secret/competitors" ?>"
@@ -63,7 +61,14 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 </a>
             <?php } ?>
             <hr>
-            <?php foreach ($comp_data->events as $event_a) { ?>
+            <?php
+            $ee = true;
+            foreach ($comp_data->events as $event_a) {
+
+                if ($events_dict[$event_a->event_dict]->extraevents and $ee) {
+                    $ee = false;
+                    ?><hr><?php }
+                ?>
                 <a class="<?= ($event_dict ?? false) == $event_a->event_dict ? 'select' : '' ?>"
                    title="<?= $comp_data->events[$event_a->event_dict]->name ?>"
                    href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_a->event_dict]->code}/1" ?> "
@@ -76,6 +81,12 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 include 'competition.info.php';
             } elseif ($section == 'events') {
                 include 'competition.events.php';
+            } elseif ($section == 'setting') {
+                include 'competition.setting.php';
+            } elseif ($section == 'setting_events') {
+                include 'competition.setting.events.php';
+            } elseif ($section == 'registrations') {
+                include 'competition.registrations.php';
             } elseif ($section == 'records') {
                 include 'competition.records.php';
             } else {

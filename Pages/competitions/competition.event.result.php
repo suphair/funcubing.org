@@ -111,13 +111,7 @@
                 </td>
                 <?php foreach (range(1, $event->attempts) as $i) { ?>
                     <td class="attempt">
-                        <?php if ((($competitor->average ?? false) == '-cutoff') and $i > 2) { ?>
-                            .
-                        <?php } elseif ((($competitor->mean ?? false) == '-cutoff') and $i > 1) { ?>
-                            .
-                        <?php } else { ?>
-                            <?= $competitor->{"attempt$i"} ?>
-                        <?php } ?>
+                        <?= $competitor->{"attempt$i"} ?>
                     </td>
                 <?php } ?>
                 <?php foreach ($formats as $format) { ?>  

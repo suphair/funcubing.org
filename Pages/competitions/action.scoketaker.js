@@ -4,7 +4,6 @@ var is_amount_asc = (format_result === 'amount_asc');
 var is_amount_desc = (format_result === 'amount_desc');
 const DNF = ['f', 'F', '/', '-', 'd', 'D'];
 const DNS = ['s', 'S', '*'];
-
 $('[data-competitor-chosen]').change(function () {
     var val = $(this).val().toString();
     click_competitor($('[data-competitor-id=' + val + ']'));
@@ -62,8 +61,8 @@ $('[data-results]').submit(function () {
     }
 
     var best = -1;
-    var average = -1;
-    var mean = -1;
+    var average = 0;
+    var mean = 0;
     var complete = 0;
     var wrong = 0;
     var worst = 0;
@@ -118,6 +117,13 @@ $('[data-results]').submit(function () {
         }
     }
 
+    if (wrong >= 2 && empty == 0) {
+        average = -1;
+    }
+    if (wrong >= 1 && empty == 0) {
+        mean = -1;
+    }
+
     if (is_amount_desc && worst) {
         var t = best;
         var t_i = best_i;
@@ -148,13 +154,12 @@ $('[data-results]').submit(function () {
         $('[data-results-attempts]').val('');
     }
 
-
     if (is_time) {
         $('[data-results-attempts-best]').val(public_result(result_format_enter(best)));
         $('[data-results-attempts-average]').val(public_result(result_format_enter(average)));
         $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
     } else {
-        $('[data-results-attempts-best]').val(result_format_amount(best));
+        $('[data-results-attempts-best]').val(result_format_amount_100(best));
         $('[data-results-attempts-average]').val(result_format_amount_100(average));
         $('[data-results-attempts-mean]').val(result_format_amount_100(mean));
     }
@@ -171,7 +176,6 @@ $('[data-results]').submit(function () {
     $('#attempt_average').val(average);
     $('#attempt_best').val(best);
 });
-
 function result_format(value) {
     if (is_time) {
         var second_first = value.toString().slice(-5)[0];
@@ -200,6 +204,10 @@ function result_format_amount(val) {
 }
 
 function result_format_amount_100(val) {
+    if(val == -1){
+        return 'DNF';
+    }
+   
     if (val.toString().indexOf('.') !== -1) {
         return result_format_amount(val) / 100;
     }

@@ -9,8 +9,12 @@ http_response_code(404);
 if ($method == 'get' and $request_1 == 'competitions') {
     $competition_id = $request_2;
     $sub_query = $request_3;
-    $json = api\get_competitions($competition_id);
-    if ($competition_id and sizeof($json) != 1) {
+    if($competition_id){
+        $json = api\get_competition($competition_id);
+    }else{
+        $json = api\get_competitions();
+    }
+    if ($competition_id and !$json) {
         $json = ['error' => "Competition with id $competition_id not found"];
     } else {
         if ($sub_query) {

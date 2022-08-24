@@ -2,23 +2,27 @@
 
 namespace api;
 
-function events($competition_id) {
+function events($competition_id, $event_id) {
+    $RU = t('', 'RU');
     $events = \db::rows("
             select 
                     ed.code event,
                     er.round,
                     e.rounds,
-                    coalesce(e.name, ed.name) name,
+                    coalesce(e.name, ed.name$RU) name,
                     ed.special is_special,
-                    rd.fullName round_name,
+                    rd.fullName$RU round_name,
                     er.cutoff,
                     er.time_limit,
                     er.cumulative time_limit_cumulative,
                     er.next_round_value,
                     er.next_round_procent is_percent,
                     fd.name format,
+                    fd.attempts attempts,
+                    fd.format format_type,
                     fd.cutoff_name format_cutoff,
-                    resd.name result
+                    resd.name result,
+                    resd.code result_type
                     from `unofficial_events_rounds` er
             join `unofficial_events` e on e.`id`= er.`event`
             join `unofficial_competitions` c on c.`id`= e.`competition`
@@ -28,6 +32,7 @@ function events($competition_id) {
             join `unofficial_rounds_dict` rd on 
                 (case when er.`round` = e.rounds then 3 else er.`round` end) = rd.`id`
             where lower('$competition_id') in (lower(c.secret), lower(c.rankedID), '')
+                and '$event_id' in (CONCAT(ed.code,'_',er.round),'')
             order by ed.order, er.round
             ");
     $events_key = [];
@@ -57,7 +62,10 @@ function events($competition_id) {
             $event_key->time_limit = null;
         }
         $event_key->format = $event->cutoff ? "$event->format_cutoff / $event->format" : $event->format;
+        $event_key->format_type = $event->format_type;
+        $event_key->attempts = $event->attempts;
         $event_key->result = $event->result;
+        $event_key->result_type = $event->result_type;
 
         $events_key[] = $event_key;
     }

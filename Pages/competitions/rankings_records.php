@@ -1,6 +1,8 @@
+<?php $broken = filter_input(INPUT_GET, 'broken') === ''; ?>
 <h2>
     <i class="fas fa-trophy"></i> 
-    <?= t('Records', 'Рекорды') ?>
+    <a href="?" class="<?= $broken ? '' : 'select' ?>"><?= t('Records', 'Рекорды') ?></a> | 
+    <a href="?broken" class="<?= $broken ? 'select' : '' ?>"><?= t('Broken WCA Records', 'Побитые рекорды WCA') ?></a>
 </h2>
 <table class='table thead_stable'>
     <thead>
@@ -15,13 +17,25 @@
     </thead>
     <tbody>
         <?php
+        $broken_out = [];
+        $record_code_types = ['best', 'average'];
         foreach ($events_dict as $event) {
+            if ($event->special) {
+                continue;
+            }
             $event_record = $ratings[$event->id] ?? [];
             $record_types = [
                 t('Single', 'Лучшая') => current($event_record['best'] ?? []),
                 t('Average', 'Среднее') => current($event_record['average'] ?? [])];
+            $r = -1;
             foreach ($record_types as $type => $record) {
+                $r++;
                 if ($record) {
+                    if ($broken and in_array($record->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) {
+                        continue;
+                    } else {
+                        $broken_out[$event->code][$record_code_types[$r]] = true;
+                    }
                     ?>
                     <tr>
                         <td>
@@ -35,7 +49,7 @@
                                 <?= $record->competitor_name ?>
                             </a>
                         </td>
-                        <td class='td_record'>
+                        <td class='attempt td_record'>
                             <?= $record->result ?>
                         </td>
                         <td>
@@ -83,8 +97,14 @@
     <tbody>
         <?php
         foreach ($events_dict as $event) {
-            foreach (['best', 'average'] as $type_att) {
+            if ($event->special) {
+                continue;
+            }
+            foreach ($record_code_types as $type_att) {
                 foreach (array_reverse($history[$event->id][$type_att] ?? []) as $r => $row) {
+                    if ($broken and!($broken_out[$event->code][$type_att] ?? false)) {
+                        continue;
+                    }
                     ?>
                     <tr>
                         <td>

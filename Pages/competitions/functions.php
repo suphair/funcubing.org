@@ -4,116 +4,10 @@ namespace unofficial;
 
 require_once 'rankings_functions.php';
 
-function admin() {
-    return (\wcaoauth::me()->wca_id ?? FALSE) == \config::get('Admin', 'wcaid');
-}
-
-function federation() {
-    return
-            in_array((\wcaoauth::me()->wca_id ?? FALSE), explode(",", \config::get('Federation', 'wcaid')))
-            or admin();
-}
-
-function getCompetitions($me, $mine, $ranked_only = false) {
-    $me_id = ($me->id ?? -2);
-    $me_wcaid = ($me->wca_id ?? -2);
-    $admin = admin();
-    $federation = federation();
-    $RU = t('', 'RU');
-
-
-
-    $organizer_ids = [];
-    $judge_ids = [];
-    $competitor_ids = [];
-
-    if ($me_wcaid) {
-        foreach (\db::rows(" 
-                select distinct c.id from `unofficial_competitions` c
-                join `unofficial_organizers` o on o.competition=c.id
-                where lower(o.wcaid)=lower('$me_wcaid') 
-                union 
-                select distinct c.id from `unofficial_competitions` c
-                where c.competitor = $me_id 
-                ") as $row) {
-            $organizer_ids[] = $row->id;
-        }
-
-
-        foreach (\db::rows(" select distinct c.id from `unofficial_competitions` c
-                join `unofficial_competition_judges` j on j.competition_id=c.id
-                where lower(j.judge)=lower('$me_wcaid') ") as $row) {
-            $judge_ids[] = $row->id;
-        }
-        foreach (\db::rows(" select distinct cn.id from `unofficial_competitions` cn
-                join `unofficial_competitors` cr on cr.competition=cn.id
-                join unofficial_fc_wca wca on wca.FCID = cr.FCID
-                where lower(wca.wcaid) =  lower('$me_wcaid')") as $row) {
-            $competitor_ids[] = $row->id;
-        }
-    }
-    if ($mine) {
-        $ids = array_merge($judge_ids, $organizer_ids, $competitor_ids);
-    } elseif ($ranked_only) {
-        $competition_ids = \db::rows("
-            select distinct 
-                c.id 
-            from `unofficial_competitions` c
-            where  c.ranked " . (($admin or $federation) ? "" : "and c.show"));
-
-        $ids = [];
-        foreach ($competition_ids as $competition_id) {
-            $ids[] = $competition_id->id;
-        }
-    } else {
-        $competition_ids = \db::rows("
-            select distinct 
-                c.id 
-            from `unofficial_competitions` c
-            where 1=1 " . (($admin or $federation) ? "" : "and c.show"));
-
-        $ids = $organizer_ids;
-        foreach ($competition_ids as $competition_id) {
-            $ids[] = $competition_id->id;
-        }
-    }
-
-    $sql = "SELECT
-        unofficial_competitions.website,
-        unofficial_competitions.id,
-        unofficial_competitions.show, 
-        unofficial_competitions.competitor,
-        coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret,
-        unofficial_competitions.name,
-        unofficial_competitions.details,
-        unofficial_competitions.date,
-        unofficial_competitions.date_to,
-        unofficial_competitions.ranked,
-        unofficial_competitions.rankedApproved approved,        
-        (date(unofficial_competitions.date) > current_date) upcoming,
-        (date(unofficial_competitions.date) = current_date 
-        or date(unofficial_competitions.date_to) = current_date) run,
-        coalesce(dict_competitors.name$RU, dict_competitors.name) competitor_name,
-        dict_competitors.country competitor_country,
-        dict_competitors.wcaid competitor_wcaid,
-        without_FCID.count without_FCID,
-        unofficial_competitions.id in ('" . implode("','", $judge_ids) . "') is_judge,
-        unofficial_competitions.id in ('" . implode("','", $organizer_ids) . "') is_organizer,
-        unofficial_competitions.id in ('" . implode("','", $competitor_ids) . "') is_competitor
-    FROM unofficial_competitions
-    JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
-    left outer JOIN (select count(*) count,competition from `unofficial_competitors` where FCID is null group by competition) without_FCID 
-        on without_FCID.competition=unofficial_competitions.id
-    where unofficial_competitions.id in('" . implode("','", $ids) . "')    
-    ORDER BY unofficial_competitions.date DESC";
-
-    return \db::rows($sql);
-}
-
 function getCompetition($secret, $me = FALSE) {
     $me_id = ($me->id ?? -1);
     $me_wcaid = ($me->wca_id ?? -1);
-    $admin = admin() ? 'TRUE' : 'FALSE';
+    $admin = (\api\get_me()->is_admin ?? false) ? 'TRUE' : 'FALSE';
     $RU = t('', 'RU');
     $sql = "SELECT
         unofficial_competitions.website,
@@ -319,6 +213,7 @@ function getCompetitionData($id) {
                     . " ORDER BY unofficial_events_dict.`order` ");
     $data->events = [];
     foreach ($events as $event) {
+        $event->extraevents = (strpos($event->image, 'ee-') !== false);
         $data->events[$event->event_dict] = $event;
         $data->events[$event->event_dict]->rounds = [];
         foreach (\db::rows("SELECT round, id "
@@ -376,6 +271,7 @@ function getCompetitionData($id) {
                     . " unofficial_events_rounds.round,"
                     . " unofficial_competitors.id competitor,"
                     . " case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end name,"
+                    . " unofficial_competitors.name name_original, "
                     . " unofficial_competitors.FCID,"
                     . " unofficial_competitors.card, "
                     . " unofficial_competitors.id, "
@@ -594,7 +490,7 @@ function getCompetitorsByEventdictRound($comp_id, $event_dict, $round) {
 }
 
 function attempt_to_int($attempt) {
-    if (in_array(strtolower($attempt), ['dnf', 'dns', '-cutoff', '0', false])) {
+    if (in_array($attempt, ['DNF', 'DNS', '0', false])) {
         return 999999;
     } else {
         $value = substr("00000" . str_replace(['.', ':'], '', $attempt), -6, 6);
@@ -677,6 +573,10 @@ function getCompetitionsByCompetitor($competitor_id) {
                     . " unofficial_competitions.name,"
                     . " unofficial_competitions.date,"
                     . " unofficial_competitions.date_to,"
+                    . " unofficial_competitions.website,"
+                    . " (date(unofficial_competitions.date) > current_date) upcoming,"
+                    . " (date(unofficial_competitions.date) = current_date 
+                         or date(unofficial_competitions.date_to) = current_date ) run,"
                     . " coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret, "
                     . " unofficial_competitors.id competitor_id,"
                     . " unofficial_competitions.competitor competition_competitor_id, "
@@ -846,7 +746,7 @@ function getBestAttempts($comp_id) {
     foreach ($attempts as $attempt) {
         if (!isset($average_order[$attempt->code][$attempt->round])
                 or $average_order[$attempt->code][$attempt->round] > $attempt->average_order) {
-            if ($attempt->average and!in_array(strtolower($attempt->average), ['dnf', '-cutoff'])) {
+            if ($attempt->average and!in_array($attempt->average, ['DNF'])) {
                 $results[$attempt->code][$attempt->round]['average'] = $attempt->average;
                 $average_order[$attempt->code][$attempt->round] = $attempt->average_order;
             }

@@ -70,7 +70,7 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                     $record = in_array($competitor->competitor_round, $record_attempts[str_replace('mean', 'average', $format)] ?? []);
                     ?>
                     <td class='attempt <?= $record ? 'td_record' : '' ?>'>
-                        <?= strtoupper(str_replace(["dns", "-cutoff"], ["dnf", ""], $competitor->$format)) ?>
+                            <?= $competitor->$format ?>
                     </td>
                     <td>
                         <?= $record ? 'R' : '' ?>

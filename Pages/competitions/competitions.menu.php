@@ -2,7 +2,8 @@
 $show = filter_input(INPUT_GET, 'show');
 $mine = $me ? $show == 'mine' : false;
 $ranked = $show == 'ranked';
-$aviable_hidden = (unofficial\admin() or unofficial\federation());
+$me_api = api\get_me();
+$aviable_hidden = ($me_api->is_admin ?? false or $me_api->is_federation ?? false);
 $show_hidden = ($show == 'hidden' and $aviable_hidden);
 $create = request(1) == 'create';
 $all = $show == 'all';

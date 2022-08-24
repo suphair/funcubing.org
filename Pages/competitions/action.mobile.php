@@ -75,16 +75,21 @@ foreach ($comp_data->event_rounds as $event_round) {
 
                     <?php foreach ($formats as $f => $format) { ?>
                         <td align="right" class="mobile_attempt">
-                            <?php if (!$f) { ?>
+                            <?php
+                            if ($format == 'average' and $competitor->attempt5 == '') {
+                                $competitor->$format = '';
+                            }
+                            if (!$f) {
+                                ?>
                                 <b><?= $competitor->$format; ?></b>
                             <?php } else { ?>
-                                <?= $competitor->$format; ?>
-                            <?php } ?>
+                            <?= $competitor->$format; ?>
+                        <?php } ?>
                         </td>
-                    <?php } ?>    
+                <?php } ?>    
                 </tr>
-            <?php }
-            ?>
+    <?php }
+    ?>
         </tbody>
     </table>
 <?php } ?>

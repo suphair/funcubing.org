@@ -23,13 +23,15 @@ if (!$secret) {
 } elseif ($me->wca_id ?? FALSE or $notAuthorized) {
 
     $comp = unofficial\getCompetition($secret, $me);
+    $competition = api\get_competition($secret);
+    $grand = $competition->grand ?? null;
     $comp_data = unofficial\getCompetitionData($comp->id ?? -1);
     $events_dict = unofficial\getEventsDict();
     $formats_dict = unofficial\getFormatsDict();
     $results_dict = unofficial\getResultsDict();
     if (!$comp) {
         include 'action.competition.notfound.php';
-    } elseif ($comp->my ?? FALSE or $comp->organizer ?? FALSE or $notAuthorized) {
+    } elseif ($grand->edit ?? false or $notAuthorized) {
         switch ($action) {
             case 'cards':
                 include 'action.cards.php';

@@ -17,7 +17,7 @@ $only_podium = isset($_GET['podium']);
 <div>
     <?php
     foreach ($comp_data->events as $event) {
-        if ($event->special) {
+        if ($event->special and !$event->extraevents) {
             ?>
             <i class="<?= $event->image ?>"></i>
             <?= $event->name ?>&nbsp;&nbsp;&nbsp;
@@ -33,11 +33,19 @@ $only_podium = isset($_GET['podium']);
     }
     ?>
 </div>
+<?php
+$count_competitors = 0;
+foreach ($comp_data->competitors as $competitor_id => $competitor) {
+    if (sizeof($comp_data->competitors[$competitor_id]->events) > 0) {
+        $count_competitors++;
+    }
+}
+?>
 <table class="table thead_stable">
     <thead>
         <tr>
             <th>
-                <?= !$only_podium ? ('[' . sizeof($comp_data->competitors) . ']') : '' ?>
+                <?= !$only_podium ? ("[$count_competitors]") : '' ?>
             </th>
             <?php
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {

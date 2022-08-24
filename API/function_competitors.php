@@ -23,15 +23,14 @@ function competitors($competitor_id = false) {
             wca.wcaid,
             wca.nonwca
         FROM unofficial_competitors c 
-                join unofficial_competitions comp on comp.id=c.competition
-                join `unofficial_competitors_round` round on round.competitor=c.id
-                join `unofficial_competitors_result` result on result.competitor_round=round.id
-                join `unofficial_events_rounds` r on r.id=round.round
-                join `unofficial_events` event on event.id=r.event
-                join `unofficial_events_dict` ed on ed.id=event.event_dict 
+                LEFT OUTER JOIN unofficial_competitions comp on comp.id=c.competition
+                LEFT OUTER JOIN `unofficial_competitors_round` round on round.competitor=c.id
+                LEFT OUTER JOIN `unofficial_competitors_result` result on result.competitor_round=round.id
+                LEFT OUTER JOIN `unofficial_events_rounds` r on r.id=round.round
+                LEFT OUTER JOIN `unofficial_events` event on event.id=r.event
+                LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict and ed.special = false 
                 LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
         WHERE lower('$competitor_id') in (lower(coalesce(c.FCID,'XXXX')), lower(c.ID), '')
-        and ed.special = false 
         ORDER BY c.name desc, comp.date desc, ed.order");
 
     $competitors_key = [];
@@ -43,6 +42,9 @@ function competitors($competitor_id = false) {
                     'fc_id' => null,
         ];
         if ($competitor->is_ranked) {
+            if (!$competitor->name_EN) {
+                $competitor->name_EN = transliterate($competitor->name);
+            }
             $competitors_key[$competitor->name]->fc_id = $competitor->fc_id;
             $competitors_key[$competitor->name]->name = "$competitor->name_EN ($competitor->name)";
             if ($competitor->nonwca) {

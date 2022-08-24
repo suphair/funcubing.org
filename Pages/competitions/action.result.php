@@ -2,151 +2,125 @@
 
 $event_code = request(3);
 $round = request(4);
-
-$events = [];
-$event_dict = $comp_data->event_dict->by_code[$event_code]->id ?? FALSE;
-$event = $comp_data->rounds[$event_dict][$round]->round->id ?? FALSE;
-if ($comp_data->event_rounds[$event]->id ?? FALSE) {
-    $events[] = $comp_data->event_rounds[$event];
-} elseif ($event_code) {
-    die("event [$event_code] with round [$round] not found");
-} else {
-    $events = $comp_data->event_rounds;
+$event_key = "{$event_code}_{$round}";
+$results = api\get_results($comp->secret, $event_key);
+$event = api\get_event($comp->secret, $event_key);
+if (!$event) {
+    die("$event_key not found");
 }
+$result_type = $event->result_type;
+$round_name = $event->round->name;
+$attempts = $event->attempts;
 
-$pdf = new PDF_Dash('P', 'mm');
+$mpdf = new \Mpdf\Mpdf();
 
-foreach ($events as $event_round) {
+$stylesheet = '
+               html,body {margin:0px;padding:0px;}
+               * {
+                font-family: Roboto, system-ui, sans-serif;
+               td {
+                    font-size:16px;
+               }
+               th {
+                    font-size:12px;
+                    font-weight:bold;
+               }
+               h3{
+                    padding:0px;
+                    margin:0px;
+                    margin-bottom:10px;
+               }
+               table{
+                    border-collapse:collapse;
+                    width:100%;
+               }
+               table td{
+                    padding:5px 10px 5px 10px;
+                    white-space: nowrap;
+                    border-bottom:1px solid lightgray;
+               }
+               table th{
+                    padding-right:10px;
+                    padding-left:10px;
+                    white-space: nowrap;
+                    border-bottom:1px solid lightgray;
+               }
+               table td.next_round{
+                    background-color:lightgray;
+                    border-bottom:1px solid white;
+                    
+               }';
+$mpdf->SetTitle("$event_code - {$event->round->name}");
+$mpdf->WriteHTML($stylesheet, 1);
+$mpdf->SetHTMLFooter('<div style="text-align: center">{PAGENO} ' . t('of', 'из') . ' {nbpg}</div>');
+$comp_name = t(transliterate($comp->name), $comp->name);
+$mpdf->WriteHTML("<h3>$comp_name &bull; $event->name &bull; $round_name</h3>");
+$formats = array_unique(['average', 'best']);
 
-    $competitors = unofficial\getCompetitorsByEventround($event_round->id);
-    $event = unofficial\getEventByEventround($event_round->id);
-    foreach ($competitors as $c => $competitor) {
-        if (!$competitor->place) {
-            unset($competitors[$c]);
-        }
+$mpdf->WriteHTML('<table>');
+$mpdf->WriteHTML('<thead><tr>');
+$mpdf->WriteHTML('<th>#</th>');
+$mpdf->WriteHTML('<th align="left" >' . t('Name', 'Имя') . '</th>');
+for ($i = 1; $i <= $attempts; $i++) {
+    $mpdf->WriteHTML("<th align='right'>$i</th>");
+}
+foreach ($formats as $f => $format) {
+    if ($format == 'average') {
+        $mpdf->WriteHTML('<th align="right">' . t(ucfirst($format), 'Среднее') . '</th>');
+    } else {
+        $mpdf->WriteHTML('<th align="right">' . t(ucfirst($format), 'Лучшая') . '</th>');
     }
-    $competitors = array_values($competitors);
+}
+$mpdf->WriteHTML('</tr></thead>');
+$mpdf->WriteHTML('<tbody>');
+foreach ($results as $result) {
+    $mpdf->WriteHTML("<tr>");
+    if ($result->next_round ?? false or
+            ($event->round->this == $event->round->total and $result->pos <= 3)) {
+        $mpdf->WriteHTML("<td class='next_round'>$result->pos</td>");
+    } else {
+        $mpdf->WriteHTML("<td>$result->pos</td>");
+    }
+    $mpdf->WriteHTML("<td>" . t(transliterate($result->name), $result->name) . "</td>");
 
-    $xPlace = 10;
-    $xAttempt = 17;
-    $xCompetitor = 50;
-    $yCompetitor = 6;
-
-    $max_page = 44;
-
-    $pdf->SetFont('courier');
-
-    $pages = ceil(sizeof($competitors) / $max_page);
-
-    $xStart = 5;
-    $xEnd = $pdf->GetPageWidth() - 5;
-
-    for ($p = 0; $p < $pages; $p++) {
-        $start = $p * $max_page;
-        $end = min(array(($p + 1) * $max_page, sizeof($competitors)));
-        $on_page = ($end - $start + 1);
-        $pdf->AddPage();
-        $pdf->SetFont('msserif', '', 10);
-
-        $n = 0;
-        for ($c = $start; $c < $end; $c++) {
-            $competitor = $competitors[$c];
-            $n++;
-
-            if ($c % 2 == 0) {
-                
-            }
-            $place = $competitor->place;
-            if ($competitor->podium) {
-                $pdf->Text(12, 20 + $n * $yCompetitor, '*');
-            }
-            if ($competitor->next_round) {
-                $pdf->Text(12, 20 + $n * $yCompetitor, '>');
-            }
-            $pdf->Text(7, 20 + $n * $yCompetitor, $place);
-            $pdf->SetFont('msserif', '', 10);
-            $dX = 1;
-            if ($event->format == 'average') {
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 - 1 + $n * $yCompetitor, '.');
-                $dX++;
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->average));
-                $dX++;
-            } elseif ($event->format == 'mean') {
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 - 1 + $n * $yCompetitor, '.');
-                $dX++;
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt(str_replace("-cutoff", "", $competitor->mean)));
-                $dX++;
-            } else {
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->best));
-                $dX++;
-            }
-            for ($i = $event->attempts; $i > 0; $i--) {
-
-                $pdf->Text($xEnd - $dX * $xAttempt, 20 + $n * $yCompetitor, attempt($competitor->{"attempt$i"}));
-                if ($i > 1)
-                    $pdf->Text($xEnd - $dX * $xAttempt, 20 - 1 + $n * $yCompetitor, '.');
-                $dX++;
-            }
-
-
-            $pdf->SetLineWidth(0.4);
-            $pdf->SetDash(0.1, 5);
-            if ($n > 0) {
-                $pdf->Line(30,
-                        21.5 + ($n - 0.4) * $yCompetitor,
-                        $xEnd - ($dX - 1) * $xAttempt,
-                        21.5 + ($n - 0.4) * $yCompetitor);
-            }
-            $lat = iconv('utf-8', 'windows-1251', $competitor->name);
-            $pdf->SetFillColor(255, 255, 255);
-            $pdf->SetDash(0);
-            $width = $pdf->GetStringWidth($lat);
-            $pdf->Rect(18, 20 + ($n - 0.6) * $yCompetitor, $width + 5, 8, 'F');
-            $pdf->Text(18, 20 + $n * $yCompetitor, $lat);
-            $pdf->SetDash(0.1, 5);
-        }
-
-        $event_name = iconv('utf-8', 'windows-1251', $event->name);
-        $comp_name = iconv('utf-8', 'windows-1251', $comp->name);
-        $round = iconv('utf-8', 'windows-1251', $rounds_dict[$event->final ? 0 : $event->round]->fullName);
-        $pdf->Text(5, 13, "$event_name, $round. $comp_name");
-        $pdf->Text(6, 20, t('Place', iconv('utf-8', 'windows-1251', 'Место')));
-        $pdf->Text(18, 20, t('Competitor', iconv('utf-8', 'windows-1251', 'Имя')));
-
-        $dX = 1;
-
-        if ($event->format == 'mean') {
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
-            $dX++;
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Mean', iconv('utf-8', 'windows-1251', 'Среднее')));
-            $dX++;
-        } elseif ($event->format == 'average') {
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
-            $dX++;
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Average', iconv('utf-8', 'windows-1251', 'Среднее')));
-            $dX++;
+    for ($i = 0; $i < $attempts; $i++) {
+        $mpdf->WriteHTML("<td align='right'>" . attempt($result->attempts[$i], $result_type) . "</td>");
+    }
+    foreach ($formats as $f => $format) {
+        if (!$f) {
+            $mpdf->WriteHTML("<td align='right'><b>" . attempt($result->$format, $result_type) . "</b></td>");
         } else {
-            $pdf->Text($xEnd - $dX * $xAttempt + 5, 20, t('Best', iconv('utf-8', 'windows-1251', 'Лучшая')));
-            $dX++;
-        }
-        $pdf->SetFont('Arial', '', 10);
-        for ($i = $event->attempts; $i > 0; $i--) {
-            $pdf->Text($xEnd - $dX * $xAttempt, 20, sprintf('%0 9s', $i));
-            $dX++;
+            $mpdf->WriteHTML("<td align='right'>" . attempt($result->$format, $result_type) . "</td>");
         }
     }
+    $mpdf->WriteHTML("</tr>");
 }
-if ($event_code) {
-    $pdf->Output("{$comp->name}_results_{$event_code}_{$event->round}.pdf", 'I');
-} else {
-    $pdf->Output("{$comp->name}_results.pdf", 'I');
-}
-$pdf->Close();
+$mpdf->WriteHTML('</tbody>');
+$mpdf->WriteHTML('</table>');
+$mpdf->Output("Results_{$comp->secret}_$event_key.pdf", 'I');
+exit();
 
-function attempt($attempt) {
-    $attempt = str_replace(['DNS', '(', ')'], "", $attempt);
-    $attempt = str_replace(['DNF'], "X", $attempt);
-    return sprintf('%0 10s', $attempt);
+function attempt($attempt, $result_type) {
+    if ($attempt == -1) {
+        return 'DNF';
+    }
+    if ($attempt == -2) {
+        return 'DNS';
+    }
+    if ($attempt == 0) {
+        return '';
+    }
+    if (in_array($result_type, ['amount_asc', 'amount_desc'])) {
+        return $attempt;
+    }
+    $minute = floor($attempt / 100 / 60);
+    $second = floor(($attempt - $minute * 60 * 100) / 100);
+    $centisecond = $attempt - $minute * 60 * 100 - $second * 100;
+    if ($minute) {
+        return "$minute:" . sprintf("%02d", $second) . "." . sprintf("%02d", $centisecond);
+    }
+    if ($second) {
+        return "$second." . sprintf("%02d", $centisecond);
+    }
+    return "0.$centisecond";
 }

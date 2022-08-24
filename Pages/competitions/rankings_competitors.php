@@ -1,4 +1,5 @@
 <?php $competitors = unofficial\getRankedCompetitors(); ?>
+<!--
 <h2>
     <i class="fas fa-trophy"></i> 
     <?= t('Record holders', 'Держатели рекордов') ?> 
@@ -33,6 +34,7 @@ usort($competitors_holder_records, function($a, $b) {
     <tbody>
         <?php
         foreach ($competitors_holder_records as $competitor) {
+            
             $holder_records_best = $holder_records[$competitor->FCID]['best'];
             $holder_records_average = $holder_records[$competitor->FCID]['average'];
             if ($holder_records_best or $holder_records_average) {
@@ -47,6 +49,9 @@ usort($competitors_holder_records, function($a, $b) {
                         <?php
                         foreach ($holder_records_best as $record) {
                             $event = $events_dict[$record->event_id];
+                            if ($event->special) {
+                                continue;
+                            }
                             ?>
                             <a title='<?= $event->name ?>' href='<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/best'>
                                 <nobr><i class="<?= $event->image ?>"></i> <?= $event->name ?></nobr>
@@ -57,6 +62,9 @@ usort($competitors_holder_records, function($a, $b) {
                         <?php
                         foreach ($holder_records_average as $record) {
                             $event = $events_dict[$record->event_id];
+                            if ($event->special) {
+                                continue;
+                            }
                             ?>
                             <a title='<?= $event->name ?>' href='<?= PageIndex() ?>competitions/rankings/<?= $event->code ?>/average'>
                                 <nobr><i class="<?= $event->image ?>"></i> <?= $event->name ?></nobr>
@@ -81,6 +89,7 @@ usort($competitors_holder_records, function($a, $b) {
     </tbody>
 </table>
 <hr>
+-->
 <h2>
     <i title='Competitors' class="fas fa-users"></i>
     <?= t('Competitors', 'Участники') ?> (<?= count($competitors) ?>)
@@ -98,7 +107,15 @@ usort($competitors_holder_records, function($a, $b) {
             <tr>
                 <td>
                     <a href="<?= PageIndex() . "competitions/rankings/competitor/$competitor->FCID" ?>">
-                        <?= $competitor->name ?> (<?= $competitor->name_other ?>)
+                        <?php if ($competitor->name != $competitor->name_other) { ?>
+                            <?= $competitor->name ?> (<?= $competitor->name_other ?>)
+                        <?php } else { ?>    
+                            <?php if (t(true, false)) { ?>
+                                <?= transliterate($competitor->name) ?> <?= $competitor->name ?>)
+                            <?php } else { ?>
+                                <?= $competitor->name ?> (<?= transliterate($competitor->name) ?>)
+                            <?php } ?>
+                        <?php } ?>
                     </a>
                 </td>
                 <td align="center">

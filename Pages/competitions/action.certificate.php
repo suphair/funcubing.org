@@ -60,6 +60,7 @@ $stylesheet = '
                }';
 $mpdf->WriteHTML($stylesheet, 1);
 $competitors_count = count($competitors);
+
 $r = 0;
 foreach ($competitors as $competitor_name => $results) {
     $r++;
@@ -69,10 +70,10 @@ foreach ($competitors as $competitor_name => $results) {
         if ($result->best) {
             $result_row = ['value' => $result->best, 'format' => t('best', 'лучшая'), 'position' => $result->place];
         }
-        if ($result->mean and!in_array($result->mean, ['DNF', 'dnf', '-cutoff'])) {
+        if ($result->mean and!in_array($result->mean, ['DNF'])) {
             $result_row = ['value' => $result->mean, 'format' => t('mean', 'среднее'), 'position' => $result->place];
         }
-        if ($result->average and!in_array($result->average, ['DNF', 'dnf', '-cutoff'])) {
+        if ($result->average and!in_array($result->average, ['DNF'])) {
             $result_row = ['value' => $result->average, 'format' => t('average', 'среднее'), 'position' => $result->place];
         }
         if ($result_row and!isset($results_event[$result->event_name])) {
@@ -116,7 +117,6 @@ foreach ($competitors as $competitor_name => $results) {
         } else {
             $html .= ', certify that';
         }
-
         if ($RU) {
             $text = 'принимал(a) участие в <b>' . str_replace(' ', '&nbsp;', $comp->name) . '</b> и получил(а)
 следующие результаты:';
@@ -136,11 +136,14 @@ following results:';
 
         $mpdf->WriteHTML('</tbody></table>');
         $mpdf->WriteHTML('<div style="padding:20px; text-align:center"><span style="font-size:18px;">' . ($comp_api->city ? "$comp_api->city, " : "") . dateRange($comp->date, $comp->date_to, true) . '</span></div>');
+
         if ($competitors_count != $r) {
             $mpdf->AddPage();
         }
     }
 }
+
+
 if (sizeof($competitors) == 1) {
     $mpdf->Output($comp->name . '-' . array_keys($competitors)[0] . '-Certificate.pdf', 'I');
 } else {

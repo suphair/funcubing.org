@@ -1,9 +1,7 @@
 <?php
 
 if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
-
     $registrations = filter_input(INPUT_POST, 'registrations', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-
     if (!is_array($registrations)) {
         $registrations = [];
     }
@@ -14,7 +12,7 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
     }
     foreach ($registrations as $competitorId => $registration) {
         unset($registration['FCID']);
-        $non_resident = isset($registration['non_resident']) ? 0 : 1;
+        $non_resident = ($registration['non_resident'] ?? 'off') == 'on' ? 0 : 1;
         unset($registration['non_resident']);
         if ($registration['name'] ?? false) {
             $name = strip_tags($registration['name']);
@@ -62,7 +60,7 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'registrations') {
                 . " WHERE id = $competitorId");
     }
 }
-
+/*
 if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'FCID' and unofficial\admin()) {
 
     $registrations = filter_input(INPUT_POST, 'registrations', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -93,3 +91,4 @@ if (filter_input(INPUT_POST, 'button', FILTER_DEFAULT) == 'FCID' and unofficial\
         }
     }
 }
+ */

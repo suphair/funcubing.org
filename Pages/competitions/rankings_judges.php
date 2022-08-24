@@ -9,6 +9,9 @@
 <table class='table thead_stable'>
     <thead>
         <tr>
+            <th width="10%">
+                <?= t('Contacts', 'Контакты') ?>
+            </th>
             <th>
                 <?= t('Name', 'Имя') ?>
             </th>
@@ -26,6 +29,11 @@
     <tbody>
         <?php foreach ($judges as $judge) { ?>
             <tr>   
+                <td>
+                    <font size="3">
+                    <?= unofficial\build_contact($judge) ?>
+                    </font>
+                </td>
                 <td>                    
                     <?= $judge->name ?>
                 </td>
@@ -46,7 +54,7 @@
         <?php } ?>
     </tbody>
 </table> 
-<?php if (unofficial\federation()) { ?>
+<?php if (api\get_me()->is_federation ?? false or \api\get_me()->is_admin ?? false) { ?>
     <?php $judges = unofficial\getRankedJudges(); ?>
     <h2>
         <i class="fas fa-user-cog"></i>
@@ -66,6 +74,7 @@
         WCA ID <input name="wcaid" required"> 
         <button> <i class="fas fa-user-plus"></i>Добавить</button>
     </form>
+    <br>
     <form method="POST" action="?ranking_judge">
         <table class="table">
             <thead>
@@ -85,7 +94,10 @@
                         WCA ID
                     </th>
                     <th>
-                        В архиве
+                        Контакты
+                    </th>
+                    <th>
+                        Hide
                     </th>
                     <th></th>
                 </tr>
@@ -119,6 +131,16 @@
                         <td>
                             <?= $judge->wcaid ?>
                             <input hidden name="judges[<?= $judge->wcaid ?>][wcaid]" value="<?= $judge->wcaid ?>">
+                        </td>
+                        <td style="text-align:right">
+                            <p><i class="fab fa-vk"></i>
+                                <input name="judges[<?= $judge->wcaid ?>][vk]" value="<?= $judge->vk ?>"/></p>
+                            <p><i class="fab fa-telegram-plane"></i>
+                                <input name="judges[<?= $judge->wcaid ?>][telegram]" value="<?= $judge->telegram ?>"/></p>
+                            <p><i class='fas fa-phone'></i>
+                                <input name="judges[<?= $judge->wcaid ?>][phone]" value="<?= $judge->phone ?>"/></p>
+                            <p><i class='far fa-envelope'></i>
+                                <input name="judges[<?= $judge->wcaid ?>][email]" value="<?= $judge->email ?>"/></p>
                         </td>
                         <td>
                             <input type="checkbox" name="judges[<?= $judge->wcaid ?>][is_archive]" <?= $judge->is_archive ? 'checked' : '' ?>>

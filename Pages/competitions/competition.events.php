@@ -88,7 +88,7 @@ if ($comp_data->competition->events) {
                             <?= $results_count > 0 ? $results_count : '.' ?> / <?= $competitors_count > 0 ? $competitors_count : '.' ?>
                         </nobr></td>
                         <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
-                            <?= $cutoff ? "$format_dict->cutoff_name / " : '' ?>
+                            <nobr><?= $cutoff ? "$format_dict->cutoff_name /<br> " : '' ?></nobr>
                             <?= $format_dict->name ?>
                             <?php
                             if ($events_dict[$event->event_dict]->special) {
@@ -135,8 +135,8 @@ if ($comp_data->competition->events) {
                                     if ($record->type == 'average' and $record->round == $round) {
                                         $record_exists = true;
                                         ?>
-                                        <span class="record">
-                                            <?= $record->result ?>
+                                        <span class="td_record">
+                                            <?= $record->result ?> R
                                         </span>
                                         <?php
                                     }

@@ -1,6 +1,7 @@
 <?php
 $event_code = db::escape(request(2));
 $select = false;
+$rename_aviable = (api\get_me()->is_federation ?? false or \api\get_me()->is_admin ?? false);
 if (!$event_code) {
     $select = 'records';
 }
@@ -16,11 +17,14 @@ if ($event_code == 'competitions') {
 if ($event_code == 'judges') {
     $select = 'judges';
 }
+if ($event_code == 'rename') {
+    $select = 'rename';
+}
 if (!$select) {
     $select = 'event';
 }
 
-change_title(t('Speecubing Federation', 'Федерация Спидкубинга'));
+change_title(t('Russian Speecubing Federation', 'Федерация Спидкубинга России'));
 
 $type = db::escape(request(3)) == 'average' ? 'average' : 'best';
 list('current' => $ratings, 'history' => $history) = unofficial\getRankedRatings();
@@ -73,14 +77,22 @@ foreach (['average', 'best'] as $type_att) {
             <a href= '<?= PageIndex() ?>competitions/rankings/competitors' class='<?= in_array($select, ['competitor', 'competitors']) ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i></a>
             <a href= '<?= PageIndex() ?>competitions/rankings/competitions' class='<?= $select == 'competitions' ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Соревнования') ?>' class="fas fa-cubes"></i></a>
             <a href= '<?= PageIndex() ?>competitions/rankings/judges' class='<?= $select == 'judges' ? 'select' : '' ?>'><i title='<?= t('Judges', 'Судьи') ?>' class="fas fa-user-tie"></i></a>
+            <?php if ($rename_aviable) { ?>
+                <a href= '<?= PageIndex() ?>competitions/rankings/rename' class='<?= $select == 'rename' ? 'select' : '' ?>'><i title='<?= t('Rename WCA', 'Смена WCA имени') ?>' class="fas fa-user-edit"></i></a>
+            <?php } ?>
             <hr>
             <?php
+            $ee = true;
             $events_dict = unofficial\getEventsDict();
             foreach ($events_dict as $event_dict) {
                 if ($event_code == $event_dict->code) {
                     $event_select = $event_dict;
                 }
-                if (!$event_dict->special and isset($ratings[$event_dict->id]['best'])) {
+                if ($event_dict->extraevents and $ee) {
+                    $ee = false;
+                    ?><hr><?php
+                }
+                if (($event_dict->extraevents or!$event_dict->special) and isset($ratings[$event_dict->id]['best'])) {
                     ?>
                     <a href='<?= PageIndex() ?>competitions/rankings/<?= $event_dict->code ?>'><i title="<?= $event_dict->name ?>" class=" <?= $event_code == $event_dict->code ? 'select' : '' ?> <?= $event_dict->image ?>"></i></a>
                 <?php }
@@ -111,6 +123,13 @@ foreach (['average', 'best'] as $type_att) {
                     break;
                 case 'judges':
                     include'rankings_judges.php';
+                    break;
+                case 'rename':
+                    if ($rename_aviable) {
+                        include'rankings_rename.php';
+                    } else {
+                        include'rankings_rename.accessdenied.php';
+                    }
                     break;
             }
             ?>

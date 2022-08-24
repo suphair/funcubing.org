@@ -15,7 +15,9 @@ if ($comp_data->event_rounds[$event]->id ?? FALSE) {
 }
 
 $pdf = new FPDF('P', 'mm');
-
+if ($events[0] ?? false) {
+    $pdf->SetTitle($comp_data->events[$events[0]->event_dict]->event_code . '_' . $events[0]->round);
+}
 foreach ($events as $event) {
 
     $event->final = ($event->round == $event->rounds);
@@ -65,7 +67,9 @@ foreach ($events as $event) {
             if ($competitor) {
                 if ($comp_data->competitors[$competitor->id]->card) {
                     $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);
-                    $lat = iconv('utf-8', 'windows-1251', $comp_data->competitors[$competitor->id]->name);
+                    $name = $comp_data->competitors[$competitor->id]->name;
+                    $name = str_replace('ë', 'ё', $name);
+                    $lat = iconv('utf-8', 'windows-1251//TRANSLIT//IGNORE', $name);
                     $pdf->Text($point[0] + 15, $point[1] + $Ry + 2, $lat);
                     $pdf->SetFont('msserif', '', 20);
                     $pdf->Text($point[0], $point[1] + $Ry + 2, $comp_data->competitors[$competitor->id]->card);

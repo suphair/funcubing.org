@@ -11,9 +11,9 @@
     Sign out
 </a>
 <br>
-<?php if (unofficial\admin()) { ?>
+<?php if (\api\get_me()->is_admin) { ?>
     <i class="fas fa-user-tag"></i> Admin
-<?php } elseif (unofficial\federation()) { ?>
+<?php } elseif (\api\get_me()->is_federation) { ?>
     <i class="fas fa-user-tag"></i> Federation
 <?php } ?>
 <?php if ($comp->my ?? false) { ?>

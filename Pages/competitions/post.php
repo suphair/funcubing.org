@@ -1,9 +1,12 @@
 <?php
 
+$me = api\get_me();
 $secret = db::escape(request(1));
+$grand = ($me->is_admin ?? FALSE or $me->is_federation ?? FALSE);
 if ($secret) {
+    $competition = api\get_competition($secret);
     $comp = unofficial\getCompetition($secret);
-    if ($comp->id ?? FALSE) {
+    if ($competition) {
         if (filter_input(INPUT_GET, 'registration_add') !== NULL) {
             include 'post.registration.add.php';
         }
@@ -14,40 +17,44 @@ if ($secret) {
             include 'post.ranking_competitors.php';
         }
     } else {
-        if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and unofficial\federation()) {
+        if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and $grand) {
             include 'post.ranking_competitor.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_judge') !== NULL and unofficial\federation()) {
+        if (filter_input(INPUT_GET, 'ranking_judge') !== NULL and $grand) {
             include 'post.ranking_judge.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_judge_add') !== NULL and unofficial\federation()) {
+        if (filter_input(INPUT_GET, 'ranking_judge_add') !== NULL and $grand) {
             include 'post.ranking_judge_add.php';
+        }
+        if (filter_input(INPUT_GET, 'ranking_rename_delete') !== NULL and $grand) {
+            include 'post.ranking_rename_delete.php';
+        }
+        if (filter_input(INPUT_GET, 'ranking_rename_add') !== NULL and $grand) {
+            include 'post.ranking_rename_add.php';
         }
     }
 }
 
-$me = wcaoauth::me();
 if ($me->wca_id ?? FALSE) {
     if (filter_input(INPUT_GET, 'create') !== NULL) {
         include 'post.competition.create.php';
     }
-    $secret = db::escape(request(1));
 
-    if ($secret) {
+    if (filter_input(INPUT_GET, 'text') !== NULL and $grand ?? false) {
+        include 'post.text.php';
+    }
 
-        $comp = unofficial\getCompetition($secret, $me);
-        if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and unofficial\federation()) {
+    if ($competition) {
+        $grand = $competition->grand;
+        if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and $grand->federation ?? false) {
             include 'post.competition.rankings_settings.php';
         }
 
-        if (filter_input(INPUT_GET, 'organizer_rename') !== NULL and unofficial\federation()) {
+        if (filter_input(INPUT_GET, 'organizer_rename') !== NULL and $grand->federation ?? false) {
             include 'post.organizer_rename.php';
         }
-        
-        if (filter_input(INPUT_GET, 'text') !== NULL and unofficial\federation()) {
-            include 'post.text.php';
-        }
-        if ($comp->my ?? FALSE) {
+
+        if ($grand->setting ?? false) {
 
             if (filter_input(INPUT_GET, 'setting') !== NULL) {
                 include 'post.competition.setting.php';
@@ -78,10 +85,10 @@ if ($me->wca_id ?? FALSE) {
                 include 'post.competition.comments.php';
             }
         }
-        if ($comp->my ?? FALSE or $comp->organizer ?? FALSE) {
+        if ($grand->edit ?? false) {
 
             if (filter_input(INPUT_GET, 'competitors_add') !== NULL) {
-                $comp_data = unofficial\getCompetitionData($comp->id);
+                $comp_data = unofficial\getCompetitionData($competition->local_id);
                 include 'post.competition.competitors.add.php';
             }
 
@@ -118,7 +125,7 @@ if ($me->wca_id ?? FALSE) {
             }
 
             if (filter_input(INPUT_GET, 'resuts_registrations_add_next') !== NULL) {
-                $comp_data = unofficial\getCompetitionData($comp->id);
+                $comp_data = unofficial\getCompetitionData($competition->local_id);
                 include 'post.resuts.registrations.add.next.php';
             }
         }

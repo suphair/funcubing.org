@@ -1,9 +1,3 @@
-
-<?php
-$main_organizer = ($competition->my_roles->main_organizer ?? false or $admin);
-$organizer = ($competition->my_roles->organizer ?? false or $admin);
-?>
-
 <h2>
     <i title="General info" class="fas fa-info-circle"></i>
     <?= t('General info', 'Информация'); ?>
@@ -31,7 +25,7 @@ $organizer = ($competition->my_roles->organizer ?? false or $admin);
                         </td>
                     </tr>
                 <?php } ?>
-                <?php if (($main_organizer and!$competition->is_approved) or $admin) { ?>
+                <?php if ($grand->setting) { ?>
                     <tr>
                         <td><i class="fas fa-cog"></i></td>
                         <td>
@@ -39,7 +33,7 @@ $organizer = ($competition->my_roles->organizer ?? false or $admin);
                         </td>
                     </tr>
                 <?php } ?>
-                <?php if ((($main_organizer or $organizer) and!$competition->is_approved) or $admin) { ?>
+                <?php if ($grand->edit) { ?>
                     <tr>
                         <td><i class="fas fa-users-cog"></i></td>
                         <td>
@@ -129,10 +123,11 @@ $organizer = ($competition->my_roles->organizer ?? false or $admin);
                     <?php foreach ($competition->judges ?? [] as $judge) { ?>
                         <tr>
                             <td><?= $judge->role ?></td>  
-                            <td><i class="fas fa-signature"></i> <?= $judge->name ?></td>
+                            <td><i class="fas fa-signature"></i> <?= $judge->name ?> 
+                                <?= unofficial\build_contact($judge) ?></td>
                         </tr>
                     <?php } ?>
-                    <?php if ($main_organizer or $organizer or $federation) { ?>
+                    <?php if ($grand->edit or $grand->federation) { ?>
                         <tr>
                             <td><?= $wca_icon ?></td>
                             <td>

@@ -228,7 +228,7 @@ function parseAttempts(results, pos) {
         results_mean.html('dnf');
 
         if (att_correct == 1 && attemps[2].html() == 'dns' && attemps[3].html() == 'dns') {
-            results_mean.html('-cutoff');
+            results_mean.html('');
         }
     }
 
@@ -262,7 +262,7 @@ function parseAttempts(results, pos) {
 
     if (att_correct <= 2 && attemps[3].html() == 'dns' && attemps[4].html() == 'dns' && attemps[5].html() == 'dns') {
         results_average.css("color", "var(--red)");
-        results_average.html('-cutoff');
+        results_average.html('');
     }
 }
 

@@ -2,8 +2,8 @@
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
-$admin = unofficial\admin();
-$federation = unofficial\federation();
+$admin = \api\get_me()->is_admin ?? false;
+$federation = \api\get_me()->is_federation ?? false;
 $ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
 $wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {
@@ -31,33 +31,42 @@ if ($secret == 'competitor') {
         $rounds_dict = unofficial\getRoundsDict();
         $results_dict = unofficial\getResultsDict();
         $events_list = false;
+        $grand = $competition->grand ?? (object) [
+                    'edit' => false,
+                    'setting' => false,
+                    'federation' => false,
+                    'admin' => false
+        ];
 
         $section = db::escape(request(2));
 
         switch ($section) {
             case 'wcaid':
-                if ($comp->ranked and ($comp->my or $comp->organizer or unofficial\federation() )) {
+                if ($competition->is_ranked and $grand->edit) {
                     $include = 'competition.wcaid.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'registrations':
-                if ((($comp->my or $comp->organizer) and!$comp->approved) or $admin) {
-                    $include = 'competition.registrations.php';
+                if ($grand->edit) {
+                    $event_round_this = false;
+                    $include = 'competition.index.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'setting':
-                if (($comp->my and!$comp->approved) or $admin) {
-                    $include = 'competition.setting.php';
+            case 'setting_events':
+                if ($grand->setting) {
+                    $event_round_this = false;
+                    $include = 'competition.index.php';
                 } else {
                     $include = 'competition.accessdenied.php';
                 }
                 break;
             case 'ranking':
-                if (unofficial\federation()) {
+                if ($grand->federation) {
                     $include = 'competition.ranking.php';
                 } else {
                     $include = 'competition.accessdenied.php';
@@ -74,10 +83,17 @@ if ($secret == 'competitor') {
                 }
                 break;
             case 'event':
-            case 'result':
-            case 'event_competitors':
                 $event_round_this = true;
                 $include = 'competition.index.php';
+                break;
+            case 'result':
+            case 'event_competitors':
+                if ($grand->edit) {
+                    $event_round_this = true;
+                    $include = 'competition.index.php';
+                } else {
+                    $include = 'competition.accessdenied.php';
+                }
                 break;
             case false:
                 $section = 'info';
@@ -98,7 +114,8 @@ if ($secret == 'competitor') {
 } else {
     include 'competitions.php';
 }
-?><br>
+?>
+<br>
 <script>
-    <?php include 'thead_stable.js' ?>
+<?php include 'thead_stable.js' ?>
 </script>

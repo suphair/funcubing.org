@@ -7,7 +7,7 @@
             <?= $rounds_dict[$round == $event->rounds ? 0 : $round]->fullName; ?></a>
     <?php } ?>
 </div> 
-<?php if ($comp->my or $comp->organizer) { ?>
+<?php if ($grand->edit) { ?>
     <h2>
         <a style="padding-left:15px" class="<?= $section == 'event_competitors' ? 'select' : '' ?>" href="<?= PageIndex() . "competitions/$secret/event_competitors/$event->code/$event->round" ?> ">
             <i class="fas fa-user-cog"></i>

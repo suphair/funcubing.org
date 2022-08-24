@@ -97,7 +97,8 @@ foreach ($events_dict as $event) {
                     ?>
                 </td>
                 <td align="center">
-                    <?= $competition->competitors + 0 ?>
+                    <?= $competition->competitors_res + 0 ?>
+                    <?= $competition->competitors_nres?(' +'.($competition->competitors_nres + 0)." <i title = '".t('Non-resident', 'Нерезидент')."' class='fas fa-globe'></i>"):'' ?>
                 </td>      
             </tr>
         <?php } ?>

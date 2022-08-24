@@ -2,6 +2,10 @@
 
 namespace api;
 
+function is_exclude($attempt) {
+    return str_replace(['(', ')'], '', $attempt) != $attempt;
+}
+
 function attempt_centiseconds($attempt) {
     $attempt_raw = $attempt;
     $attempt = str_replace(['(', ')'], ['', ''], $attempt);
@@ -11,7 +15,7 @@ function attempt_centiseconds($attempt) {
     if (strtolower($attempt) == 'dns') {
         return -2;
     }
-    if (!$attempt or $attempt == '-cutoff') {
+    if (!$attempt) {
         return 0;
     }
     $attempt = str_replace([':', '.'], '', $attempt);

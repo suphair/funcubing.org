@@ -175,15 +175,6 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                     <?php } ?>
                 </tbody>
             </table>
-            <?php if ($bulk_delete) { ?>
-                <form method="POST" action="?competitors_delete"
-                      onsubmit="return confirm('Remove ALL competitors without results?') && confirm('Confirm. Remove ALL competitors without results?')">
-                    <button class="delete">
-                        <i class="fas fa-trash"></i>
-                        Remove all without results
-                    </button>
-                </form>     
-            <?php } ?>
         </td>
     </tr>
 </table>

@@ -8,6 +8,7 @@
             <?= t('Single', 'Лучшая') ?></a>
     <?php } ?>
     <?php if (isset($ratings[$event_select->id]['average'])) { ?>
+        |
         <a 
             class='<?= $type == 'average' ? 'select' : '' ?>' 
             href='<?= PageIndex() ?>competitions/rankings/<?= $event_select->code ?>/average'>

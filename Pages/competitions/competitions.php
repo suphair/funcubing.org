@@ -1,6 +1,6 @@
 <?php
 include 'competitions.menu.php';
-$competitions = api\get_competitions(false);
+$competitions = api\get_competitions();
 
 foreach ($competitions as $c => $competition) {
     foreach ($competition->organizers ?? [] as $organizer) {
@@ -75,8 +75,8 @@ foreach ($competitions as $c => $competition) {
                         <i class="fas fa-hourglass-start"></i>
                     <?php } ?>
                     <?php
-                    if (strtotime($competition->start_date) >= strtotime(date('Y-m-d')) and
-                            strtotime($competition->end_date) <= strtotime(date('Y-m-d'))) {
+                    if (strtotime($competition->start_date) <= strtotime(date('Y-m-d')) and
+                            strtotime($competition->end_date) >= strtotime(date('Y-m-d'))) {
                         ?>
                         <i style='color:var(--green)' class="fas fa-running"></i>
                     <?php } ?>

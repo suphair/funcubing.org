@@ -39,12 +39,12 @@ foreach ($events as $event_round) {
         }
         $results['name'] = $competitor->name;
         foreach ($formats as $format) {
-            $result_format = str_replace('-cutoff', '', $competitor->$format);
+            $result_format = $competitor->$format;
             $results['display'][$format] = $result_format;
             $results[$format] = attempt_centiseconds($result_format);
         }
         foreach (range(1, $event->attempts) as $i) {
-            if ($competitor->$format != '-cutoff' or $competitor->{"attempt$i"} != 'dns') {
+            if ($competitor->{"attempt$i"} != 'DNS') {
                 $attempt = str_replace(['(', ')'], ['', ''], $competitor->{"attempt$i"});
                 $results['display']['attempts'][] = $competitor->{"attempt$i"};
                 $results['attempts'][] = attempt_centiseconds($attempt);

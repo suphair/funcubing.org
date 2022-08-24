@@ -2,7 +2,7 @@
 
 namespace unofficial;
 
-function getRankedRatings() {
+function getRankedRatings($all_events = true) {
     $RU = t('', 'RU');
     $sql_average = "
     select 
@@ -34,15 +34,11 @@ function getRankedRatings() {
     join `unofficial_competitions` on unofficial_competitions.id=unofficial_events.competition
     LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID
     where unofficial_competitions.ranked = 1 
-        and unofficial_events_dict.special = 0
+    " . ($all_events ? '' : 'and unofficial_events_dict.special = 0') . "
         and coalesce(
             unofficial_competitors_result.average,
             unofficial_competitors_result.mean,
-            'dnf') <> 'dnf'
-        and coalesce(
-            unofficial_competitors_result.average,
-            unofficial_competitors_result.mean,
-            '-cutoff') <> '-cutoff'
+            'DNF') <> 'DNF'
         and (unofficial_competitors_result.average <>'' or unofficial_competitors_result.mean <>'' )
         and  coalesce(unofficial_competitors.FCID,'')<>''  
         AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_average_exclude') . ")
@@ -74,7 +70,7 @@ function getRankedRatings() {
     join `unofficial_competitions` on unofficial_competitions.id=unofficial_events.competition
     LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID
     where unofficial_competitions.ranked = 1 
-        and unofficial_events_dict.special = 0
+    " . ($all_events ? '' : 'and unofficial_events_dict.special = 0') . "
         and coalesce(
             unofficial_competitors_result.best,
             'dnf') <> 'dnf'
@@ -89,12 +85,12 @@ function getRankedRatings() {
     $result_current = [];
     foreach ($average as $row) {
         if (!isset($result_current[$row->event_id]['average'][$row->FCID])) {
-            $result_current[$row->event_id]['average'][$row->FCID] = $row;
+            $result_current[$row->event_id]['average'][$row->FCID] = clone $row;
         }
     }
     foreach ($best as $row) {
         if (!isset($result_current[$row->event_id]['best'][$row->FCID])) {
-            $result_current[$row->event_id]['best'][$row->FCID] = $row;
+            $result_current[$row->event_id]['best'][$row->FCID] = clone $row;
         }
     }
 
@@ -149,7 +145,7 @@ function getRankedRatings() {
             $result_record_competition[$row->competition_id][$row->event_id][] = $row;
         }
     }
-    
+
     return[
         'current' => $result_current,
         'history' => $result_history,
@@ -158,7 +154,7 @@ function getRankedRatings() {
 }
 
 function getRankedRecordbyCompetition($competition_id) {
-    $record = getRankedRatings()['record_competition'][$competition_id] ?? [];
+    $record = getRankedRatings(false)['record_competition'][$competition_id] ?? [];
     return $record;
 }
 
@@ -184,12 +180,16 @@ function getRankedCompetitions($competitor_fcid = false) {
         or date(unofficial_competitions.date_to) = current_date ) run,
         dict_competitors.name competitor_name,
         dict_competitors.country competitor_country,
-        competition_competitors.count competitors
+        competition_competitors.count_res competitors_res,
+        competition_competitors.count_neres competitors_nres
     FROM unofficial_competitions
     JOIN dict_competitors on dict_competitors.wid = unofficial_competitions.competitor 
-    LEFT OUTER JOIN (select count(*) count, uc.competition
+    LEFT OUTER JOIN (
+        select
+            sum(case when uc.non_resident = 1 then 0 else 1 end) count_res,
+            sum(case when uc.non_resident = 1 then 1 else 0 end) count_neres,
+            uc.competition
         FROM unofficial_competitors uc
-        WHERE coalesce(uc.FCID,'')<>''
         GROUP BY uc.competition
         ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id    
     WHERE  unofficial_competitions.ranked = 1 
@@ -252,7 +252,6 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " JOIN unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
                     . " WHERE unofficial_competitors.FCID = '$competitor_fcid'"
                     . " AND unofficial_competitions.ranked = 1 "
-                    . " AND unofficial_events_dict.special = 0 "
                     . " AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")"
                     . " ORDER BY "
                     . " unofficial_events_dict.order,"
@@ -303,9 +302,9 @@ function getRankedJudges($filter = null) {
     }
     $sql = "
         select     
-            coalesce(dc.name$RU ,dc.name) name,
-            dc.name nameEN,
-            dc.nameRU nameRU,
+            coalesce(ur.name$RU, dc.name$RU, ur.name, dc.name) name,
+            coalesce(ur.name, dc.name) nameEN,
+            coalesce(ur.nameRU, dc.nameRU) nameRU,
             j.rank$RU rank,
             j.region$RU region,
             j.rank rankEN,
@@ -313,9 +312,15 @@ function getRankedJudges($filter = null) {
             j.region regionEN,
             j.regionRU regionRU,
             j.is_archive,
+            j.wcaid,
+            j.vk,
+            j.telegram,
+            j.phone,
+            j.email,
             j.wcaid
             from `unofficial_judges` j
             left outer join `dict_competitors` dc on dc.wcaid = j.wcaid
+            left outer join `unofficial_rename` ur on ur.wcaid = j.wcaid
             where 1=1 $where
             order by coalesce(dc.name$RU ,dc.name)
     ";
@@ -417,4 +422,27 @@ function set_wca($FCID, $wcaid, $nonwca, $current_FCID = false) {
     \db::exec("UPDATE unofficial_fc_wca
         SET wcaid = '$wcaid', nonwca = $nonwca
         WHERE FCID='$FCID'");
+}
+
+function get_rename() {
+    return \db::rows("SELECT id, wcaid, name "
+                    . " FROM unofficial_rename "
+                    . " WHERE description = 'wca_rename' order by name");
+}
+
+function build_contact($judge) {
+    $return = "";
+    if ($judge->vk) {
+        $return .= '<a target="_blank" href="https://vk.com/' . $judge->vk . '"><i class="fab fa-vk"></i></a> ';
+    }
+    if ($judge->telegram) {
+        $return .= '<a target="_blank" href="https://t.me/' . $judge->vk . '"><i class="fab fa-telegram-plane"></i></a> ';
+    }
+    if ($judge->phone) {
+        $return .= '<a target="_blank" href="tel:' . $judge->vk . '"><i class="fas fa-phone"></i></a> ';
+    }
+    if ($judge->email) {
+        $return .= '<a target="_blank" href="mailto:' . $judge->vk . '"><i class="fas fa-envelope"></i></a> ';
+    }
+    return $return;
 }
