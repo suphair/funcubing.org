@@ -50,7 +50,7 @@ function competitions($competition_id = false) {
         $competition_key->is_publish = $competition->is_publish > 0;
         $competition_key->is_ranked = $competition->is_ranked > 0;
         $competition_key->is_approved = $competition->is_approved > 0;
-        $competition_key->judges = null;
+        $competition_key->delegates = null;
         $competition_key->organizers = [(object) [
                 'wca_id' => $competition->dc_wcaid,
                 'name' => $competition->dc_name,
@@ -62,7 +62,7 @@ function competitions($competition_id = false) {
             $competition_key->my_roles = (object) [
                         'main_organizer' => $competition->dc_wcaid == $wca_id,
                         'organizer' => false,
-                        'judge' => false,
+                        'delegate' => false,
                         'competitor' => $competition->my_roles_competitor > 0
             ];
         }
@@ -92,34 +92,34 @@ function competitions($competition_id = false) {
         }
     }
 
-    $judges = \db::rows("SELECT 
+    $delegates = \db::rows("SELECT 
                             cj.competition_id competition,
-                            cj.judge wcaid,
+                            cj.delegate wcaid,
                             j.vk vk,
                             j.telegram telegram,
                             j.phone phone,
                             j.email email,
                             coalesce(dc.name$RU, dc.name) name,
 			    coalesce(jrd.role$RU, jrd.role) role
-                        FROM unofficial_competition_judges cj
-                        LEFT OUTER JOIN unofficial_judges j on j.wcaid=cj.judge
-                        JOIN unofficial_judge_roles_dict jrd on jrd.id=cj.dict_judge_role
-                        JOIN dict_competitors dc on dc.wcaid=cj.judge");
-    foreach ($judges as $judge) {
-        if ($competitions_key[$judge->competition] ?? false) {
-            $competitions_key[$judge->competition]->judges ??= [];
-            $competitions_key[$judge->competition]->judges[] = (object) [
-                        'wca_id' => $judge->wcaid,
-                        'name' => $judge->name,
-                        'role' => $judge->role,
-                        'vk' => $judge->vk,
-                        'telegram' => $judge->telegram,
-                        'phone' => $judge->phone,
-                        'email' => $judge->email
+                        FROM unofficial_competition_delegates cj
+                        LEFT OUTER JOIN unofficial_delegates j on j.wcaid=cj.delegate
+                        JOIN unofficial_delegate_roles_dict jrd on jrd.id=cj.dict_delegate_role
+                        JOIN dict_competitors dc on dc.wcaid=cj.delegate");
+    foreach ($delegates as $delegate) {
+        if ($competitions_key[$delegate->competition] ?? false) {
+            $competitions_key[$delegate->competition]->delegates ??= [];
+            $competitions_key[$delegate->competition]->delegates[] = (object) [
+                        'wca_id' => $delegate->wcaid,
+                        'name' => $delegate->name,
+                        'role' => $delegate->role,
+                        'vk' => $delegate->vk,
+                        'telegram' => $delegate->telegram,
+                        'phone' => $delegate->phone,
+                        'email' => $delegate->email
             ];
             if ($wca_id) {
-                $competitions_key[$judge->competition]->my_roles->judge = (($competitions_key[$judge->competition]->my_roles->judge ?? false)
-                        or $judge->wcaid == $wca_id);
+                $competitions_key[$delegate->competition]->my_roles->delegate = (($competitions_key[$delegate->competition]->my_roles->delegate ?? false)
+                        or $delegate->wcaid == $wca_id);
             }
         }
     }
@@ -131,11 +131,11 @@ function competitions($competition_id = false) {
             $federation = $me->is_federation ?? false;
             $main_organizer = $competition_key->my_roles->main_organizer ?? false;
             $organizer = $competition_key->my_roles->organizer ?? false;
-            $judge = $competition_key->my_roles->judge ?? false;
+            $delegate = $competition_key->my_roles->delegate ?? false;
 
-            $edit_grand = ($main_organizer or $organizer or $judge);
+            $edit_grand = ($main_organizer or $organizer or $delegate);
 
-            $setting_grand = ($main_organizer or $judge);
+            $setting_grand = ($main_organizer or $delegate);
 
             $federation_grand = $federation;
 

@@ -1,6 +1,6 @@
 <?php
-$judges = unofficial\getRankedJudges();
-$judge_roles = unofficial\getJudgeRolesDict();
+$delegates = unofficial\getRankedDelegates();
+$delegate_roles = unofficial\getDelegateRolesDict();
 ?>
 
 <h2>
@@ -20,27 +20,27 @@ $judge_roles = unofficial\getJudgeRolesDict();
         </tr>
         <?php
         $s = 1;
-        foreach ($comp_data->judges as $comp_judge) {
+        foreach ($comp_data->delegates as $comp_delegate) {
             ?>
             <tr>
-                <td>Cудья / Роль</td>
+                <td>Делегат / Роль</td>
                 <td>
-                    <select name="judges[<?= $s ?>]">
+                    <select name="delegates[<?= $s ?>]">
                         <option value=0> - </option>
                         <?php
-                        foreach ($judges as $judge) {
+                        foreach ($delegates as $delegate) {
                             ?>
-                            <option  value="<?= $judge->wcaid ?>" <?= $comp_judge->wcaid == $judge->wcaid ? 'selected' : '' ?>><?= $judge->name ?> - <?= $judge->rank ?></option>
+                            <option  value="<?= $delegate->wcaid ?>" <?= $comp_delegate->wcaid == $delegate->wcaid ? 'selected' : '' ?>><?= $delegate->name ?> - <?= $delegate->rank ?></option>
                             <?php
                         }
                         ?>
                     </select> /
-                    <select name="judges_role[<?= $s ?>]">
+                    <select name="delegates_role[<?= $s ?>]">
                         <option value=0> - </option>
                         <?php
-                        foreach ($judge_roles as $judge_role) {
+                        foreach ($delegate_roles as $delegate_role) {
                             ?>
-                            <option  value="<?= $judge_role->id ?>"  <?= $comp_judge->role == $judge_role->role ? 'selected' : '' ?>><?= $judge_role->role ?></option>
+                            <option  value="<?= $delegate_role->id ?>"  <?= $comp_delegate->role == $delegate_role->role ? 'selected' : '' ?>><?= $delegate_role->role ?></option>
                             <?php
                         }
                         ?>
@@ -52,23 +52,23 @@ $judge_roles = unofficial\getJudgeRolesDict();
         }
         ?>
         <tr>
-            <td>Cудья (<?= $s ?>)</td>
+            <td>Делегат (<?= $s ?>)</td>
             <td>
-                <select name="judges[<?= $s ?>]">
+                <select name="delegates[<?= $s ?>]">
                     <option value=0> - </option>
                     <?php
-                    foreach ($judges as $judge) {
+                    foreach ($delegates as $delegate) {
                         ?>
-                        <option  value="<?= $judge->wcaid ?>"><?= $judge->name ?> - <?= $judge->rank ?></option>
+                        <option  value="<?= $delegate->wcaid ?>"><?= $delegate->name ?> - <?= $delegate->rank ?></option>
                         <?php
                     }
                     ?>
                 </select> /
-                <select name="judges_role[<?= $s ?>]">
+                <select name="delegates_role[<?= $s ?>]">
                     <?php
-                    foreach ($judge_roles as $judge_role) {
+                    foreach ($delegate_roles as $delegate_role) {
                         ?>
-                        <option  value="<?= $judge_role->id ?>"><?= $judge_role->role ?></option>
+                        <option  value="<?= $delegate_role->id ?>"><?= $delegate_role->role ?></option>
                         <?php
                     }
                     ?>
@@ -91,7 +91,7 @@ $judge_roles = unofficial\getJudgeRolesDict();
     </table> 
 </form>
 <i class="fas fa-user-cog"></i>
-<a href="<?= PageIndex() ?>competitions/rankings/judges">Управление судьями Федерации Спидкубинга</a>
+<a href="<?= PageIndex() ?>competitions/rankings/delegates">Управление делегатами Федерации Спидкубинга</a>
 <hr>
 <h2>
     <i class='fas fa-user-tie'></i> 

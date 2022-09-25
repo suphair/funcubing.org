@@ -179,11 +179,19 @@ $('[data-results]').submit(function () {
 function result_format(value) {
     if (is_time) {
         var second_first = value.toString().slice(-5)[0];
-        if ((second_first == '6' ||
-                second_first == '7' ||
-                second_first == '8' ||
-                second_first == '9') && value.length >= 5) {
-            return value;
+        if (DNF.indexOf(value.toString().slice(-1)) == -1
+                && DNS.indexOf(value.toString().slice(-1)) == -1
+                && (second_first == '6' ||
+                        second_first == '7' ||
+                        second_first == '8' ||
+                        second_first == '9') && value.length >= 5) {
+            value = value.replace(/\D+/g, '');
+            value = '000000' + value;
+            value = value.substr(value.length - 6);
+            minute_format = value.substr(value.length - 6, 2);
+            second_format = value.substr(value.length - 4, 2);
+            centisecond_format = value.substr(value.length - 2);
+            return  minute_format + ':' + second_format + '.' + centisecond_format;
         }
         return result_format_enter(input_to_centisecond(value));
     } else {
@@ -204,10 +212,10 @@ function result_format_amount(val) {
 }
 
 function result_format_amount_100(val) {
-    if(val == -1){
+    if (val == -1) {
         return 'DNF';
     }
-   
+
     if (val.toString().indexOf('.') !== -1) {
         return result_format_amount(val) / 100;
     }

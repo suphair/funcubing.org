@@ -21,7 +21,7 @@ function autoCheck() {
         'competitions/rankings',
         'competitions/rankings/competitors',
         'competitions/rankings/competitions',
-        'competitions/rankings/judges',
+        'competitions/rankings/delegates',
         'competitions/rankings/333',
         'competitions/rankings/333/average',
         'competitions/rankings/competitor/AZ01',

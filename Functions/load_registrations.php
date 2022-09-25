@@ -40,39 +40,6 @@ function load_registrations() {
             $new = [];
             $delete = [];
 
-            foreach ($registrations as $r => $registration) {
-
-                $renameRU = db::row("SELECT nameRU "
-                                . " from `unofficial_rename` "
-                                . "     where UPPER(description) = UPPER('$competition->rankedID') AND ( "
-                                . "     ('$registration->wca_id'<>'' AND UPPER(wcaid) = UPPER('$registration->wca_id'))"
-                                . "         or UPPER(name) = UPPER('$registration->name')"
-                                . "     )")->nameRU ?? false;
-                if ($renameRU) {
-                    $registration->name = $renameRU;
-                }
-
-
-
-                $registration->description = $registration->name . '/' . $registration->wca_id;
-                $registration->non_resident = ($registration->name == transliterate($registration->name)) + 0;
-                if ($registration->non_resident) {
-                    if ($registration->wca_id) {
-                        $find_FCID = db::row("SELECT fw.WCAID,fw.FCID,uc.name
-                        FROM unofficial_fc_wca fw 
-                        JOIN `unofficial_competitors` uc on uc.FCID=fw.FCID
-                        WHERE fw.WCAID='$registration->wca_id'");
-                        if ($find_FCID) {
-                            $registration->name = $find_FCID->name;
-                            $registration->non_resident = 0;
-                        } else {
-                            $registration->name .= $registration->wca_id ? (': ' . $registration->wca_id) : '';
-                        }
-                    }
-                }
-                $registrations[$r] = $registration;
-            }
-
             $registrations_name = [];
             foreach ($registrations as $registration) {
                 $registrations_name[] = $registration->name;
@@ -87,10 +54,10 @@ function load_registrations() {
             }
 
             foreach ($registrations as $registration) {
-                db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name, non_resident, description) "
-                        . "VALUES ($competition->id,'$registration->name',$registration->non_resident,'$registration->description')");
+                db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name, non_resident) "
+                        . "VALUES ($competition->id,'$registration->name',0)");
                 $id = db::id();
-                if ($competition->ranked and $id and!$registration->non_resident) {
+                if ($competition->ranked) {
                     unofficial\set_fc_id($id, $registration->name);
                 }
                 unofficial\updateCompetitionCard($competition->id);

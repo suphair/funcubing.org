@@ -7,5 +7,5 @@ if ($person->person ?? FALSE) {
     competitor\actual($person->person);
 }
 
-db::exec("INSERT IGNORE INTO `unofficial_judges`(wcaid, is_archive) VALUES (UPPER('$wcaid'), 1)");
+db::exec("INSERT IGNORE INTO `unofficial_delegates`(wcaid, is_archive) VALUES (UPPER('$wcaid'), 1)");
 ?>

@@ -71,8 +71,9 @@ foreach ($events as $event) {
                     $name = str_replace('ë', 'ё', $name);
                     $lat = iconv('utf-8', 'windows-1251//TRANSLIT//IGNORE', $name);
                     $pdf->Text($point[0] + 15, $point[1] + $Ry + 2, $lat);
-                    $pdf->SetFont('msserif', '', 20);
-                    $pdf->Text($point[0], $point[1] + $Ry + 2, $comp_data->competitors[$competitor->id]->card);
+                    $card = $comp_data->competitors[$competitor->id]->card;
+                    $pdf->SetFont('msserif', '', $card > 99 ? 16 : 20);
+                    $pdf->Text($point[0], $point[1] + $Ry + 2, $card);
                 }
             } else {
                 $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);

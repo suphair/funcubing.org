@@ -49,7 +49,7 @@ if ($method == 'get' and!$request_1) {
             'query' => [
                 'name',
                 'organizer',
-                'judge',
+                'delegate',
                 'from_date',
                 'to_date',
                 'is_ranked',

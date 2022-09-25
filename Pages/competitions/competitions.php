@@ -39,13 +39,10 @@ foreach ($competitions as $c => $competition) {
                 <?= t('Date', 'Дата') ?>
             </th>
             <th>
-                <?= t('City', 'Город') ?>
-            </th>
-            <th>
                 <?= t('Competition', 'Наименование') ?>
             </th>
             <th>
-                <?= t('Organizer', 'Организатор') ?> <i class="fas fa-external-link-alt"></i>
+                <?= t('City', 'Город') ?>
             </th>
             <th>
                 <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
@@ -62,8 +59,8 @@ foreach ($competitions as $c => $competition) {
                     <?php if ($competition->is_approved) { ?>
                         <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
                     <?php } ?>
-                    <?php if ($competition->my_roles->judge ?? false) { ?>
-                        <i title="<?= t('Judge', 'Судья') ?>" class="fas fa-signature"></i>
+                    <?php if ($competition->my_roles->delegate ?? false) { ?>
+                        <i title="<?= t('Delegate', 'Делегат') ?>" class="fas fa-signature"></i>
                     <?php } ?>
                     <?php if ($competition->my_roles->organizer ?? false or $competition->my_roles->main_organizer ?? false) { ?>
                         <i title="<?= t('Organizer', 'Организатор') ?>" class="fas fa-user-tie"></i>
@@ -88,27 +85,30 @@ foreach ($competitions as $c => $competition) {
                     <?= dateRange($competition->start_date, $competition->end_date) ?>
 
                 </td>
-                <td>
-                    <?= str_replace(',', ',<br>', $competition->city) ?>
-                </td>
                 <td>                    
                     <a href="<?= PageIndex() ?>competitions/<?= $competition->id ?>"><?= t(transliterate($competition->name), $competition->name); ?> </a>
                 </td>
-
                 <td>
-                    <a target="_blank" href="https://www.worldcubeassociation.org/persons/<?= $competition->main_organizer->wca_id ?>">
-                        <?= $competition->main_organizer->name ?>
-                    </a>
-                </td>   
-                <td title="<?= $competition->website ?>">
-                    <?php unofficial\getFavicon($competition->website, true) ?>
+                    <?= str_replace(',', ',<br>', $competition->city) ?>
                 </td>
-            </tr>
+                <td title="<?= $competition->website ?>">
+                    <?php if (!$ranked) { ?>
+            <nobr>
+                <a target="_blank" href="https://www.worldcubeassociation.org/persons/<?= $competition->main_organizer->wca_id ?>">
+                    <?= $competition->main_organizer->name ?></a>
+            </nobr>  
+            &bull; 
         <?php } ?>
-    </tbody>
+        <nobr>
+            <?php unofficial\getLink($competition->website) ?>
+        </nobr>  
+    </td>
+    </tr>
+<?php } ?>
+</tbody>
 </table>  
 <div class="details_footer">
-    <span><i class="fas fa-signature"></i> - <?= t('Judge', 'Судья') ?></span>
+    <span><i class="fas fa-signature"></i> - <?= t('Delegate', 'Делегат') ?></span>
     <span><i class="fas fa-user-tie"></i> - <?= t('Organizer', 'Организатор') ?></span>
     <span><i class="fas fa-user"></i> - <?= t('Competitor', 'Участник') ?></span>
     <span><?= $ranked_icon ?>  - <?= t('Speedcubing Federation', 'Федерация Спидкубинга') ?></span>

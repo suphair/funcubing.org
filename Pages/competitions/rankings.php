@@ -14,8 +14,8 @@ if ($event_code == 'competitor') {
 if ($event_code == 'competitions') {
     $select = 'competitions';
 }
-if ($event_code == 'judges') {
-    $select = 'judges';
+if ($event_code == 'delegates') {
+    $select = 'delegates';
 }
 if ($event_code == 'rename') {
     $select = 'rename';
@@ -76,7 +76,7 @@ foreach (['average', 'best'] as $type_att) {
             <a href= '<?= PageIndex() ?>competitions/rankings' class='<?= $select == 'records' ? 'select' : '' ?>'><i title='<?= t('Records', 'Рекорды') ?>' class="fas fa-trophy"></i></a>
             <a href= '<?= PageIndex() ?>competitions/rankings/competitors' class='<?= in_array($select, ['competitor', 'competitors']) ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Участники') ?>' class="fas fa-users"></i></a>
             <a href= '<?= PageIndex() ?>competitions/rankings/competitions' class='<?= $select == 'competitions' ? 'select' : '' ?>'><i title='<?= t('Competitors', 'Соревнования') ?>' class="fas fa-cubes"></i></a>
-            <a href= '<?= PageIndex() ?>competitions/rankings/judges' class='<?= $select == 'judges' ? 'select' : '' ?>'><i title='<?= t('Judges', 'Судьи') ?>' class="fas fa-user-tie"></i></a>
+            <a href= '<?= PageIndex() ?>competitions/rankings/delegates' class='<?= $select == 'delegates' ? 'select' : '' ?>'><i title='<?= t('Delegates', 'Делегаты') ?>' class="fas fa-user-tie"></i></a>
             <?php if ($rename_aviable) { ?>
                 <a href= '<?= PageIndex() ?>competitions/rankings/rename' class='<?= $select == 'rename' ? 'select' : '' ?>'><i title='<?= t('Rename WCA', 'Смена WCA имени') ?>' class="fas fa-user-edit"></i></a>
             <?php } ?>
@@ -121,8 +121,8 @@ foreach (['average', 'best'] as $type_att) {
                 case 'competitions':
                     include'rankings_competitions.php';
                     break;
-                case 'judges':
-                    include'rankings_judges.php';
+                case 'delegates':
+                    include'rankings_delegates.php';
                     break;
                 case 'rename':
                     if ($rename_aviable) {

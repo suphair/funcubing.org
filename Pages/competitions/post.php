@@ -20,11 +20,11 @@ if ($secret) {
         if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and $grand) {
             include 'post.ranking_competitor.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_judge') !== NULL and $grand) {
-            include 'post.ranking_judge.php';
+        if (filter_input(INPUT_GET, 'ranking_delegate') !== NULL and $grand) {
+            include 'post.ranking_delegate.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_judge_add') !== NULL and $grand) {
-            include 'post.ranking_judge_add.php';
+        if (filter_input(INPUT_GET, 'ranking_delegate_add') !== NULL and $grand) {
+            include 'post.ranking_delegate_add.php';
         }
         if (filter_input(INPUT_GET, 'ranking_rename_delete') !== NULL and $grand) {
             include 'post.ranking_rename_delete.php';

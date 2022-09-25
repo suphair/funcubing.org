@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Fri, 03 Jun 2022 17:26:32 +0000
+-- Date: Sun, 25 Sep 2022 05:18:04 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -32,7 +32,7 @@ CREATE TABLE `announcements` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user` (`user`),
   KEY `ID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,7 +72,7 @@ CREATE TABLE `cron_config` (
   `schedule` time DEFAULT NULL,
   `argument` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +88,7 @@ CREATE TABLE `cron_logs` (
   `end` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `details` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,7 +105,7 @@ CREATE TABLE `dict_competitors` (
   `timestamp_insert` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `timestamp_update` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `nameRU` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  UNIQUE KEY `wcaid` (`wcaid`,`wid`)
+  UNIQUE KEY `wcaid` (`wcaid`,`wid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -119,7 +119,7 @@ CREATE TABLE `dict_continents` (
   `code` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   UNIQUE KEY `Code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,7 +133,7 @@ CREATE TABLE `dict_countries` (
   `name` varchar(255) DEFAULT NULL,
   `continent` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
-  UNIQUE KEY `ISO2` (`iso2`)
+  UNIQUE KEY `ISO2` (`iso2`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -149,7 +149,7 @@ CREATE TABLE `friends` (
   `user` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `friend_user` (`friend`,`user`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +197,7 @@ CREATE TABLE `goals_competitions` (
   `resultsLoad` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `WCA` (`wca`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +214,7 @@ CREATE TABLE `goals_competitors` (
   `eventCode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `competitorWid` (`competitorWid`,`competitionWca`,`eventCode`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -228,7 +228,7 @@ CREATE TABLE `goals_events` (
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -245,7 +245,7 @@ CREATE TABLE `mosaic_colors_dict` (
   `border` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`code`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +262,7 @@ CREATE TABLE `mosaic_displays_dict` (
   `order` int(11) DEFAULT NULL,
   PRIMARY KEY (`code`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,7 +284,7 @@ CREATE TABLE `mosaic_images` (
   PRIMARY KEY (`id`),
   KEY `session_id` (`session_id`),
   CONSTRAINT `mosaic_images_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `mosaic_session` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +300,7 @@ CREATE TABLE `mosaic_pixels_dict` (
   `order` int(11) NOT NULL DEFAULT '0',
   `default` bit(1) DEFAULT NULL,
   KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,7 +318,7 @@ CREATE TABLE `mosaic_schemas` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `step_schema` (`step_id`,`schema`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -331,7 +331,7 @@ CREATE TABLE `mosaic_schemas_dict` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -360,7 +360,7 @@ CREATE TABLE `mosaic_session` (
   CONSTRAINT `mosaic_session_ibfk_1` FOREIGN KEY (`color_dict`) REFERENCES `mosaic_colors_dict` (`code`),
   CONSTRAINT `mosaic_session_ibfk_2` FOREIGN KEY (`pixel_dict`) REFERENCES `mosaic_pixels_dict` (`code`),
   CONSTRAINT `mosaic_session_ibfk_3` FOREIGN KEY (`display_dict`) REFERENCES `mosaic_displays_dict` (`code`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -378,7 +378,7 @@ CREATE TABLE `mosaic_steps` (
   UNIQUE KEY `image_step` (`image_id`,`step`),
   KEY `image` (`image_id`),
   CONSTRAINT `mosaic_steps_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `mosaic_images` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -415,21 +415,21 @@ CREATE TABLE `smtp_logs` (
   `result` varchar(255) DEFAULT NULL,
   `version` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `unofficial_competition_judges`
+-- Table structure for table `unofficial_competition_delegates`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unofficial_competition_judges` (
-  `judge` varchar(255) DEFAULT NULL,
+CREATE TABLE `unofficial_competition_delegates` (
+  `delegate` varchar(255) DEFAULT NULL,
   `competition_id` int(11) DEFAULT NULL,
-  `dict_judge_role` int(1) DEFAULT NULL,
-  UNIQUE KEY `judge` (`judge`,`competition_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+  `dict_delegate_role` int(1) DEFAULT NULL,
+  UNIQUE KEY `judge` (`delegate`,`competition_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -455,10 +455,12 @@ CREATE TABLE `unofficial_competitions` (
   `rankedApproved` bit(1) DEFAULT NULL,
   `rankedID` varchar(255) DEFAULT NULL,
   `logo` varchar(256) DEFAULT NULL,
+  `adapter` varchar(255) DEFAULT NULL,
+  `adapter_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `secret` (`secret`),
   UNIQUE KEY `rankedID` (`rankedID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -475,11 +477,12 @@ CREATE TABLE `unofficial_competitors` (
   `FCID` varchar(10) DEFAULT NULL,
   `card` int(11) DEFAULT NULL,
   `non_resident` bit(1) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `competition_name` (`competition`,`name`),
   KEY `competition` (`competition`),
   CONSTRAINT `unofficial_competitors_ibfk_1` FOREIGN KEY (`competition`) REFERENCES `unofficial_competitions` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -503,9 +506,9 @@ CREATE TABLE `unofficial_competitors_result` (
   `order` double NOT NULL,
   `order_best` double DEFAULT NULL,
   `order_average` double DEFAULT NULL,
-  UNIQUE KEY `competitor_round` (`competitor_round`),
+  UNIQUE KEY `competitor_round` (`competitor_round`) USING BTREE,
   CONSTRAINT `fk_unofficial_competitors_result_competitor_round` FOREIGN KEY (`competitor_round`) REFERENCES `unofficial_competitors_round` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -524,7 +527,43 @@ CREATE TABLE `unofficial_competitors_round` (
   KEY `round` (`round`),
   CONSTRAINT `fk_unofficial_competitors_round_competitor` FOREIGN KEY (`competitor`) REFERENCES `unofficial_competitors` (`id`),
   CONSTRAINT `fk_unofficial_competitors_round_round` FOREIGN KEY (`round`) REFERENCES `unofficial_events_rounds` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `unofficial_delegate_roles_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_delegate_roles_dict` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role` varchar(255) DEFAULT NULL,
+  `roleRU` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `unofficial_delegates`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_delegates` (
+  `wcaid` varchar(255) NOT NULL,
+  `is_archive` bit(1) DEFAULT NULL,
+  `rank` varchar(255) DEFAULT NULL,
+  `rankRU` varchar(255) DEFAULT NULL,
+  `region` varchar(255) DEFAULT NULL,
+  `regionRU` varchar(255) DEFAULT NULL,
+  `vk` varchar(255) DEFAULT NULL,
+  `telegram` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`wcaid`),
+  UNIQUE KEY `wcaid` (`wcaid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -542,7 +581,7 @@ CREATE TABLE `unofficial_events` (
   `result_dict` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `competition_event` (`competition`,`event_dict`),
+  UNIQUE KEY `competition_event` (`competition`,`event_dict`) USING BTREE,
   KEY `competition` (`competition`),
   KEY `event_dict` (`event_dict`),
   KEY `format` (`format_dict`),
@@ -550,7 +589,7 @@ CREATE TABLE `unofficial_events` (
   CONSTRAINT `fk_unofficial_event_competition` FOREIGN KEY (`competition`) REFERENCES `unofficial_competitions` (`id`),
   CONSTRAINT `fk_unofficial_event_format_dict` FOREIGN KEY (`format_dict`) REFERENCES `unofficial_formats_dict` (`id`),
   CONSTRAINT `fk_unofficial_event_result_dict` FOREIGN KEY (`result_dict`) REFERENCES `unofficial_results_dict` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -588,17 +627,17 @@ CREATE TABLE `unofficial_events_rounds` (
   `round` int(11) DEFAULT NULL,
   `comment` varchar(255) DEFAULT NULL,
   `cutoff` varchar(255) DEFAULT NULL,
-  `time_limit` varchar(255) DEFAULT NULL,
+  `time_limit` varchar(255) DEFAULT '10:00',
   `cumulative` bit(1) DEFAULT NULL,
   `next_round_value` int(11) DEFAULT '75',
   `next_round_procent` bit(1) DEFAULT b'1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `event_round` (`event`,`round`),
+  UNIQUE KEY `event_round` (`event`,`round`) USING BTREE,
   KEY `event` (`event`),
   KEY `round` (`round`),
   CONSTRAINT `fk_unofficial_events_rounds_event` FOREIGN KEY (`event`) REFERENCES `unofficial_events` (`id`),
   CONSTRAINT `fk_unofficial_events_rounds_round` FOREIGN KEY (`round`) REFERENCES `unofficial_rounds_dict` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,7 +653,7 @@ CREATE TABLE `unofficial_fc_wca` (
   `wca_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`FCID`),
   UNIQUE KEY `FCID` (`FCID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -634,39 +673,7 @@ CREATE TABLE `unofficial_formats_dict` (
   `nameRU` varchar(255) DEFAULT NULL,
   `cutoff_nameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `unofficial_judge_roles_dict`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unofficial_judge_roles_dict` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `role` varchar(255) DEFAULT NULL,
-  `roleRU` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `unofficial_judges`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unofficial_judges` (
-  `wcaid` varchar(255) NOT NULL,
-  `is_archive` bit(1) DEFAULT NULL,
-  `rank` varchar(255) DEFAULT NULL,
-  `rankRU` varchar(255) DEFAULT NULL,
-  `region` varchar(255) DEFAULT NULL,
-  `regionRU` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`wcaid`),
-  UNIQUE KEY `wcaid` (`wcaid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -682,7 +689,7 @@ CREATE TABLE `unofficial_organizers` (
   PRIMARY KEY (`id`),
   KEY `competition` (`competition`),
   CONSTRAINT `fk_unofficial_organizers_competition` FOREIGN KEY (`competition`) REFERENCES `unofficial_competitions` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -697,7 +704,24 @@ CREATE TABLE `unofficial_partners` (
   `partner` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `competitor` (`competitor`,`partner`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `unofficial_rename`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_rename` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `wcaid` varchar(11) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `nameRU` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `wcaid` (`wcaid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -714,7 +738,7 @@ CREATE TABLE `unofficial_results_dict` (
   `nameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -733,7 +757,7 @@ CREATE TABLE `unofficial_rounds_dict` (
   `smallNameRU` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -748,7 +772,7 @@ CREATE TABLE `unofficial_text` (
   `text` text,
   `is_archive` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -764,7 +788,7 @@ CREATE TABLE `visitors` (
   `timestampt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `request_uri` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -779,7 +803,7 @@ CREATE TABLE `wca_api_cash` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `version` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -797,7 +821,7 @@ CREATE TABLE `wca_api_logs` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `version` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -815,7 +839,7 @@ CREATE TABLE `wca_oauth_logs` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `version` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -827,4 +851,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Fri, 03 Jun 2022 17:26:32 +0000
+-- Dump completed on: Sun, 25 Sep 2022 05:18:04 +0000

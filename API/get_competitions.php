@@ -8,7 +8,7 @@ function get_competitions($id = false) {
     $filters = [
         'name' => ['type' => 'substring'],
         'organizer' => ['type' => 'equal', 'array' => 'organizers', 'value' => 'wca_id'],
-        'judge' => ['type' => 'equal', 'array' => 'judges', 'value' => 'wca_id'],
+        'delegate' => ['type' => 'equal', 'array' => 'delegates', 'value' => 'wca_id'],
         'from_date' => ['type' => 'date', 'compare' => 'later', 'key' => 'start_date'],
         'to_date' => ['type' => 'date', 'compare' => 'earlier', 'key' => 'end_date'],
         'is_ranked' => ['type' => 'boolean'],

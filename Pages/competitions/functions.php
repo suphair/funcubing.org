@@ -345,16 +345,16 @@ function getCompetitionData($id) {
                     . " WHERE competition=$id");
     $data->organizers = $organizers;
 
-    $judges = \db::rows("SELECT 
-                            cj.judge wcaid,
+    $delegates = \db::rows("SELECT 
+                            cj.delegate wcaid,
                             coalesce(dc.name$RU, dc.name) name,
                             coalesce(jrd.role$RU, jrd.role) role
-                        FROM unofficial_competition_judges cj
-                        JOIN unofficial_judge_roles_dict jrd on jrd.id=cj.dict_judge_role
-                        JOIN dict_competitors dc on dc.wcaid=cj.judge 
+                        FROM unofficial_competition_delegates cj
+                        JOIN unofficial_delegate_roles_dict jrd on jrd.id=cj.dict_delegate_role
+                        JOIN dict_competitors dc on dc.wcaid=cj.delegate 
                         WHERE cj.competition_id=$id");
 
-    $data->judges = $judges;
+    $data->delegates = $delegates;
 
     return $data;
 }
@@ -689,6 +689,25 @@ function getFavicon($website, $only_domen) {
         ?> 
         <a target="_blank" href="<?= $website ?>">
             <?= $result ?? $website ?>
+        </a> 
+        <?php
+    }
+}
+
+function getLink($website) {
+    if ($website) {
+        preg_match('/.*(instagram|facebook).*/', $website, $ban);
+        preg_match('/https?:\/\/(?:www\.|)([\w.-]+.*)/', $website, $matches);
+        $result = $matches[1];
+        $website_cut = substr($result, 0, 30);
+        $website_cut .= ($website_cut == $result) ? '' : '...';
+        if (isset($ban[1])) {
+            return;
+        }
+        $result = $matches[1];
+        ?> 
+        <a target="_blank" href="<?= $website ?>">
+            <?= $website_cut ?>
         </a> 
         <?php
     }

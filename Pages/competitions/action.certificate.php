@@ -16,18 +16,18 @@ if (!$comp_api) {
 }
 
 $organisers = [];
-$judges = [];
+$delegates = [];
 
-foreach ($comp_api->judges ?? [] as $judge) {
-    $judge_name = str_replace(' ', '&nbsp;', trim(explode("(", $judge->name)[0]));
-    if (!in_array($judge_name, $judges)) {
-        $judges[] = $judge_name;
+foreach ($comp_api->delegates ?? [] as $delegate) {
+    $delegate_name = str_replace(' ', '&nbsp;', trim(explode("(", $delegate->name)[0]));
+    if (!in_array($delegate_name, $delegates)) {
+        $delegates[] = $delegate_name;
     }
 }
 
 foreach ($comp_api->organizers as $organizer) {
     $organizer_name = str_replace(' ', '&nbsp;', trim(explode("(", $organizer->name)[0]));
-    if (!in_array($organizer_name, $judges) and!in_array($organizer_name, $organisers)) {
+    if (!in_array($organizer_name, $delegates) and!in_array($organizer_name, $organisers)) {
         $organisers[] = $organizer_name;
     }
 }
@@ -67,7 +67,7 @@ foreach ($competitors as $competitor_name => $results) {
     $results_event = [];
     foreach ($results as $result) {
         $result_row = false;
-        if ($result->best) {
+        if ($result->best and!in_array($result->best, ['DNF'])) {
             $result_row = ['value' => $result->best, 'format' => t('best', 'лучшая'), 'position' => $result->place];
         }
         if ($result->mean and!in_array($result->mean, ['DNF'])) {
@@ -82,16 +82,16 @@ foreach ($competitors as $competitor_name => $results) {
     }
     if (sizeof($results_event)) {
         $html = '<div style="padding:20px 30px 0px 30px"><span style="font-size:18px;">';
-        if (sizeof($judges)) {
+        if (sizeof($delegates)) {
             if ($RU) {
-                $html .= '<b>' . implode(" и ", $judges) . '</b>'
+                $html .= '<b>' . implode(" и ", $delegates) . '</b>'
                         . ', от имени <span class="nobr"><b>Федерации&nbsp;Спидкубинга</b></span>';
             } else {
-                $html .= '<b>' . implode(" and ", $judges) . '</b>'
+                $html .= '<b>' . implode(" and ", $delegates) . '</b>'
                         . ', on behalf of the <span class="nobr"><b>Speedcubing&nbsp;Federation</b></span>';
             }
         }
-        if (sizeof($organisers) and sizeof($judges)) {
+        if (sizeof($organisers) and sizeof($delegates)) {
             if ($RU) {
                 $html .= ', и ';
             } else {
@@ -109,7 +109,7 @@ foreach ($competitors as $competitor_name => $results) {
         }
 
         if ($RU) {
-            if ((sizeof($organisers) + sizeof($judges)) > 1) {
+            if ((sizeof($organisers) + sizeof($delegates)) > 1) {
                 $html .= ', подтвержают что';
             } else {
                 $html .= ', подтвержает что';

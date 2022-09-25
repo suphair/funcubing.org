@@ -294,7 +294,7 @@ function getFCIDlistbyName($name) {
     return $FCIDlist;
 }
 
-function getRankedJudges($filter = null) {
+function getRankedDelegates($filter = null) {
     $RU = t('', 'RU');
     $where = '';
     if (isset($filter['is_archive'])) {
@@ -318,7 +318,7 @@ function getRankedJudges($filter = null) {
             j.phone,
             j.email,
             j.wcaid
-            from `unofficial_judges` j
+            from `unofficial_delegates` j
             left outer join `dict_competitors` dc on dc.wcaid = j.wcaid
             left outer join `unofficial_rename` ur on ur.wcaid = j.wcaid
             where 1=1 $where
@@ -328,11 +328,11 @@ function getRankedJudges($filter = null) {
     return \db::rows($sql);
 }
 
-function getJudgeRolesDict() {
+function getDelegateRolesDict() {
     $RU = t('', 'RU');
     $rows = \db::rows("SELECT "
                     . " id, role$RU role"
-                    . " FROM unofficial_judge_roles_dict "
+                    . " FROM unofficial_delegate_roles_dict "
                     . " ORDER BY id");
     $roles_dict = [];
     foreach ($rows as $row) {
@@ -430,19 +430,19 @@ function get_rename() {
                     . " WHERE description = 'wca_rename' order by name");
 }
 
-function build_contact($judge) {
+function build_contact($delegate) {
     $return = "";
-    if ($judge->vk) {
-        $return .= '<a target="_blank" href="https://vk.com/' . $judge->vk . '"><i class="fab fa-vk"></i></a> ';
+    if ($delegate->vk) {
+        $return .= '<a target="_blank" href="https://vk.com/' . $delegate->vk . '"><i class="fab fa-vk"></i></a> ';
     }
-    if ($judge->telegram) {
-        $return .= '<a target="_blank" href="https://t.me/' . $judge->vk . '"><i class="fab fa-telegram-plane"></i></a> ';
+    if ($delegate->telegram) {
+        $return .= '<a target="_blank" href="https://t.me/' . $delegate->telegram . '"><i class="fab fa-telegram-plane"></i></a> ';
     }
-    if ($judge->phone) {
-        $return .= '<a target="_blank" href="tel:' . $judge->vk . '"><i class="fas fa-phone"></i></a> ';
+    if ($delegate->phone) {
+        $return .= '<a target="_blank" href="tel:' . $delegate->phone . '"><i class="fas fa-phone"></i></a> ';
     }
-    if ($judge->email) {
-        $return .= '<a target="_blank" href="mailto:' . $judge->vk . '"><i class="fas fa-envelope"></i></a> ';
+    if ($delegate->email) {
+        $return .= '<a target="_blank" href="mailto:' . $delegate->email . '"><i class="fas fa-envelope"></i></a> ';
     }
     return $return;
 }

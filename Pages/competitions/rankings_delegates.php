@@ -1,10 +1,10 @@
-<?php $judges = unofficial\getRankedJudges(['is_archive' => false]); ?>
+<?php $delegates = unofficial\getRankedDelegates(['is_archive' => false]); ?>
 <h2>
     <i title='Competitors' class="fas fa-user-tie"></i>
-    <?= t('Judges', 'Судьи') ?> (<?= count($judges) ?>)
+    <?= t('Delegates', 'Делегаты') ?> (<?= count($delegates) ?>)
 </h2>
-<div>
-    <?= markdown::convertToHtml(unofficial\getText('judges')); ?>
+<div> 
+    <?= markdown::convertToHtml(unofficial\getText('delegates')); ?>
 </div>
 <table class='table thead_stable'>
     <thead>
@@ -27,26 +27,26 @@
         </tr>    
     </thead>
     <tbody>
-        <?php foreach ($judges as $judge) { ?>
+        <?php foreach ($delegates as $delegate) { ?>
             <tr>   
                 <td>
                     <font size="3">
-                    <?= unofficial\build_contact($judge) ?>
+                    <?= unofficial\build_contact($delegate) ?>
                     </font>
                 </td>
                 <td>                    
-                    <?= $judge->name ?>
+                    <?= $delegate->name ?>
                 </td>
                 <td>
-                    <?= $judge->region ?>
+                    <?= $delegate->region ?>
                 </td>    
                 <td>
-                    <?= $judge->rank ?>
+                    <?= $delegate->rank ?>
                 </td>    
                 <td>
-                    <?php if ($judge->wcaid) { ?>
-                        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $judge->wcaid ?>'>
-                            <?= $judge->wcaid ?>
+                    <?php if ($delegate->wcaid) { ?>
+                        <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $delegate->wcaid ?>'>
+                            <?= $delegate->wcaid ?>
                         </a>
                     <?php } ?>
                 </td>
@@ -55,27 +55,27 @@
     </tbody>
 </table> 
 <?php if (api\get_me()->is_federation ?? false or \api\get_me()->is_admin ?? false) { ?>
-    <?php $judges = unofficial\getRankedJudges(); ?>
+    <?php $delegates = unofficial\getRankedDelegates(); ?>
     <h2>
         <i class="fas fa-user-cog"></i>
         Управление
     </h2>
     <form method="POST" action="?text">
-        <input hidden name='code' value='judges'>
-        EN<textarea name="textEN" style="width:500px; height:100px; "><?= unofficial\getText('judgesEN') ?></textarea>
+        <input hidden name='code' value='delegates'>
+        EN<textarea name="textEN" style="width:500px; height:100px; "><?= unofficial\getText('delegatesEN') ?></textarea>
         support <i class="fab fa-markdown"></i> <a target="_blank" href="https://ru.wikipedia.org/wiki/Markdown">Markdown</a>
         <br>
-        RU<textarea name="textRU" style="width:500px; height:100px; "><?= unofficial\getText('judgesRU') ?></textarea>
+        RU<textarea name="textRU" style="width:500px; height:100px; "><?= unofficial\getText('delegatesRU') ?></textarea>
         support <i class="fab fa-markdown"></i> <a target="_blank" href="https://ru.wikipedia.org/wiki/Markdown">Markdown</a>
         <br><button>Описание</button> 
     </form>
     <hr>
-    <form method="POST" action="?ranking_judge_add">
+    <form method="POST" action="?ranking_delegate_add">
         WCA ID <input name="wcaid" required"> 
         <button> <i class="fas fa-user-plus"></i>Добавить</button>
     </form>
     <br>
-    <form method="POST" action="?ranking_judge">
+    <form method="POST" action="?ranking_delegate">
         <table class="table">
             <thead>
                 <tr>
@@ -103,47 +103,47 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($judges as $judge) { ?>
+                <?php foreach ($delegates as $delegate) { ?>
                     <tr>
                         <td>
                             EN<br>RU
                         </td>
                         <td>
-                            <?php if ($judge->is_archive) { ?>
+                            <?php if ($delegate->is_archive) { ?>
                                 <i class="fas fa-user-alt-slash"></i>
                             <?php } ?>
                         </td>
                         <td>
-                            <?= $judge->nameEN ?>
+                            <?= $delegate->nameEN ?>
                             <br>
-                            <input name="judges[<?= $judge->wcaid ?>][nameRU]" value="<?= $judge->nameRU ?>">
+                            <input name="delegates[<?= $delegate->wcaid ?>][nameRU]" value="<?= $delegate->nameRU ?>">
                         </td>
                         <td>
-                            <input name="judges[<?= $judge->wcaid ?>][rankEN]" value="<?= $judge->rankEN ?>">
+                            <input name="delegates[<?= $delegate->wcaid ?>][rankEN]" value="<?= $delegate->rankEN ?>">
                             <br>
-                            <input name="judges[<?= $judge->wcaid ?>][rankRU]" value="<?= $judge->rankRU ?>">
+                            <input name="delegates[<?= $delegate->wcaid ?>][rankRU]" value="<?= $delegate->rankRU ?>">
                         </td>
                         <td>
-                            <input name="judges[<?= $judge->wcaid ?>][regionEN]" value="<?= $judge->regionEN ?>">
+                            <input name="delegates[<?= $delegate->wcaid ?>][regionEN]" value="<?= $delegate->regionEN ?>">
                             <br>
-                            <input name="judges[<?= $judge->wcaid ?>][regionRU]" value="<?= $judge->regionRU ?>">
+                            <input name="delegates[<?= $delegate->wcaid ?>][regionRU]" value="<?= $delegate->regionRU ?>">
                         </td>
                         <td>
-                            <?= $judge->wcaid ?>
-                            <input hidden name="judges[<?= $judge->wcaid ?>][wcaid]" value="<?= $judge->wcaid ?>">
+                            <?= $delegate->wcaid ?>
+                            <input hidden name="delegates[<?= $delegate->wcaid ?>][wcaid]" value="<?= $delegate->wcaid ?>">
                         </td>
                         <td style="text-align:right">
                             <p><i class="fab fa-vk"></i>
-                                <input name="judges[<?= $judge->wcaid ?>][vk]" value="<?= $judge->vk ?>"/></p>
+                                <input name="delegates[<?= $delegate->wcaid ?>][vk]" value="<?= $delegate->vk ?>"/></p>
                             <p><i class="fab fa-telegram-plane"></i>
-                                <input name="judges[<?= $judge->wcaid ?>][telegram]" value="<?= $judge->telegram ?>"/></p>
+                                <input name="delegates[<?= $delegate->wcaid ?>][telegram]" value="<?= $delegate->telegram ?>"/></p>
                             <p><i class='fas fa-phone'></i>
-                                <input name="judges[<?= $judge->wcaid ?>][phone]" value="<?= $judge->phone ?>"/></p>
+                                <input name="delegates[<?= $delegate->wcaid ?>][phone]" value="<?= $delegate->phone ?>"/></p>
                             <p><i class='far fa-envelope'></i>
-                                <input name="judges[<?= $judge->wcaid ?>][email]" value="<?= $judge->email ?>"/></p>
+                                <input name="delegates[<?= $delegate->wcaid ?>][email]" value="<?= $delegate->email ?>"/></p>
                         </td>
                         <td>
-                            <input type="checkbox" name="judges[<?= $judge->wcaid ?>][is_archive]" <?= $judge->is_archive ? 'checked' : '' ?>>
+                            <input type="checkbox" name="delegates[<?= $delegate->wcaid ?>][is_archive]" <?= $delegate->is_archive ? 'checked' : '' ?>>
                         </td>
                     </tr>
                 <?php } ?>

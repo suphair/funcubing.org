@@ -28,9 +28,10 @@ function competitors($competitor_id = false) {
                 LEFT OUTER JOIN `unofficial_competitors_result` result on result.competitor_round=round.id
                 LEFT OUTER JOIN `unofficial_events_rounds` r on r.id=round.round
                 LEFT OUTER JOIN `unofficial_events` event on event.id=r.event
-                LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict and ed.special = false 
+                LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict
                 LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
         WHERE lower('$competitor_id') in (lower(coalesce(c.FCID,'XXXX')), lower(c.ID), '')
+            and coalesce(ed.special, false) = false 
         ORDER BY c.name desc, comp.date desc, ed.order");
 
     $competitors_key = [];

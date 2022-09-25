@@ -64,7 +64,8 @@
                     <tr>
                         <td><?= t('Website', 'Сайт') ?></td>
                         <td title="<?= $competition->website ?>">
-                            <?php unofficial\getFavicon($competition->website, false) ?>    </td>
+                            <?php unofficial\getLink($competition->website) ?>    
+                        </td>
                     </tr>
                     <?php
                 }
@@ -120,11 +121,11 @@
                             </td>
                         </tr>
                     <?php } ?>
-                    <?php foreach ($competition->judges ?? [] as $judge) { ?>
+                    <?php foreach ($competition->delegates ?? [] as $delegate) { ?>
                         <tr>
-                            <td><?= $judge->role ?></td>  
-                            <td><i class="fas fa-signature"></i> <?= $judge->name ?> 
-                                <?= unofficial\build_contact($judge) ?></td>
+                            <td><?= $delegate->role ?></td>  
+                            <td><i class="fas fa-signature"></i> <?= $delegate->name ?> 
+                                <?= unofficial\build_contact($delegate) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if ($grand->edit or $grand->federation) { ?>
@@ -136,45 +137,72 @@
                         </tr>
                     <?php } ?>
                 <?php } ?>
-                <tr><td colspan="2"><hr></td></tr>
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                        <i class="fas fa-certificate"></i>
-                        <a target="_blank" href="?action=certificates"><?= t('Certificates', 'Сертификаты') ?></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <?= t('Export', 'Экспорт') ?> (json)
-                    </td>
-                    <td>
-                        <i class="fas fa-info-circle"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>"><?= t('Competition info', 'Информация') ?></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <i class="fas fa-users"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/registrations"><?= t('Registrations', 'Регистрации') ?></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <i class="fas fa-newspaper"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/events"><?= t('Events', 'Дисциплины') ?></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <i class="fas fa-list-alt"></i>
-                        <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/results"><?= t('Results', 'Результаты') ?></a>
-                    </td>
-                </tr>
+                <tr><td colspan="2"><hr></td></tr>     
+                <?php
+                $res = true;
+                foreach ($comp_data->events as $event_a) {
+                    ?>
+                    <tr>
+                        <td>
+                            <?php if ($res) { ?>
+                                <?= t('Results', 'Результаты'); ?>
+                                <?php
+                                $res = false;
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <i class="<?= $events_dict[$event_a->event_dict]->image ?>"></i>
+                            <a
+                                title="<?= $comp_data->events[$event_a->event_dict]->name ?>"
+                                href="<?= PageIndex() . "competitions/$secret/event/{$events_dict[$event_a->event_dict]->code}/1" ?> "
+                                >
+                                    <?= $comp_data->events[$event_a->event_dict]->name ?>
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                <?php if ($grand->edit) { ?>
+                    <tr><td colspan="2"><hr></td></tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <i class="fas fa-certificate"></i>
+                            <a target="_blank" href="?action=certificates"><?= t('Certificates', 'Сертификаты') ?></a> pdf
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <?= t('Export', 'Экспорт') ?>
+                        </td>
+                        <td>
+                            <i class="fas fa-info-circle"></i>
+                            <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>"><?= t('Competition info', 'Информация') ?></a>  json
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <i class="fas fa-users"></i>
+                            <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/registrations"><?= t('Registrations', 'Регистрации') ?></a> json
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <i class="fas fa-newspaper"></i>
+                            <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/events"><?= t('Events', 'Дисциплины') ?></a> json
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <i class="fas fa-list-alt"></i>
+                            <a target="_blank" href="<?= PageIndex() ?>api/competitions/<?= $competition->id ?>/results"><?= t('Results', 'Результаты') ?></a> json
+                        </td>
+                    </tr>
+                <?php } ?>
             </table>
         </td>
         <?php if ($competition->details ?? '') { ?>
