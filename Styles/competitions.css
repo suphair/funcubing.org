@@ -59,3 +59,7 @@ span.checked{
     color:gray;
     text-decoration: line-through;
 }
+
+.competition_info *{
+    max-width: 100%;
+}

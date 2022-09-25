@@ -3,7 +3,7 @@
     <?= t('General info', 'Информация'); ?>
 </h2>
 <br>
-<table width="100%" style="padding:0px; margin:0px">
+<table width="100%" style="padding:0px; margin:0px" class="competition_info">
     <tr>
         <td valign="top" align="center">
             <?php if ($competition->logo) { ?>
