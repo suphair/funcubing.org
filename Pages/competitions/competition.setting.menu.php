@@ -5,6 +5,9 @@
         <a href='<?= $competition->url ?>/setting' class='<?= $setting_select == 'setting' ? 'select' : '' ?>'
            ><?= t('Setting', 'Настройки') ?></a>
         |
+        <a href='<?= $competition->url ?>/setting_sheets' class='<?= $setting_select == 'setting_sheets' ? 'select' : '' ?>'
+           ><?= t('Sheets', 'Вкладки') ?></a>
+        |
         <a href='<?= $competition->url ?>/setting_events' class='<?= $setting_select == 'setting_events' ? 'select' : '' ?>'
            ><?= t('Events', 'Дисциплины') ?></a>
         |

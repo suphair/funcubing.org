@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Sun, 25 Sep 2022 05:18:04 +0000
+-- Date: Sun, 25 Sep 2022 10:02:45 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -433,6 +433,27 @@ CREATE TABLE `unofficial_competition_delegates` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `unofficial_competition_sheets`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_competition_sheets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `competition_id` varchar(255) NOT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `sheet` varchar(255) NOT NULL,
+  `is_archive` tinyint(4) NOT NULL DEFAULT '0',
+  `version` int(11) NOT NULL DEFAULT '0',
+  `user` varchar(255) NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `order` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `unofficial_competitions`
 --
 
@@ -851,4 +872,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Sun, 25 Sep 2022 05:18:04 +0000
+-- Dump completed on: Sun, 25 Sep 2022 10:02:45 +0000

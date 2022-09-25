@@ -84,6 +84,16 @@ if ($me->wca_id ?? FALSE) {
                 $events_dict = unofficial\getEventsDict();
                 include 'post.competition.comments.php';
             }
+
+            if (filter_input(INPUT_GET, 'sheet_create') !== NULL) {
+                include 'post.competition.sheet.create.php';
+            }
+            if (filter_input(INPUT_GET, 'sheet_edit') !== NULL) {
+                include 'post.competition.sheet.edit.php';
+            }
+            if (filter_input(INPUT_GET, 'sheet_delete') !== NULL) {
+                include 'post.competition.sheet.delete.php';
+            }
         }
         if ($grand->edit ?? false) {
 

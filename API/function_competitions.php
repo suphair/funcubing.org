@@ -124,6 +124,26 @@ function competitions($competition_id = false) {
         }
     }
 
+    $sheets = \db::rows("SELECT 
+                            competition_id competition,
+                            content,
+                            title,
+                            sheet
+                        FROM unofficial_competition_sheets 
+                        WHERE is_archive = 0
+                        ORDER BY `order`");
+    foreach ($sheets as $sheet) {
+        if ($competitions_key[$sheet->competition] ?? false) {
+            $competitions_key[$sheet->competition]->sheets ??= [];
+            $competitions_key[$sheet->competition]->sheets[] = (object) [
+                        'sheet' => $sheet->sheet,
+                        'title' => $sheet->title,
+                        'content' => $sheet->content
+            ];
+        }
+    }
+
+
     if ($wca_id) {
         foreach ($competitions_key as $competition_id => $competition_key) {
 
@@ -165,6 +185,7 @@ function competitions($competition_id = false) {
             ];
         }
     }
+
 
     return $competitions_key;
 }

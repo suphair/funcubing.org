@@ -877,3 +877,13 @@ function set_fc_id($id, $name) {
     }
     \db::exec("update `unofficial_competitors` set FCID='$FCID_set' where id=$id");
 }
+
+function getCompetitionSheets($competition_id) {
+    $rows = \db::rows("
+        select * from 
+        unofficial_competition_sheets
+        where is_archive = 0 and competition_id = $competition_id
+        order by `order`");
+
+    return $rows;
+}

@@ -1,4 +1,4 @@
-<link href="<?= PageIndex() ?>Styles/competitions.css?100" rel="stylesheet">
+<link href="<?= PageIndex() ?>Styles/competitions.css" rel="stylesheet">
 <?php
 $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
@@ -58,6 +58,7 @@ if ($secret == 'competitor') {
                 break;
             case 'setting':
             case 'setting_events':
+            case 'setting_sheets':
                 if ($grand->setting) {
                     $event_round_this = false;
                     $include = 'competition.index.php';

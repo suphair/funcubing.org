@@ -85,6 +85,8 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 include 'competition.setting.php';
             } elseif ($section == 'setting_events') {
                 include 'competition.setting.events.php';
+            } elseif ($section == 'setting_sheets') {
+                include 'competition.setting.sheets.php';
             } elseif ($section == 'registrations') {
                 include 'competition.registrations.php';
             } elseif ($section == 'records') {
