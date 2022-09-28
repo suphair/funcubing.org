@@ -9,7 +9,6 @@ select{
     font-size:20px;
 }
 
-
 td.podium, td.next_round{
     color:green;
 }
@@ -43,4 +42,13 @@ table thead{
     position: absolute;
     top: 10px;
     right: 10px;
+}
+a{
+    text-decoration: none;
+    color:blue;
+}
+
+a:hover{
+    text-decoration: underline;
+    color:light_blue;
 }

@@ -48,7 +48,7 @@ function resize(event) {
 
 $('.popup-fade').fadeOut();
 
-$("[data-modal]").click(function () {
+$("[data-modal]").click(function (e) {
     if (!landscape) {
         return false;
     }

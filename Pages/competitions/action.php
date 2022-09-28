@@ -4,7 +4,7 @@ $me = wcaoauth::me();
 $secret = db::escape(request(1));
 $action = filter_input(INPUT_GET, 'action');
 $rounds_dict = unofficial\getRoundsDict();
-$notAuthorized = in_array($action, ['result', 'projector', 'mobile', 'certificates']);
+$notAuthorized = in_array($action, ['result', 'projector', 'mobile', 'certificates','competitor']);
 
 if (!$secret) {
     include 'action.wrong.php';
@@ -38,6 +38,9 @@ if (!$secret) {
                 break;
             case 'result':
                 include 'action.result.php';
+                break;
+            case 'competitor':
+                include 'action.competitor.php';
                 break;
             case 'projector':
                 include 'action.projector.php';

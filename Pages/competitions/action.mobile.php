@@ -3,7 +3,7 @@
     <title><?= $comp->name ?></title>
     <link rel="icon" href="<?= PageLocal() ?>Pages/competitions/mobile.png" >
     <script src="<?= PageLocal() ?>jQuery/jquery-3.4.1.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="<?= PageLocal() ?>Pages/competitions/action.mobile.css?1" type="text/css"/>
+    <link rel="stylesheet" href="<?= PageLocal() ?>Pages/competitions/action.mobile.css?2" type="text/css"/>
 </head>
 <script>
     $('body').html('');
@@ -83,13 +83,13 @@ foreach ($comp_data->event_rounds as $event_round) {
                                 ?>
                                 <b><?= $competitor->$format; ?></b>
                             <?php } else { ?>
-                            <?= $competitor->$format; ?>
-                        <?php } ?>
+                                <?= $competitor->$format; ?>
+                            <?php } ?>
                         </td>
-                <?php } ?>    
+                    <?php } ?>    
                 </tr>
-    <?php }
-    ?>
+            <?php }
+            ?>
         </tbody>
     </table>
 <?php } ?>

@@ -47,6 +47,7 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
             <th>
                 <?= !$only_podium ? ("[$count_competitors]") : '' ?>
             </th>
+            <th style="width:0px;"></th>
             <?php
             foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                 $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
@@ -110,6 +111,9 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
                         <?php }
                         ?>
                     </td>
+                    <td>
+                        <a href="<?= PageIndex() . "competitions/$secret/?action=competitor&id=$competitor->id" ?>"><i class="far fa-arrow-alt-circle-right"></i></a>
+                        </td>
                     <?php
                     foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                         $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;
@@ -144,6 +148,7 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
                 <td>
                     <?= t('Total', 'Всего') ?>
                 </td>
+                <td style="width:0px;"></td>
                 <?php
                 foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
                     $rounds = $comp_data->events[$event_round->event_dict]->event_rounds;

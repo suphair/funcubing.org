@@ -634,20 +634,26 @@ function getResutsByCompetitorMain($competitor_id) {
                     . " unofficial_events_rounds.round DESC");
 }
 
-function getResutsByCompetitor($competitor_id) {
+function getResutsByCompetitor($competitor_id, $order = false) {
     $RU = t('', 'RU');
+    if (!$order) {
+        $order = "unofficial_events_dict.order, unofficial_events_rounds.round DESC";
+    }
     return \db::rows("SELECT"
                     . " unofficial_events_dict.id event_dict,"
+                    . " unofficial_events_dict.code event_code,"
                     . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) event_name,"
                     . " unofficial_events_dict.image event_image,"
                     . " unofficial_events_rounds.round,"
+                    . " unofficial_events_rounds.id round_id,"
                     . " unofficial_competitors_result.place, "
                     . " unofficial_competitions.id competition_id, "
                     . " unofficial_competitions.name competition_name, "
                     . " coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret,"
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final,"
                     . " CASE WHEN unofficial_events.rounds = unofficial_events_rounds.round AND unofficial_competitors_result.place<=3 and upper(unofficial_competitors_result.best)!='DNF' THEN 1 ELSE 0 END podium,"
-                    . "unofficial_rounds_dict.name round_name,  "
+                    . " unofficial_rounds_dict.name round_name,  "
+                    . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN unofficial_final_dict.fullName$RU ELSE unofficial_rounds_dict.fullName$RU END round_full_name,"
                     . " unofficial_competitors_result.attempt1, "
                     . " unofficial_competitors_result.attempt2, "
                     . " unofficial_competitors_result.attempt3, "
@@ -661,15 +667,15 @@ function getResutsByCompetitor($competitor_id) {
                     . " FROM unofficial_competitions "
                     . " JOIN unofficial_competitors ON unofficial_competitors.competition = unofficial_competitions.id "
                     . " JOIN unofficial_competitors_round ON unofficial_competitors_round.competitor = unofficial_competitors.id"
-                    . " JOIN unofficial_competitors_result ON unofficial_competitors_result.competitor_round = unofficial_competitors_round.id"
+                    . " LEFT OUTER JOIN unofficial_competitors_result ON unofficial_competitors_result.competitor_round = unofficial_competitors_round.id"
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict "
                     . " JOIN unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
+                    . " JOIN unofficial_rounds_dict unofficial_final_dict on unofficial_final_dict.id = 3"
                     . " WHERE unofficial_competitors.id = $competitor_id"
                     . " ORDER BY "
-                    . " unofficial_events_dict.name,"
-                    . " unofficial_events_rounds.round DESC");
+                    . $order);
 }
 
 function getFavicon($website, $only_domen) {
