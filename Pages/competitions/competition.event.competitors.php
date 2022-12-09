@@ -1,4 +1,6 @@
 <?php
+$round=db::escape(request(4));
+
 $record_attempts = [];
 foreach ($records[$event->event_dict] ?? [] as $record) {
     $record_attempts[$record->type][] = $record->round_id;

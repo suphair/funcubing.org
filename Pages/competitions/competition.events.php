@@ -77,7 +77,7 @@ if ($comp_data->competition->events) {
                                 <i style='color:var(--green)' class="fas fa-arrow-alt-circle-down"></i>
                             <?php } ?>
                             <?php if ($results_count and $competitors_count != $results_count) { ?>
-                                <i   class="fas fa-running"></i>
+                                <i  style='color:var(--red)' class="fas fa-running"></i>
                             <?php } ?>
                             <?php if (!$competitors_count and!$results_count) { ?>
                                 <i class="fas fa-hourglass-start"></i>

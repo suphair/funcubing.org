@@ -128,7 +128,7 @@ function getRankedRatings($all_events = true) {
 
     foreach ($history_average as $row) {
         if (!isset($result_history[$row->event_id]['average'][$row->date])
-                and $row->order < ($orders[$row->event_id]['average'] ?? 99999999999999)) {
+                and $row->order <= ($orders[$row->event_id]['average'] ?? 99999999999999)) {
             $orders[$row->event_id]['average'] = $row->order;
             $result_history[$row->event_id]['average'][$row->date] = $row;
             $row->type = 'average';
@@ -138,7 +138,7 @@ function getRankedRatings($all_events = true) {
     }
     foreach ($history_best as $row) {
         if (!isset($result_history[$row->event_id]['best'][$row->date])
-                and $row->order < ($orders[$row->event_id]['best'] ?? 99999999999999)) {
+                and $row->order <= ($orders[$row->event_id]['best'] ?? 99999999999999)) {
             $orders[$row->event_id]['best'] = $row->order;
             $result_history[$row->event_id]['best'][$row->date] = $row;
             $row->type = 'best';

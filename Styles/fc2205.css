@@ -143,3 +143,7 @@ table.table tbody tr.odd{
 table.table tbody tr.even{
     background-color:var(--white);
 }
+
+.sheet img{
+    max-width: 100%;
+}

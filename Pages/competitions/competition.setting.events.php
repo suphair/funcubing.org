@@ -181,19 +181,24 @@ if ($comp_data->competition->events) {
                             <?php } else { ?>
                                 <input 
                                 <?= $format == $format_dict->id ? 'checked' : '' ?> 
-                                    type="radio" value="<?= $format_dict->id ?>" name="events[<?= $eventId ?>][format]">
+                                    type="radio" value="<?= $format_dict->id ?>" name="events[<?= $eventId ?>][format]"
+                                    <?= ($event_dict->code == '333mbf' and $format_dict->id != 3) ? 'hidden' : '' ?>
+                                    <?= ($event_dict->code == '333mbf' and $format_dict->id == 3)?'checked' : '' ?> 
+                                    >
                                 <?php } ?>    
                         </td>
                     <?php } ?>
                     <td style="border-left:1px solid lightgray; padding:0px;margin:0px;"></td>
                     <?php foreach ($results_dict as $resultId => $result_dict) { ?>
                         <td style='text-align:center'>
-                            <?php if (!$event_dict->special or $withResult or $event_dict->extraevents !== false) { ?>
+                            <?php
+                            if (!$event_dict->special or $withResult or $event_dict->extraevents !== false) {
+                                ?>
                                 <?php if ($resultId == $result) { ?>
                                     <i class="far fa-dot-circle"></i>
                                     <input type="hidden" value="<?= $result_dict->id ?>" name="events[<?= $eventId ?>][result]">
                                 <?php } ?>
-                            <?php } else { ?>            
+                            <?php } elseif (($event_dict->code != '333mbf' and $result_dict->id != 4)) { ?>         
                                 <input <?= $resultId == $result ? 'checked' : '' ?> type="radio" value="<?= $resultId ?>" name="events[<?= $eventId ?>][result]">
                             <?php } ?>  
                         </td>

@@ -94,7 +94,7 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
             } else {
                 if (($comp->my or $comp->organizer) and $section == 'result') {
                     include 'competition.event.index.php';
-                } elseif ($event_round_this and ($comp->my or $comp->organizer) and $section == 'event_competitors') {
+                } elseif ($event_round_this and ($grand->edit??false) and $section == 'event_competitors') {
                     include 'competition.event.index.php';
                 } elseif ($section == 'event') {
                     include 'competition.event.index.php';

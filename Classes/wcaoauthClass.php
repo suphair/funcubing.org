@@ -51,7 +51,9 @@ class wcaoauth {
     }
 
     static function location() {
-        header("Location: {$_SESSION['wcaoauth.request_uri']}");
+        if (isset($_SESSION['wcaoauth.request_uri'])) {
+            header("Location: {$_SESSION['wcaoauth.request_uri']}");
+        }
         exit();
     }
 

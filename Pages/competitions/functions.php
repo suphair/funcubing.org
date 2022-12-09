@@ -299,6 +299,7 @@ function getCompetitionData($id) {
                         . " WHERE unofficial_competitors.id = $competitor->id"
                         . " GROUP BY unofficial_events.event_dict");
         $data->competitors[$competitor->id]->events = [];
+
         foreach ($competitor_events as $competitor_event) {
             $data->competitors[$competitor->id]->events[$competitor_event->event_dict] = $competitor_event;
         }
@@ -341,7 +342,7 @@ function getCompetitionData($id) {
                     . " dict_competitors.nameRU competitor_nameRU,"
                     . " unofficial_organizers.wcaid competitor_wcaid"
                     . " FROM unofficial_organizers"
-                    . " LEFT OUTER JOIN dict_competitors on unofficial_organizers.wcaid = dict_competitors.wcaid "
+                    . " LEFT OUTER JOIN dict_competitors on unofficial_organizers.wcaid in(dict_competitors.wcaid, dict_competitors.wid) "
                     . " WHERE competition=$id");
     $data->organizers = $organizers;
 
@@ -356,7 +357,40 @@ function getCompetitionData($id) {
 
     $data->delegates = $delegates;
 
+    $data->competitors = resolved_competitor_dublicate($data->competitors);
+
     return $data;
+}
+
+function resolved_competitor_dublicate($competitors) {
+    $count_names = [];
+    foreach ($competitors as $competitor_id => $competitor) {
+        $name_wo_fcid = trim(str_replace($competitor->FCID, '', $competitor->name));
+        if (trim($competitor->name) != $name_wo_fcid) {
+            $competitors[$competitor_id]->name_clear = $name_wo_fcid;
+            $competitors[$competitor_id]->fcid_show = true;
+            $count_names[$competitor->name_clear] ??= 0;
+        } else {
+            $competitors[$competitor_id]->name_clear = $competitor->name;
+        }
+    }
+    foreach ($competitors as $competitor_id => $competitor) {
+        if (isset($count_names[$competitor->name_clear])) {
+            $count_names[$competitor->name_clear]++;
+        }
+    }
+
+    foreach (array_keys($count_names) as $name) {
+        if ($count_names[$name] < 2) {
+            unset($count_names[$name]);
+        }
+    }
+    foreach ($competitors as $competitor_id => $competitor) {
+        $competitors[$competitor_id]->fcid_show = isset($count_names[$competitor->name_clear]);
+        $competitors[$competitor_id]->name_full = $competitor->name_clear . ' ' .
+                ($competitors[$competitor_id]->fcid_show ? " $competitor->FCID" : '');
+    }
+    return $competitors;
 }
 
 function getCompetitorsSession($id, $session) {
@@ -412,6 +446,7 @@ function getCompetitorsByEventround($eventround, $event = null) {
             . " unofficial_competitors_result.average, "
             . " unofficial_competitors_result.mean, "
             . " unofficial_competitors_result.best, "
+            . " unofficial_competitors_result.order, "
             . " unofficial_competitors_result.attempt1, "
             . " unofficial_competitors_result.attempt2, "
             . " unofficial_competitors_result.attempt3, "
@@ -464,6 +499,8 @@ function getCompetitorsByEventround($eventround, $event = null) {
         }
     }
 
+    $competitors = resolved_competitor_dublicate($competitors);
+
     return $competitors;
 }
 
@@ -498,6 +535,14 @@ function attempt_to_int($attempt) {
         $second = substr($value, 2, 2);
         $milisecond = substr($value, 4, 2);
         return $minute * 100 * 60 + $second * 100 + $milisecond;
+    }
+}
+
+function attempt_to_int_fm($attempt) {
+    if (in_array($attempt, ['DNF', 'DNS', '0', false])) {
+        return 999999;
+    } else {
+        return $attempt;
     }
 }
 
@@ -640,6 +685,7 @@ function getResutsByCompetitor($competitor_id, $order = false) {
         $order = "unofficial_events_dict.order, unofficial_events_rounds.round DESC";
     }
     return \db::rows("SELECT"
+                    . " unofficial_competitors.FCID, "
                     . " unofficial_events_dict.id event_dict,"
                     . " unofficial_events_dict.code event_code,"
                     . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) event_name,"
@@ -649,6 +695,7 @@ function getResutsByCompetitor($competitor_id, $order = false) {
                     . " unofficial_competitors_result.place, "
                     . " unofficial_competitions.id competition_id, "
                     . " unofficial_competitions.name competition_name, "
+                    . " unofficial_competitions.date competition_date_from, "
                     . " coalesce(unofficial_competitions.rankedID, unofficial_competitions.secret) secret,"
                     . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final,"
                     . " CASE WHEN unofficial_events.rounds = unofficial_events_rounds.round AND unofficial_competitors_result.place<=3 and upper(unofficial_competitors_result.best)!='DNF' THEN 1 ELSE 0 END podium,"
@@ -662,6 +709,7 @@ function getResutsByCompetitor($competitor_id, $order = false) {
                     . " unofficial_competitors_result.average, "
                     . " unofficial_competitors_result.mean, "
                     . " unofficial_competitors_result.best,"
+                    . " unofficial_competitors_result.order_best, "
                     . " unofficial_competitors.name competitor_name,"
                     . " unofficial_competitors.id competitor_id"
                     . " FROM unofficial_competitions "
@@ -796,12 +844,12 @@ function getCompetitionPoints($competition_id) {
         select 
             ed.id event_id,
             e.rounds,
-            count_competitor.count,
+            LEAST(count_competitor.count,12) count,
             c.id competitor_id,
             c.name competitor_name,
             c.FCID competitor_FCID,
             c_result.place,
-            count + 1 - c_result.place point
+            GREATEST(LEAST(count,12) + 1 - c_result.place,0) point
         from `unofficial_events` e 
         join `unofficial_events_rounds` er on er.event=e.id and er.round=e.rounds
         join `unofficial_events_dict` ed on ed.id=e.event_dict
@@ -819,6 +867,7 @@ function getCompetitionPoints($competition_id) {
         join `unofficial_competitors` c on c.id = c_round.competitor 
         where e.competition = $competition_id
             and ed.special = 0
+            and GREATEST(LEAST(count,12) + 1 - c_result.place,0)>0
         order by ed.order");
     $results = (object) ['head' => [], 'competitors' => []];
     foreach ($rows as $row) {
@@ -882,6 +931,7 @@ function set_fc_id($id, $name) {
         $FCID_set = $preinput . "01";
     }
     \db::exec("update `unofficial_competitors` set FCID='$FCID_set' where id=$id");
+    return $FCID_set;
 }
 
 function getCompetitionSheets($competition_id) {

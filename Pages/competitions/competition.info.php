@@ -22,7 +22,7 @@ foreach ($competition->sheets ?? [] as $sheet) {
 </h2>
 <br>
 <?php if ($sheet_select) { ?>
-    <div>
+    <div class="sheet">
         <?= markdown::convertToHtml($sheet_select->content); ?>
     </div>
 <?php } else { ?>
@@ -185,7 +185,7 @@ foreach ($competition->sheets ?? [] as $sheet) {
                             </td>
                         </tr>
                     <?php } ?>
-                    <?php if ($grand->edit) { ?>
+                    <?php if ($grand->view) { ?>
                         <tr><td colspan="2"><hr></td></tr>
                         <tr>
                             <td>

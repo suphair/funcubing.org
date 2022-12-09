@@ -9,10 +9,12 @@ $points_data = unofficial\getCompetitionPoints($comp->id);
 </h2>
 <div>
     <?=
-    t('Only the final rounds are considered. The difference between the number of participants in the final plus one and the participant\'s place is summed up.
-        <br>The competitor is not counted if there is only one round and there is not a single successful attempt.',
-            'Учитываются только финальные раунды. Суммируется разница между количеством участников в финале плюс один и местом участника.
-            <br>Участник не учитывается, если раунд только один и нет ни одной успешной сборки.')
+    t('Points are awarded to the 12 best participants of the final rounds.
+        <br>There are N points for 1st place, N-1 point for 2nd place and so on. Nth place - 1 point.
+        <br>N is a minimum of 12 and the number of participants in the final.',
+            'Очки получает топ-12 финальных раундов.
+             <br>За 1-е место N очков, за 2-е место N-1 очков и так далее. За N-е место 1 очко. 
+             <br>Где N это минимум из 12 и количества участников финала.')
     ?>
 </div>
 <table class="table thead_stable">

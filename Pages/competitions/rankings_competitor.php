@@ -15,11 +15,13 @@ if (!$competitor) {
 }
 $wca_name = $competitor->wca_name ? $competitor->wca_name : transliterate($competitor->name);
 change_title(t($wca_name, $competitor->name));
+$competitor_name = trim(str_replace($FCID, '', $competitor->name));
+$wca_name = trim(str_replace($FCID, '', $wca_name));
 $wca = unofficial\get_wca($FCID);
 ?>
 <h1>
     <i class="fas fa-user"></i>
-    <?= t($wca_name, $competitor->name) ?> (<?= t($competitor->name, $wca_name) ?>) <?= $competitor->FCID ?> 
+    <?= t($wca_name, $competitor_name) ?> (<?= t($competitor_name, $wca_name) ?>) <?= $competitor->FCID ?> 
 </h1> 
 
 <?php if ($wca->id ?? false) { ?>
@@ -55,14 +57,14 @@ $wca = unofficial\get_wca($FCID);
         if ($wca_person) {
             ?>
             <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
-                <?= t('WCA profile','Профиль WCA') ?> <?= $wca->id ?> <i class="fas fa-external-link-alt"></i></a>
-        <?php } ?>
-        <?php if ($ee_person_exists) {
-            ?>
+                <?= t('WCA profile', 'Профиль WCA') ?> <?= $wca->id ?> <i class="fas fa-external-link-alt"></i></a>
+            <?php } ?>
+            <?php if ($ee_person_exists) {
+                ?>
             &bull;
             <a target='_blank' href='https://www.extraevents.org/persons/<?= $wca->id ?>'>
-                <?= t('Extra Events profile','Профиль Extra Events') ?> <i class="fas fa-external-link-alt"></i></a>
-        <?php } ?>
+                <?= t('Extra Events profile', 'Профиль Extra Events') ?> <i class="fas fa-external-link-alt"></i></a>
+            <?php } ?>
     </p>
 <?php } elseif ($wca->nonwca ?? false) { ?>
     <p>
@@ -88,6 +90,14 @@ foreach ($results as $result) {
                 </td>
                 <td>
                     <input required name="name" value="<?= $competitor->name ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Имя EN
+                </td>
+                <td>
+                    <input required name="wca_name" value="<?= $competitor->wca_name ?>">
                 </td>
             </tr>
             <tr>
@@ -123,6 +133,7 @@ foreach ($results as $result) {
             </tr>
         </table>   
         <input hidden name="current_name" value="<?= $competitor->name ?>">
+        <input hidden name="current_wca_name" value="<?= $competitor->wca_name ?>">
         <input hidden name="current_FCID" value="<?= $competitor->FCID ?>">
         <input hidden name="current_ID" value="<?= $competitor->ID ?>">
     </form>

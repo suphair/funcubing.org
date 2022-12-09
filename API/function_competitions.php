@@ -6,6 +6,7 @@ function competitions($competition_id = false) {
 
     $me = get_me();
     $wca_id = $me->wca_id ?? false;
+    $wca_id = $wca_id ? $wca_id : ($me->wid ?? false);
     $RU = t('', 'RU');
     $competitions = \db::rows("SELECT 
                     c.id,
@@ -23,7 +24,8 @@ function competitions($competition_id = false) {
                     c.logo,
                     dc.wcaid dc_wcaid,
                     coalesce(dc.name$RU, dc.name) dc_name,
-                    competitor.wcaid is not null my_roles_competitor
+                    competitor.wcaid is not null my_roles_competitor,
+                    competitors.count competitors_count
                 FROM unofficial_competitions c 
                 left outer JOIN dict_competitors dc on dc.wid=c.competitor 
                 left outer JOIN ( 
@@ -32,10 +34,16 @@ function competitions($competition_id = false) {
                         join unofficial_fc_wca wca on wca.FCID = cr.FCID
                         where lower(wca.wcaid) =  lower('$wca_id') and '$wca_id') competitor
                     ON competitor.competition = c.id        
+                left outer JOIN (
+                    SELECT count(*) count, competition FROM unofficial_competitors
+                    GROUP BY competition) competitors
+                    ON competitors.competition = c.id
                 WHERE lower('$competition_id') in (lower(c.secret), lower(c.rankedID), '')
                 ORDER BY c.date desc, c.name");
+
     $competitions_key = [];
     foreach ($competitions as $competition) {
+
         $competition_key = new \stdClass();
         $competition_key->id = $competition->secret;
         $competition_key->name = $competition->name;
@@ -57,6 +65,7 @@ function competitions($competition_id = false) {
                 'main' => true,
         ]];
         $competition_key->my_roles = null;
+        $competition_key->competitors_count = $competition->competitors_count;
 
         if ($wca_id) {
             $competition_key->my_roles = (object) [
@@ -71,6 +80,7 @@ function competitions($competition_id = false) {
     $organizers = \db::rows("SELECT 
                             o.competition,
                             dc.wcaid,
+                            dc.wid,
                             coalesce(dc.name$RU, dc.name) name
                         FROM unofficial_organizers o
                         JOIN dict_competitors dc on o.wcaid in (coalesce(dc.wcaid,'X'),coalesce(dc.wid,'X')) 
@@ -81,12 +91,13 @@ function competitions($competition_id = false) {
             if ($main_organizer != $organizer->wcaid) {
                 $competitions_key[$organizer->competition]->organizers[] = (object) [
                             'wca_id' => $organizer->wcaid,
+                            'wid' => $organizer->wid,
                             'name' => $organizer->name,
                             'main' => false
                 ];
                 if ($wca_id) {
                     $competitions_key[$organizer->competition]->my_roles->organizer = (($competitions_key[$organizer->competition]->my_roles->organizer ?? false)
-                            or $organizer->wcaid == $wca_id);
+                            or $organizer->wcaid == $wca_id or $organizer->wid == $wca_id);
                 }
             }
         }
@@ -154,6 +165,8 @@ function competitions($competition_id = false) {
             $delegate = $competition_key->my_roles->delegate ?? false;
 
             $edit_grand = ($main_organizer or $organizer or $delegate);
+            
+            $view_grand = $edit_grand; 
 
             $setting_grand = ($main_organizer or $delegate);
 
@@ -172,6 +185,7 @@ function competitions($competition_id = false) {
 
             if ($admin) {
                 $edit_grand = true;
+                $view_grand = true;
                 $setting_grand = true;
                 $federation_grand = true;
                 $admin_grand = true;
@@ -179,6 +193,7 @@ function competitions($competition_id = false) {
 
             $competitions_key[$competition_id]->grand = (object) [
                         'edit' => $edit_grand,
+                        'view' => $view_grand,
                         'setting' => $setting_grand,
                         'federation' => $federation_grand,
                         'admin' => $admin_grand

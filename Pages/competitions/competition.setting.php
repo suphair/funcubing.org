@@ -36,23 +36,25 @@ $organizers = db::rows("SELECT "
             <?= t('All action except the settings (this section)', 'Все действия, кроме настроек (данный раздел)') ?>
         </td>
     </tr>
-    <?php 
-    foreach ($competition->organizers as $o => $organizer) { ?>
-        <form method="POST" action="?organizer_remove" onsubmit="return confirm('<?= t('Remove organizer', 'Исключить организатора') ?>  <?= $organizer->name ?>?')">
-            <tr>
-                <td>
-                </td>
-                <td>
-                    <input type="hidden" name="wcaid" value="<?= $organizer->wca_id ?>">
-                    <button class="delete">
-                        <i class="fas fa-user-minus"></i>
-                        <?= t('Remove', 'Исключить') ?>
-                    </button>
-                    <?= $organizer->name ?> - <?= $organizer->wca_id ?>
-                </td>
-            </tr>
-        </form>
-    <?php } ?>
+    <?php
+    foreach ($competition->organizers as $o => $organizer)
+        if ($organizer->name != $comp->competitor_name) {
+            ?>
+            <form method="POST" action="?organizer_remove" onsubmit="return confirm('<?= t('Remove organizer', 'Исключить организатора') ?>  <?= $organizer->name ?>?')">
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                        <input type="hidden" name="wcaid" value="<?= $organizer->wca_id ?>">
+                        <button class="delete">
+                            <i class="fas fa-user-minus"></i>
+                            <?= t('Remove', 'Исключить') ?>
+                        </button>
+                        <?= $organizer->name ?> - <?= $organizer->wca_id ?>
+                    </td>
+                </tr>
+            </form>
+        <?php } ?>
     <form method="POST" action="?organizer_add">
         <tr>
             <td>

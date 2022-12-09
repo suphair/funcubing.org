@@ -16,6 +16,10 @@
 &bull; You can register a competitor in the events later;
 <br>
 &bull; You can add registrations in several parts;
+<?php if($comp->ranked){ ?>
+<br><br>
+<p>Для добавления участника с тем же именем добавьте "*". <br><b>[Competitor Beta<br>Competitor Beta *<br>Competitor Beta *] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
+<?php } ?>
 <form method="POST" action="?competitors_add">
     <table width='100%'>
         <tr class="no_border">

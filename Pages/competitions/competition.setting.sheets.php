@@ -4,6 +4,16 @@ $sheets = unofficial\getCompetitionSheets($comp->id);
 ?>
 
 <h2><?= t('Sheets settings', 'Управление вкладками') ?></h2>
+<?php if(t(false,true)){ ?>
+<pre>
+    Код добавления картинки в Markdown нотации:
+        ![](URL_картинки)
+    Если картинка шире экрана, то она ужимается до ширины экрана.
+    
+    А если требуется ужать картинку ещё больше, то следует использовать HTML нотацию (1100px - максимальная ширина):
+        &lt;img src="URL_картинки" width="600px"/&gt;
+</pre>
+<?php } ?>
 <table class="table">
     <thead>
         <tr>

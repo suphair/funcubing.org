@@ -59,25 +59,4 @@ function dateRange($start, $end = null, $month_full = false) {
                         $e['day'], $e['month_full'], $e['month'], $e['year']
                     ]
                     , $template));
-    /*
-      if ($s['year'] == date("Y") and $e['year'] == date("Y")) {
-      if ($s['month'] != $e['month']) {
-      return "{$s['day']} {$s['month_full']} - {$e['day']} {$e['month_full']}";
-      }
-      if ($s['day'] != $e['day']) {
-      return "{$s['day']} - {$e['day']} {$s['month_full']}";
-      }
-      return "{$s['day']} {$s['month_full']} ";
-      }
-
-      if ($s['year'] != $e['year']) {
-      return "{$s['month']} {$s['day']}, {$s['year']} - {$e['month']} {$e['day']}, {$e['year']}";
-      }
-      if ($s['month'] != $e['month']) {
-      return "{$s['month']} {$s['day']} - {$e['month']} {$e['day']}, {$s['year']}";
-      }
-      if ($s['day'] != $e['day']) {
-      return "{$s['month']} {$s['day']} - {$e['day']}, {$s['year']}";
-      }
-      return "{$s['month']} {$s['day']}, {$s['year']}"; */
 }

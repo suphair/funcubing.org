@@ -53,7 +53,11 @@ foreach (['average', 'best'] as $type_att) {
     foreach ($history as $event_att => $a) {
         $best = 999999;
         foreach ($a[$type_att] ?? [] as $i => $row) {
-            $result_int = str_replace(['.', ':'], '', $row->result) + 0;
+            if (strpos($row->result, ' ') !== -1) {
+                $result_int = $row->order;
+            } else {
+                $result_int = str_replace(['.', ':'], '', $row->result) + 0;
+            }
             if ($result_int >= $best) {
                 unset($history[$event_att][$type_att][$i]);
             } else {

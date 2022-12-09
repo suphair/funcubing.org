@@ -55,7 +55,12 @@ if (!$secret) {
                 include 'action.export.php';
                 break;
             case 'scoketaker':
-                include 'action.scoketaker.php';
+                $event_code=db::escape(request(3));
+                if($event_code=='333mbf'){
+                    include 'action.scoketaker.333mbf.php';
+                }else{
+                    include 'action.scoketaker.php';
+                }
                 break;
             default:
                 include 'action.wrong.php';

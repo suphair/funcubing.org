@@ -1,17 +1,17 @@
 <?php
 
+require_once 'function.mbf.php';
+
 $competitor_round = db::escape(filter_input(INPUT_POST, 'competitor_round', FILTER_VALIDATE_INT));
 
-$attempts = db::escape(filter_input(INPUT_POST, 'attempts'));
-$exclude = db::escape(filter_input(INPUT_POST, 'exclude'));
-if (!$exclude or!is_numeric($exclude)) {
-    $exclude = 0;
-}
+$number = db::escape(filter_input(INPUT_POST, 'number', FILTER_VALIDATE_INT));
+$solved = db::escape(filter_input(INPUT_POST, 'solved', FILTER_VALIDATE_INT));
+$time = db::escape(filter_input(INPUT_POST, 'time'));
+
 $code = db::escape(request(3));
 $round = db::escape(request(4));
-$attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
-if ($code and is_numeric($round)) {
+if ($code and is_numeric($round) and $solved!='') {
     $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
@@ -22,55 +22,23 @@ if ($code and is_numeric($round)) {
                     . " AND unofficial_events_rounds.round = $round"
                     . " AND unofficial_events_dict.code = '$code'");
     if ($competitors_round) {
-
-        if ($attempts == '') {
+        if ($number == 0) {
             db::exec("DELETE FROM unofficial_competitors_result WHERE competitor_round = $competitor_round");
         } else {
             db::exec("INSERT IGNORE INTO unofficial_competitors_result (competitor_round) VALUES ($competitor_round)");
-            foreach ($attempt_arr as $a => $attempt) {
-                if (substr($attempt, 0, 1) == '0') {
-                    $attempt = str_replace(['0:0', '0:'], '', $attempt);
-                }
-
-                if (is_numeric($a) and in_array($a, range(1, 5))) {
-                    if (preg_match("/$a/", $exclude)) {
-                        $attempt = "($attempt)";
-                    }
-
-                    db::exec("UPDATE unofficial_competitors_result "
-                            . "SET attempt$a = '$attempt'"
-                            . "WHERE competitor_round = $competitor_round");
-                }
-                if (!is_numeric($a) and in_array($a, ['best', 'average', 'mean'])) {
-                    db::exec("UPDATE unofficial_competitors_result "
-                            . "SET $a = '$attempt'"
-                            . "WHERE competitor_round = $competitor_round");
-                }
+            $time_int = false;
+            if ($time) {
+                $time_int = MBF\time_to_int($time);
             }
-
-            db::exec("UPDATE unofficial_competitors_result "
-                    . "SET attempts = '$attempts'"
-                    . "WHERE competitor_round = $competitor_round");
-            $order = 0;
-            if ($competitors_round->code == 'amount_desc') {
-                $order += 10000000 * 999999;
-                $order += (10000000 * (999999 - unofficial\attempt_to_int($attempt_arr['average'] ?? 0)));
-                $order += (10000000 * (999999 - unofficial\attempt_to_int($attempt_arr['mean'] ?? 0)));
-                $order += 9999 - unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
-            } elseif ($competitors_round->code == 'amount_asc') {
-                $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['average'] ?? 0));
-                $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['mean'] ?? 0));
-                $order += unofficial\attempt_to_int_fm($attempt_arr['best'] ?? 0);
-            } else {
-                $order += (10000000 * unofficial\attempt_to_int($attempt_arr['average'] ?? 0));
-                $order += (10000000 * unofficial\attempt_to_int($attempt_arr['mean'] ?? 0));
-                $order += unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
+            if (!$time_int) {
+                $time_int = min(60 * 60, $number * 10 * 60);
             }
+            $wcaResult = MBF\wcaResult($number, $solved, $time_int);
+            $printResult = MBF\printResult($number, $solved, $time_int);
             db::exec("UPDATE unofficial_competitors_result "
-                    . "SET `order` = '$order'"
+                    . "SET attempt1 = '$printResult',  attempts='$number $solved $time_int', best ='$printResult', `order`='$wcaResult' "
                     . "WHERE competitor_round = $competitor_round");
         }
-
 
         $results = db::rows("SELECT unofficial_competitors_result.`order`,"
                         . " unofficial_competitors_result.`best`, "
@@ -93,7 +61,7 @@ if ($code and is_numeric($round)) {
                 $order_current = $result->order;
                 $place_current++;
             }
-            $place_query = $result->best == 'dnf' ? max($place_current, 4) : $place_current;
+            $place_query = $result->best == 'DNF' ? max($place_current, 4) : $place_current;
             db::exec("UPDATE unofficial_competitors_result "
                     . "SET `place` = '$place_query'  "
                     . "WHERE competitor_round = $result->competitor_round");

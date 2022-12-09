@@ -2,10 +2,12 @@
 <?php
 
 $name = db::escape(filter_input(INPUT_POST, 'name'));
+$wca_name = db::escape(filter_input(INPUT_POST, 'wca_name'));
 $FCID_prefix = db::escape(filter_input(INPUT_POST, 'FCID'));
 $wcaid = db::escape(filter_input(INPUT_POST, 'WCAID'));
 
 $current_name = db::escape(filter_input(INPUT_POST, 'current_name'));
+$current_wca_name = db::escape(filter_input(INPUT_POST, 'current_wca_name'));
 $current_FCID = db::escape(filter_input(INPUT_POST, 'current_FCID'));
 $current_ID = db::escape(filter_input(INPUT_POST, 'current_ID'));
 $nonwca = db::escape(filter_input(INPUT_POST, 'nonwca')) ? 1 : 0;
@@ -20,7 +22,6 @@ if ($name and $FCID_prefix and $current_name and $current_FCID and $current_ID a
 
     $FCID_change = ($FCID_prefix != substr($current_FCID, 0, 2));
     $name_change = ($name != $current_name);
-
     $competitor = db::row("SELECT * "
                     . "FROM unofficial_competitors "
                     . "WHERE ID='$current_ID' AND name='$current_name' AND FCID='$current_FCID' ");
@@ -44,7 +45,14 @@ if ($name and $FCID_prefix and $current_name and $current_FCID and $current_ID a
         db::exec("UPDATE unofficial_competitors
         SET name = '$name', FCID = '$FCID'
         WHERE name='$current_name' AND FCID='$current_FCID' ");
+        
     }
+}
+
+if($wca_name != $current_wca_name){
+    db::exec("UPDATE unofficial_fc_wca
+        SET wca_name = '$wca_name'
+        WHERE FCID = '$FCID'");
 }
 
 unofficial\set_wca($FCID, $wcaid, $nonwca, $current_FCID);

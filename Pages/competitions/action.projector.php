@@ -100,7 +100,7 @@ $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
                     <?= $competitor->place; ?>
                 </td>
                 <td  style='text-align:left'>
-                    <?= $competitor->name; ?>
+                    <?= $competitor->name_full; ?>
                 </td>
                 <?php for ($i = 1; $i <= $event->attempts; $i++) { ?>
                     <td>

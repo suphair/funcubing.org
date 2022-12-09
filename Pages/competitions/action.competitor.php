@@ -53,7 +53,7 @@ $data = $results[0];
                 <td style="text-align: center; font-weight: bold">
                     &nbsp;<?= $result->place; ?>&nbsp;
                 </td>
-                <td style="text-align: center;"><?= implode('&nbsp;&nbsp;&nbsp;', $solves) ?></td>
+                <td style="text-align: left;"><?= implode('&nbsp;&nbsp;&nbsp;', $solves) ?></td>
                 <td style="text-align: center; font-weight: bold"" ><?= $result->best; ?></td>
                 <td style="text-align: center;"><?= $result->average ?? $result->mean; ?></td>
             </tr>

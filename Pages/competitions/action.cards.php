@@ -51,7 +51,7 @@ foreach ($events as $event) {
 
             $pdf->SetLineWidth(0.2);
             $pdf->SetFont('msserif', '', 12);
-            $lat = iconv('utf-8', 'windows-1251', $comp->name);
+            $lat = iconv('utf-8', 'windows-1251//TRANSLIT//IGNORE', $comp->name);
             $pdf->Text($point[0] + 10, $point[1] + 10, $lat);
 
             $pdf->SetFont('msserif', '', 12);
@@ -67,7 +67,7 @@ foreach ($events as $event) {
             if ($competitor) {
                 if ($comp_data->competitors[$competitor->id]->card) {
                     $pdf->Rect($point[0] + 10, $point[1] + $Ry - 6, 85, 13);
-                    $name = $comp_data->competitors[$competitor->id]->name;
+                    $name = $competitor->name_full;
                     $name = str_replace('ë', 'ё', $name);
                     $lat = iconv('utf-8', 'windows-1251//TRANSLIT//IGNORE', $name);
                     $pdf->Text($point[0] + 15, $point[1] + $Ry + 2, $lat);

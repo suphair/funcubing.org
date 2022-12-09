@@ -21,12 +21,18 @@ foreach ($competitors as $competitor) {
 
     $events = array_unique($events);
     $name = strip_tags(db::escape(implode(' ', $names)));
-
+    $name = str_replace('ë', 'ё', $name);
+    db::exec("UPDATE unofficial_competitors SET name = replace(name,'ë', 'ё')");
 
     if ($name) {
         db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
         if ($comp->ranked) {
-            unofficial\set_fc_id(db::id(), $name);
+            $FCID = unofficial\set_fc_id(db::id(), $name);
+            $new_name = str_replace('*', $FCID, $name);
+            if ($new_name != $name) {
+                db::exec("UPDATE unofficial_competitors SET name = '$new_name' WHERE competition = $comp->id AND name = '$name'");
+                $name = $new_name;
+            }
         }
         unofficial\updateCompetitionCard($comp->id);
     }

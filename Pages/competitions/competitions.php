@@ -47,12 +47,13 @@ foreach ($competitions as $c => $competition) {
             <th>
                 <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
             </th>
+            <th><i class="fas fa-users"></th>
         </tr>    
     </thead>
     <tbody>
         <?php foreach ($competitions as $competition) { ?>
             <tr>   
-                <td align="left">
+                <td>
                     <?php if ($competition->is_ranked) { ?>
                         <?= $ranked_icon ?>
                     <?php } ?>
@@ -72,10 +73,11 @@ foreach ($competitions as $c => $competition) {
                         <i class="fas fa-hourglass-start"></i>
                     <?php } ?>
                     <?php
-                    if (strtotime($competition->start_date) <= strtotime(date('Y-m-d')) and
+                    if (!$competition->is_approved and
+                            strtotime($competition->start_date) <= strtotime(date('Y-m-d')) and
                             strtotime($competition->end_date) >= strtotime(date('Y-m-d'))) {
                         ?>
-                        <i style='color:var(--green)' class="fas fa-running"></i>
+                        <i style='color:var(--red)' class="fas fa-running"></i>
                     <?php } ?>
                     <?php if (!$competition->is_publish) { ?>
                         <i title="<?= t('Hidden', 'Спрятано') ?>" class="far fa-eye-slash"></i>
@@ -102,6 +104,9 @@ foreach ($competitions as $c => $competition) {
         <nobr>
             <?php unofficial\getLink($competition->website) ?>
         </nobr>  
+    </td>
+    <td>
+        <?= $competition->competitors_count ?>
     </td>
     </tr>
 <?php } ?>

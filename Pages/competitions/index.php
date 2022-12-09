@@ -4,7 +4,7 @@ $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
 $admin = \api\get_me()->is_admin ?? false;
 $federation = \api\get_me()->is_federation ?? false;
-$ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
+$ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png?1" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
 $wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {
     $competitor_id = request(2);
@@ -33,13 +33,13 @@ if ($secret == 'competitor') {
         $events_list = false;
         $grand = $competition->grand ?? (object) [
                     'edit' => false,
+                    'view' => false,
                     'setting' => false,
                     'federation' => false,
                     'admin' => false
         ];
 
         $section = db::escape(request(2));
-
         switch ($section) {
             case 'wcaid':
                 if ($competition->is_ranked and $grand->edit) {

@@ -35,7 +35,7 @@ if ($secret) {
     }
 }
 
-if ($me->wca_id ?? FALSE) {
+if ($me->wid ?? FALSE) {
     if (filter_input(INPUT_GET, 'create') !== NULL) {
         include 'post.competition.create.php';
     }
@@ -120,6 +120,10 @@ if ($me->wca_id ?? FALSE) {
 
             if (filter_input(INPUT_GET, 'results_add') !== NULL) {
                 include 'post.results.add.php';
+            }
+
+            if (filter_input(INPUT_GET, 'results_mbf_add') !== NULL) {
+                include 'post.results_mbf.add.php';
             }
 
             if (filter_input(INPUT_GET, 'close_round') !== NULL) {

@@ -110,7 +110,7 @@ function attempt($attempt, $result_type) {
     if ($attempt == 0) {
         return '';
     }
-    if (in_array($result_type, ['amount_asc', 'amount_desc'])) {
+    if (in_array($result_type, ['amount_asc', 'amount_desc','mbf'])) {
         return $attempt;
     }
     $minute = floor($attempt / 100 / 60);

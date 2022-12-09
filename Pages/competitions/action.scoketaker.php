@@ -133,7 +133,7 @@ usort($competitors_sort, function($a, $b) {
                         <tr class='competitor_result' 
                             data-competitor 
                             data-competitor-id='<?= $competitor->competitor_round ?>' 
-                            data-competitor-name='<?= $competitor->card . ' ' . $competitor->name ?>' 
+                            data-competitor-name='<?= $competitor->card . ' ' . $competitor->name_full ?>' 
                             data-competitor-attempts='<?= $competitor->attempts ?>'
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
                                 data-competitor-attempt<?= $i ?>='<?= str_replace(['(', ')'], '', $competitor->{"attempt$i"}) ?>'
@@ -144,7 +144,7 @@ usort($competitors_sort, function($a, $b) {
                                 <?= $competitor->podium ? '*' : '' ?>
                             </td>
                             <td>
-                                <?= $competitor->name ?>
+                                <?= $competitor->name_full ?>
                             </td>
                             <?php foreach (range(1, $event->attempts) as $i) { ?>
                                 <td class="attempt">

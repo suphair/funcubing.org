@@ -9,6 +9,9 @@ function is_exclude($attempt) {
 function attempt_centiseconds($attempt) {
     $attempt_raw = $attempt;
     $attempt = str_replace(['(', ')'], ['', ''], $attempt);
+    if (strpos($attempt, ' ') !== false) {
+        return $attempt;
+    }
     if (strtolower($attempt) == 'dnf') {
         return -1;
     }
@@ -18,6 +21,7 @@ function attempt_centiseconds($attempt) {
     if (!$attempt) {
         return 0;
     }
+
     $attempt = str_replace([':', '.'], '', $attempt);
     $attempt = substr('000000' . $attempt, -6, 6);
 

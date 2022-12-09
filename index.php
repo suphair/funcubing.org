@@ -111,7 +111,7 @@ $title = [
             <link rel="icon" href="<?= PageLocal() ?>Pages/icon.png" >
         <?php } ?>
         <link rel="stylesheet" href="<?= PageLocal() ?>Styles/index.css" type="text/css"/>
-        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/fc2205.css?1" type="text/css"/>
+        <link rel="stylesheet" href="<?= PageLocal() ?>Styles/fc2205.css?0" type="text/css"/>
         <link rel="stylesheet" href="<?= PageLocal(); ?>Styles/flag-icon-css/css/flag-icon.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/fontawesome-free-5.13.0-web/css/all.css" type="text/css"/>
         <link rel="stylesheet" href="<?= PageIndex(); ?>Styles/icons-extra-event/css/Extra-Events.css" type="text/css"/>
