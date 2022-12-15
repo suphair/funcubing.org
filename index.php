@@ -198,6 +198,9 @@ $title = [
                         if ($grand->edit) {
                             $roles[] = 'E';
                         }
+                        if ($grand->view) {
+                            $roles[] = 'V';
+                        }
                     } else {
                         if ($admin ?? false) {
                             $roles[] = 'A';

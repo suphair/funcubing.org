@@ -285,6 +285,7 @@ function getRankedCompetitors() {
 
 function getFCIDlistbyName($name) {
     $FCIDlist = [];
+    $name = \db::escape($name);
     foreach (\db::rows("select distinct FCID "
             . "from `unofficial_competitors` "
             . "where upper(trim(name)) = upper(trim('$name')) "

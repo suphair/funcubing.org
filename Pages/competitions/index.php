@@ -30,6 +30,7 @@ if ($secret == 'competitor') {
         $formats_dict = unofficial\getFormatsDict();
         $rounds_dict = unofficial\getRoundsDict();
         $results_dict = unofficial\getResultsDict();
+        $points_dict = unofficial\getPointsDict();
         $events_list = false;
         $grand = $competition->grand ?? (object) [
                     'edit' => false,

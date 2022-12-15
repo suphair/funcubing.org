@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Sun, 25 Sep 2022 10:02:45 +0000
+-- Date: Thu, 15 Dec 2022 04:35:06 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -441,7 +441,7 @@ CREATE TABLE `unofficial_competition_delegates` (
 CREATE TABLE `unofficial_competition_sheets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `competition_id` varchar(255) NOT NULL,
-  `content` varchar(255) DEFAULT NULL,
+  `content` text,
   `title` varchar(255) NOT NULL,
   `sheet` varchar(255) NOT NULL,
   `is_archive` tinyint(4) NOT NULL DEFAULT '0',
@@ -476,6 +476,7 @@ CREATE TABLE `unofficial_competitions` (
   `rankedApproved` bit(1) DEFAULT NULL,
   `rankedID` varchar(255) DEFAULT NULL,
   `logo` varchar(256) DEFAULT NULL,
+  `points` int(11) DEFAULT NULL,
   `adapter` varchar(255) DEFAULT NULL,
   `adapter_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -498,9 +499,8 @@ CREATE TABLE `unofficial_competitors` (
   `FCID` varchar(10) DEFAULT NULL,
   `card` int(11) DEFAULT NULL,
   `non_resident` bit(1) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `competition_name` (`competition`,`name`),
+  UNIQUE KEY `competition_name` (`competition`,`name`) USING BTREE,
   KEY `competition` (`competition`),
   CONSTRAINT `unofficial_competitors_ibfk_1` FOREIGN KEY (`competition`) REFERENCES `unofficial_competitions` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
@@ -729,6 +729,24 @@ CREATE TABLE `unofficial_partners` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `unofficial_points_dict`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `unofficial_points_dict` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `nameRU` varchar(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
+  `description` text,
+  `descriptionRU` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `unofficial_rename`
 --
 
@@ -872,4 +890,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Sun, 25 Sep 2022 10:02:45 +0000
+-- Dump completed on: Thu, 15 Dec 2022 04:35:07 +0000

@@ -43,11 +43,12 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 class="<?= $section == 'competitors' ? 'select' : '' ?>"
                 href="<?= PageIndex() . "competitions/$secret/competitors" ?>"
                 ><i title='<?= t('Competitors', 'Участники'); ?>' class="fas fa-users"></i></a>
-                <?php if (strtotime($competition->start_date) <= strtotime(date('Y-m-d'))) { ?>
+                <?php if (strtotime($competition->start_date) <= strtotime(date('Y-m-d')) and $competition->points) {
+                    ?>
                 <a 
                     class="<?= $section == 'points' ? 'select' : '' ?>"
                     href="<?= PageIndex() . "competitions/$secret/points" ?>"
-                    ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="fas fa-star"></i></a>
+                    ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="<?= $points_dict[$competition->points]->icon?>"></i></a>
                 <?php } ?>
                 <?php if (sizeof($records)) { ?>
                 <a 
@@ -94,7 +95,7 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
             } else {
                 if (($comp->my or $comp->organizer) and $section == 'result') {
                     include 'competition.event.index.php';
-                } elseif ($event_round_this and ($grand->edit??false) and $section == 'event_competitors') {
+                } elseif ($event_round_this and ($grand->edit ?? false) and $section == 'event_competitors') {
                     include 'competition.event.index.php';
                 } elseif ($section == 'event') {
                     include 'competition.event.index.php';

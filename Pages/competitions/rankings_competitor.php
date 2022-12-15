@@ -28,7 +28,6 @@ $wca = unofficial\get_wca($FCID);
     <p>
         <?php
         db2::set($get(2));
-        db3::set($get(3));
         $wca_person = \db2::row("
             select name, countryId, id, gender from Persons where lower(id) = lower('$wca->id')
             order by subid desc limit 1");
@@ -44,26 +43,11 @@ $wca = unofficial\get_wca($FCID);
             }
             $outer_results[$row->eventId][$row->type] = $row;
         }
-        $ee_person_exists = false;
-        foreach (\db3::rows("
-            select 'EE' source, event_id eventId, result best,result_type type from ranks where lower(person) = lower('$wca->id') ") as $row) {
-            $row->format = santiceconds_to_string($row->best);
-            if ($outer_results[$row->eventId][$row->type] ?? 99999 > $row->best) {
-                $ee_person_exists = true;
-                $outer_results[$row->eventId][$row->type] = $row;
-            }
-        }
 
         if ($wca_person) {
             ?>
             <a target='_blank' href='https://www.worldcubeassociation.org/persons/<?= $wca->id ?>'>
                 <?= t('WCA profile', 'Профиль WCA') ?> <?= $wca->id ?> <i class="fas fa-external-link-alt"></i></a>
-            <?php } ?>
-            <?php if ($ee_person_exists) {
-                ?>
-            &bull;
-            <a target='_blank' href='https://www.extraevents.org/persons/<?= $wca->id ?>'>
-                <?= t('Extra Events profile', 'Профиль Extra Events') ?> <i class="fas fa-external-link-alt"></i></a>
             <?php } ?>
     </p>
 <?php } elseif ($wca->nonwca ?? false) { ?>
@@ -149,8 +133,8 @@ foreach ($results as $result) {
             <th class='attempt'><?= t('Rank', 'Рейтинг') ?></th>
             <th class='attempt'><?= t('Single', 'Лучшая') ?></th>
             <?php if ($wca->id ?? false) { ?>
-                <th class='attempt' style='color:gray'>WCA / EE<sup>*</sup></th>
-                <th class='attempt' style='color:gray'>WCA / EE<sup>*</sup></th>
+                <th class='attempt' style='color:gray'>WCA<sup>*</sup></th>
+                <th class='attempt' style='color:gray'>WCA<sup>*</sup></th>
             <?php } ?>
             <th class='attempt'><?= t('Average', 'Среднее') ?></th>
             <th class='attempt'><?= t('Rank', 'Рейтинг') ?></th>
@@ -159,7 +143,7 @@ foreach ($results as $result) {
     <tbody>
         <?php
         foreach ($events_dict as $event_att) {
-            if ($event_att->special and!$event_att->extraevents) {
+            if ($event_att->special) {
                 continue;
             }
             if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
@@ -211,14 +195,12 @@ foreach ($results as $result) {
                             <?php $r = $outer_results[$event_att->code]['single'] ?? false ?>
                             <?php if ($r) { ?>
                                 <?= $r->format ?? false ?>
-                                <?= $r->source == 'EE' ? '<sup>*</sup>' : '' ?>
                             <?php } ?>
                         </td>
                         <td class='attempt <?= $wca_average_beat ? 'wca_beat' : '' ?>'>
                             <?php $r = $outer_results[$event_att->code]['average'] ?? false ?>
                             <?php if ($r) { ?>
                                 <?= $r->format ?? false ?>
-                                <?= $r->source == 'EE' ? '<sup>*</sup>' : '' ?>
                             <?php } ?>
                         </td>
                     <?php } ?>

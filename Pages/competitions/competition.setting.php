@@ -128,7 +128,22 @@ $organizers = db::rows("SELECT "
                 <input style="width:500px" type="url" placeholder="https://example.com" pattern="http[s]?://.*" name="website" value="<?= $comp->website ?>">
                 <?= unofficial\getFavicon($comp->website, false) ?>
             </td>
-        </tr>        
+        </tr>    
+        <tr>
+            <td><?= t('Overall standings', 'Общий зачёт') ?></td>
+            <td>
+                <select name = "points" >
+                    <option value="0">-</option>    
+                    <?php foreach ($points_dict as $points) { ?>
+                        <option  <?= $comp->points == $points->code ? 'selected' : '' ?> value="<?= $points->id ?>"><?= $points->name ?></option>
+                    <?php } ?>
+                </select>
+                <?php if ($comp->points) { ?>
+                    <i class="<?= $points_dict[$comp->points]->icon; ?>"></i> <?= $points_dict[$comp->points]->name; ?>
+                <?php } ?>
+            </td>
+        </tr>
+
         <tr>
             <td>
                 <i class="fas fa-user-plus"></i>
@@ -175,4 +190,15 @@ if ($comp_data->competition->delete) {
             <?= t('Delete', 'Удалить') ?>
         </button>
     </form>    
+<?php } ?>
+
+
+<hr>
+<?php foreach ($points_dict as $points) { ?>
+    <div>
+        <i class="<?= $points->icon ?>"></i> 
+        <b><?= t('Overall standings', 'Общий зачёт') ?> - <?= $points->name ?></b>
+        <br>
+        <?= $points->description ?>
+    </div>
 <?php } ?>

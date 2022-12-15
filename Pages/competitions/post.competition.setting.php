@@ -10,6 +10,7 @@ $date = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date'))));
 $date_to = date('Y-m-d', strtotime(db::escape(filter_input(INPUT_POST, 'date_to'))));
 $show = db::escape(filter_input(INPUT_POST, 'show')) ? 1 : 0;
 $shareRegistration = filter_input(INPUT_POST, 'shareRegistration') ? 1 : 0;
+$points = db::escape(filter_input(INPUT_POST, 'points', FILTER_VALIDATE_INT));
 
 $secretRegistration = 'null';
 if (filter_input(INPUT_POST, 'registration') or $shareRegistration) {
@@ -27,6 +28,7 @@ db::exec("  UPDATE  unofficial_competitions
                 secretRegistration = $secretRegistration,
                 shareRegistration = $shareRegistration,
                 website = '$website',
-                `show` = $show
+                `show` = $show,
+                points= " . ($points ? $points : 'null' ) . "
             WHERE id = {$comp->id} ");
 

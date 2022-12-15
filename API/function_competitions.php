@@ -25,8 +25,10 @@ function competitions($competition_id = false) {
                     dc.wcaid dc_wcaid,
                     coalesce(dc.name$RU, dc.name) dc_name,
                     competitor.wcaid is not null my_roles_competitor,
-                    competitors.count competitors_count
+                    competitors.count competitors_count,
+                    p.code points
                 FROM unofficial_competitions c 
+                left outer join unofficial_points_dict p on p.id = c.points
                 left outer JOIN dict_competitors dc on dc.wid=c.competitor 
                 left outer JOIN ( 
                     select distinct wca.wcaid,cr.competition
@@ -58,6 +60,7 @@ function competitions($competition_id = false) {
         $competition_key->is_publish = $competition->is_publish > 0;
         $competition_key->is_ranked = $competition->is_ranked > 0;
         $competition_key->is_approved = $competition->is_approved > 0;
+        $competition_key->points = $competition->points;
         $competition_key->delegates = null;
         $competition_key->organizers = [(object) [
                 'wca_id' => $competition->dc_wcaid,

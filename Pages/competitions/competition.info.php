@@ -122,8 +122,8 @@ foreach ($competition->sheets ?? [] as $sheet) {
                             <?php
                         }
                     }
-                    ?>
-                    <?php if ($competition->is_ranked) { ?>
+                    if ($competition->is_ranked) {
+                        ?>
                         <tr><td colspan="2"><hr></td></tr>
                         <?php if ($competition->is_approved) { ?>
                             <tr>
@@ -161,6 +161,16 @@ foreach ($competition->sheets ?? [] as $sheet) {
                         <?php } ?>
                     <?php } ?>
                     <tr><td colspan="2"><hr></td></tr>     
+                    <?php if ($competition->points) {
+                        ?>
+                        <tr>
+                            <td>
+                                <i class="<?= $points_dict[$competition->points]->icon ?>"></i>
+                            </td>
+                            <td> 
+                                <a href="<?= PageIndex(). "competitions/$competition->id/points" ?>"> <?= t('Overall standings', 'Общий зачёт') ?> - <?= $points_dict[$competition->points]->name ?></a></td>
+                        </tr>
+                    <?php } ?>
                     <?php
                     $res = true;
                     foreach ($comp_data->events as $event_a) {
