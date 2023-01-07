@@ -112,17 +112,15 @@ if ($comp_data->competition->events) {
             <tr>
                 <th></th>
                 <th><?= t('Event', 'Дисциплина') ?></th>
-                <th style="border-left:1px solid lightgray; padding:0px;margin:0px;"></th>
+                <th style="border-left:1px solid lightgray; padding:0px;margin:0px;">&nbsp;<?=t('Rounds', 'Раунды') ?></th>
                 <th style='text-align:center'>
-                    <i class="fas fa-times"></i>
+                     <i class="fas fa-times"></i>
                 </th>
                 <?php
                 unset($rounds_dict[0]);
                 foreach ($rounds_dict as $round) {
                     ?>
-                    <th><?= $round->id ?> 
-                        <?= $round->id == 1 ? t('round', 'раунд') : t('rounds', 'раунда') ?>
-                    </th>
+                    <th style='text-align:center'><?= $round->id ?></th>
                 <?php } ?>
                 <th style="border-left:1px solid lightgray; padding:0px;margin:0px;"></th>
                 <?php foreach ($formats_dict as $format) { ?>

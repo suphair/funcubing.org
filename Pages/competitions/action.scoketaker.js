@@ -120,7 +120,7 @@ $('[data-results]').submit(function () {
     if (wrong >= 2 && empty == 0) {
         average = -1;
     }
-    if (wrong >= 1 && empty == 0) {
+    if (complete < 3) {
         mean = -1;
     }
 

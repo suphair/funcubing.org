@@ -18,26 +18,37 @@ foreach ($competitors as $competitor) {
             $names[] = $word;
         }
     }
-
+    $FCID = false;
     $events = array_unique($events);
     $name = strip_tags(db::escape(implode(' ', $names)));
     $name = str_replace('ë', 'ё', $name);
     db::exec("UPDATE unofficial_competitors SET name = replace(name,'ë', 'ё')");
+    if (strlen($name) == 4) {
+        $FCID = $name;
+        $row = db::row("SELECT name FROM unofficial_competitors WHERE FCID = '$FCID'");
+        $name = $row->name ?? $name;
+    }
 
     if ($name) {
-        db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
-        if ($comp->ranked) {
-            $FCID = unofficial\set_fc_id(db::id(), $name);
-            $new_name = str_replace('*', $FCID, $name);
-            if ($new_name != $name) {
-                db::exec("UPDATE unofficial_competitors SET name = '$new_name' WHERE competition = $comp->id AND name = '$name'");
-                $name = $new_name;
+        if (!$FCID) {
+            db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name) VALUES ($comp->id,'$name')");
+            if ($comp->ranked) {
+                $FCID = unofficial\set_fc_id(db::id(), $name);
+                $new_name = str_replace('*', $FCID, $name);
+                if ($new_name != $name) {
+                    db::exec("UPDATE unofficial_competitors SET name = '$new_name' WHERE competition = $comp->id AND name = '$name'");
+                    $name = $new_name;
+                }
             }
+            $competitor_id = db::row("SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name'")->id ?? FALSE;
+        } else {
+            db::exec("INSERT IGNORE INTO unofficial_competitors (competition, name,FCID) VALUES ($comp->id,'$name','$FCID')");
+            $competitor_id = db::row("SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name' AND FCID='$FCID'")->id ?? FALSE;
         }
         unofficial\updateCompetitionCard($comp->id);
     }
 
-    $competitor_id = db::row("SELECT id FROM unofficial_competitors WHERE competition = $comp->id AND name = '$name'")->id ?? FALSE;
+
     foreach ($events as $event_dict) {
         $round = db::row("SELECT unofficial_events_rounds.id "
                         . " FROM unofficial_events  "

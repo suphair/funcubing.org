@@ -1,3 +1,6 @@
+Если вам нужен функционал построения картин из кубиков Рубика, то сообщите об этом suphair@gmail.com
+<?php exit(); ?>
+
 <link href="<?= PageIndex() ?>Styles/mosaic.css?1" rel="stylesheet">
 <?php
 mosaic\cron();

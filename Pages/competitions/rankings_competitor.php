@@ -38,6 +38,8 @@ $wca = unofficial\get_wca($FCID);
             select 'WCA' source, eventId, best, 'average' type from RanksAverage where lower(personId) = lower('$wca->id')") as $row) {
             if ($row->eventId == '333fm' and $row->type == 'single') {
                 $row->format = $row->best;
+            }if ($row->eventId == '333mbf') {
+                $row->format = multiblind_to_string($row->best);
             } else {
                 $row->format = santiceconds_to_string($row->best);
             }
@@ -165,7 +167,11 @@ foreach ($results as $result) {
                     $wca_single_beat = false;
                     $wca_average_beat = false;
                     $wca_record_single = $outer_results[$event_att->code]['single']->best ?? false;
-                    $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
+                    if ($event_att->code == '333mbf') {
+                        $fc_record_single = $rating_best->order_raw ?? false;
+                    } else {
+                        $fc_record_single = string_to_santiceconds($rating_best->result ?? false);
+                    }
                     if ($fc_record_single > 0 and ($fc_record_single < $wca_record_single or $wca_record_single <= 0)) {
                         $wca_single_beat = true;
                     }
@@ -372,9 +378,6 @@ foreach ($events_dict as $event_dict) {
                 <?= t('Date', 'Дата') ?>
             </th>
             <th>
-                <?= t('Organizer', 'Организатор') ?>
-            </th>
-            <th>
                 <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
             </th>
             <th></th>
@@ -397,9 +400,6 @@ foreach ($events_dict as $event_dict) {
                 <td>
                     <?= dateRange($competition->date, $competition->date_to) ?>
                 </td>
-                <td>
-                    <?= $competition->competitor_name ?>
-                </td>      
                 <td>
                     <?php unofficial\getFavicon($competition->website, true) ?>
                 </td>
@@ -437,6 +437,19 @@ function santiceconds_to_string($input) {
     } else {
         return "DNF";
     }
+}
+
+function multiblind_to_string($input) {
+    $T = substr($input, 2, 5);
+    $min = floor($T / 60);
+    $sec = $T - $min * 60;
+    $time = sprintf("%02d:%02d", $min, $sec);
+    $difference = 99 - substr($input, 0, 2);
+    $missed = substr($input, 7, 2);
+    $solved = $difference + $missed;
+    $attempted = $solved + $missed;
+
+    return "$solved/$attempted $time";
 }
 
 function string_to_santiceconds($input) {

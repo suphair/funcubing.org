@@ -18,7 +18,8 @@
 &bull; You can add registrations in several parts;
 <?php if($comp->ranked){ ?>
 <br><br>
-<p>Для добавления участника с тем же именем добавьте "*". <br><b>[Competitor Beta<br>Competitor Beta *<br>Competitor Beta *] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
+<p>Для добавления участника с тем же именем добавьте "*". <br><b>[Competitor Beta {перенос}Competitor Beta *{перенос}Competitor Beta *] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
+<p>Вместо имени можно указывать FCID уже существующее в системе. <br><b>[CB01{перенос}CB02{перенос}CB03] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
 <?php } ?>
 <form method="POST" action="?competitors_add">
     <table width='100%'>

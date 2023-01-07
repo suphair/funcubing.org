@@ -15,6 +15,9 @@ function count_visitors() {
     else
         $ip = $remote;
 
+    $ip = db::escape($ip);
+    $agent = str_replace("'", "", db::escape($agent));
+    $request_uri = db::escape($request_uri);
 
     if (!preg_match('/Dalvik|bot|crawl|slurp|spider|mediapartners/i', $agent)) {
         db::exec("INSERT INTO visitors (ip,agent,request_uri) values ('$ip','$agent','$request_uri')");

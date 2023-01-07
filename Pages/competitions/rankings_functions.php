@@ -24,7 +24,8 @@ function getRankedRatings($all_events = true) {
         unofficial_competitors_round.id round_id,
         unofficial_events_rounds.round round,
         unofficial_fc_wca.wcaid wcaid,
-        unofficial_fc_wca.nonwca
+        unofficial_fc_wca.nonwca,
+        unofficial_competitors_result.order as order_raw
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -56,11 +57,15 @@ function getRankedRatings($all_events = true) {
         unofficial_competitors.FCID FCID,
         unofficial_events_dict.id event_id,
         unofficial_competitors_result.best result,
-        cast(replace(replace(best,'.',''),':','') as UNSIGNED) as 'order',
+        case 
+            when best like '%/% %:%' then unofficial_competitors_result.order
+            else cast(replace(replace(best,'.',''),':','') as UNSIGNED) 
+        end as 'order',
         unofficial_competitors_round.id round_id,
         unofficial_events_rounds.round round,
         unofficial_fc_wca.wcaid wcaid,
-        unofficial_fc_wca.nonwca
+        unofficial_fc_wca.nonwca,
+        unofficial_competitors_result.order as order_raw
     from `unofficial_competitors_result` 
     join `unofficial_competitors_round`  on unofficial_competitors_result.competitor_round=unofficial_competitors_round.id
     join `unofficial_competitors`  on unofficial_competitors.id=unofficial_competitors_round.competitor
@@ -77,7 +82,11 @@ function getRankedRatings($all_events = true) {
         and unofficial_competitors_result.best <>''
         and coalesce(unofficial_competitors.FCID,'')<>''
         AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_best_exclude') . ")
-    order by cast(replace(replace(best,'.',''),':','') as UNSIGNED),
+    order by 
+        case 
+        when best like '%/% %:%' then unofficial_competitors_result.order
+        else cast(replace(replace(best,'.',''),':','') as UNSIGNED) 
+        end,
         unofficial_competitions.date ";
 
     $average = \db::rows($sql_average);
@@ -420,8 +429,10 @@ function set_wca($FCID, $wcaid, $nonwca, $current_FCID = false) {
         \db::exec("DELETE from  unofficial_fc_wca where FCID='$current_FCID'");
     }
 
+    $wca_name = getCompetitorWcaName($wcaid, $FCID);
+
     \db::exec("UPDATE unofficial_fc_wca
-        SET wcaid = '$wcaid', nonwca = $nonwca
+        SET wcaid = '$wcaid', nonwca = $nonwca, wca_name='$wca_name'
         WHERE FCID='$FCID'");
 }
 
