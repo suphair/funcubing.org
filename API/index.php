@@ -29,6 +29,9 @@ if ($method == 'get' and $request_1 == 'competitions') {
         if ($sub_query == 'results') {
             $json = api\get_results($competition_id);
         }
+        if ($sub_query == 'projector') {
+            $json = api\get_projector($competition_id,$request_4,$request_5);
+        }
     }
 }
 

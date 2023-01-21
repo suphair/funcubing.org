@@ -48,9 +48,16 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 <a 
                     class="<?= $section == 'points' ? 'select' : '' ?>"
                     href="<?= PageIndex() . "competitions/$secret/points" ?>"
-                    ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="<?= $points_dict[$competition->points]->icon?>"></i></a>
+                    ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="<?= $points_dict[$competition->points]->icon ?>"></i></a>
                 <?php } ?>
-                <?php if (sizeof($records)) { ?>
+                <?php if ($competition->is_ranked) { ?>
+                <a 
+                    class="<?= $section == 'psychsheet' ? 'select' : '' ?>"
+                    href="<?= PageIndex() . "competitions/$secret/psychsheet" ?>">
+                    <i title="Psych Sheet" class="fas fa-spa"></i> 
+                </a>
+            <?php } ?>
+            <?php if (sizeof($records)) { ?>
                 <a 
                     class="<?= $section == 'records' ? 'select' : '' ?>"
                     href="<?= PageIndex() . "competitions/$secret/records" ?>"
@@ -92,6 +99,8 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 include 'competition.registrations.php';
             } elseif ($section == 'records') {
                 include 'competition.records.php';
+            } elseif ($section == 'psychsheet' and $competition->is_ranked) {
+                include 'competition.event.psychsheet.php';
             } else {
                 if (($comp->my or $comp->organizer) and $section == 'result') {
                     include 'competition.event.index.php';

@@ -26,8 +26,8 @@
 <p>
     <?= $event->comment ? ('&nbsp;<i class="fas fa-comment-dots"></i> ' . $event->comment ) : '' ?>
     <?= $event->cutoff ? ('&nbsp;<i class="fas fa-cut"></i> ' . t('Cutoff', 'Катофф') . ' ' . $event->cutoff ) : '' ?>
-    <?= ($event->time_limit and!$event->cumulative) ? ('&nbsp;<i class="fas fa-stop-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit ) : '' ?>
-    <?= ($event->time_limit and $event->cumulative) ? ('&nbsp;<i class="fas fa-plus-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit . ' ' . t('in total', 'суммарно') ) : '' ?>
+    <?= ($event->time_limit) ? ('&nbsp;<i class="fas fa-stop-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit ) : '' ?>
+    <?= ($event->time_limit_cumulative) ? ('&nbsp;<i class="fas fa-plus-circle"></i> ' . t('Time limit', 'Лимит по времени') . ' ' . $event->time_limit_cumulative . ' ' . t('in total', 'суммарно') ) : '' ?>
     <?php if (!$event->final and $event->next_round_value) { ?>
         &nbsp;<i class="fas fa-caret-square-right"></i> <?= t('Top', 'Лучшие') ?> <?= $event->next_round_value . ($event->next_round_procent ? '%' : '') ?> <?= t('advance next round', 'проходят дальше') ?> 
         <?= $next_round_competitors ? ("(" . t('selected', 'отобрано') . " $next_round_competitors)" ) : '' ?>

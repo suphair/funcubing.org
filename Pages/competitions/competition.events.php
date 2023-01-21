@@ -26,7 +26,7 @@ if ($comp_data->competition->events) {
                 <th>
                     <?= t('Cutoff', 'Катофф') ?>
                 </th>
-                <th>
+                <th class="center">
                     <?= t('Limit', 'Лимит') ?>
                 </th>
                 <th>
@@ -70,104 +70,106 @@ if ($comp_data->competition->events) {
                             <?= $rounds_dict[$event->rounds == $round ? 0 : $round]->smallName; ?>
                         </td>
                         <td><nobr>
-                            <?php if ($results_count and $competitors_count == $results_count and $event->rounds == $round) { ?>
-                                <i style='color:var(--green)' class="fas fa-flag-checkered"></i>
-                            <?php } ?>
-                            <?php if ($results_count and $competitors_count == $results_count and $event->rounds != $round) { ?>
-                                <i style='color:var(--green)' class="fas fa-arrow-alt-circle-down"></i>
-                            <?php } ?>
-                            <?php if ($results_count and $competitors_count != $results_count) { ?>
-                                <i  style='color:var(--red)' class="fas fa-running"></i>
-                            <?php } ?>
-                            <?php if (!$competitors_count and!$results_count) { ?>
-                                <i class="fas fa-hourglass-start"></i>
-                            <?php } ?>
-                            <?php if ($competitors_count and!$results_count) { ?>
-                                <i class="fas fa-hourglass-half"></i>
-                            <?php } ?>
-                            <?= $results_count > 0 ? $results_count : '.' ?> / <?= $competitors_count > 0 ? $competitors_count : '.' ?>
-                        </nobr></td>
-                        <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
-                            <nobr><?= $cutoff ? "$format_dict->cutoff_name /<br> " : '' ?></nobr>
-                            <?= $format_dict->name ?>
-                            <?php
-                            if ($events_dict[$event->event_dict]->special) {
-                                $result_dict = $results_dict[$event->result_dict];
-                                if ($result_dict->code == 'amount_asc') {
-                                    ?>
-                                    <br>
-                                    <i class="fas fa-sort-numeric-down"></i>
-                                    <?= $result_dict->name ?>
-                                    <?php
-                                }
-                                if ($result_dict->code == 'amount_desc') {
-                                    ?>
-                                    <br>
-                                    <i class="fas fa-sort-numeric-down-alt"></i>
-                                    <?= $result_dict->name ?>
-                                    <?php
-                                }
-                            }
-                            ?>
-                        </td>
-                        <td class="attempt">
-                            <?= $cutoff ? $cutoff : '-' ?>
-                        </td>
-                        <td class="attempt">
-                            <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
-                            <?php $cumulative = $eventsRounds[$event->id][$round]->cumulative; ?>
-                            <?= $time_limit ? ($time_limit . ($cumulative ? t(' in total', ' суммарно') : '')) : '' ?>
-                        </td>
-                        <td class="attempt">
-                            <?php if ($event->rounds > $round) { ?>
-                                <?php if ($event_round->next_round_procent) { ?>
-                                    <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>%
-                                <?php } else { ?>
-                                    <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>
-                                <?php } ?>   
-                            <?php } ?>   
-                        </td>
-                        <?php if ($comp->ranked) { ?>
-                            <td class="attempt">
-                                <?php
-                                $record_exists = false;
-                                foreach ($records[$event->event_dict] ?? [] as $record) {
-                                    if ($record->type == 'average' and $record->round == $round) {
-                                        $record_exists = true;
-                                        ?>
-                                        <span class="td_record">
-                                            <?= $record->result ?> R
-                                        </span>
-                                        <?php
-                                    }
-                                }
-                                if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['average'] ?? false) {
-                                    ?>
-                                    <?= $bestAttempts[$event_code][$event_round->round]['average'] ?>
-                                <?php } ?>
-                            </td>
-                            <td class="attempt">
-                                <?php
-                                $record_exists = false;
-                                foreach ($records[$event->event_dict] ?? [] as $record) {
-                                    if ($record->type == 'best' and $record->round == $round) {
-                                        $record_exists = true;
-                                        ?>
-                                        <span class="td_record">
-                                            <?= $record->result ?> R
-                                        </span>
-                                        <?php
-                                    }
-                                }
-                                if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['best'] ?? false) {
-                                    ?>
-                                    <?= $bestAttempts[$event_code][$event_round->round]['best'] ?>
-                                <?php } ?>
-                            </td>
-                        <?php } ?>
-                    </tr>    
+                    <?php if ($results_count and $competitors_count == $results_count and $event->rounds == $round) { ?>
+                        <i style='color:var(--green)' class="fas fa-flag-checkered"></i>
+                    <?php } ?>
+                    <?php if ($results_count and $competitors_count == $results_count and $event->rounds != $round) { ?>
+                        <i style='color:var(--green)' class="fas fa-arrow-alt-circle-down"></i>
+                    <?php } ?>
+                    <?php if ($results_count and $competitors_count != $results_count) { ?>
+                        <i  style='color:var(--red)' class="fas fa-running"></i>
+                    <?php } ?>
+                    <?php if (!$competitors_count and!$results_count) { ?>
+                        <i class="fas fa-hourglass-start"></i>
+                    <?php } ?>
+                    <?php if ($competitors_count and!$results_count) { ?>
+                        <i class="fas fa-hourglass-half"></i>
+                    <?php } ?>
+                    <?= $results_count > 0 ? $results_count : '.' ?> / <?= $competitors_count > 0 ? $competitors_count : '.' ?>
+                </nobr></td>
+            <td> <?php $format_dict = $formats_dict[$event->format_dict] ?>
+            <nobr><?= $cutoff ? "$format_dict->cutoff_name /<br> " : '' ?></nobr>
+            <?= $format_dict->name ?>
+            <?php
+            if ($events_dict[$event->event_dict]->special) {
+                $result_dict = $results_dict[$event->result_dict];
+                if ($result_dict->code == 'amount_asc') {
+                    ?>
+                    <br>
+                    <i class="fas fa-sort-numeric-down"></i>
+                    <?= $result_dict->name ?>
+                    <?php
+                }
+                if ($result_dict->code == 'amount_desc') {
+                    ?>
+                    <br>
+                    <i class="fas fa-sort-numeric-down-alt"></i>
+                    <?= $result_dict->name ?>
+                    <?php
+                }
+            }
+            ?>
+            </td>
+            <td class="attempt">
+                <?= $cutoff ? $cutoff : '-' ?>
+            </td>
+            <td class="attempt">
+                <?php $time_limit = $eventsRounds[$event->id][$round]->time_limit; ?>
+                <?php $time_limit_cumulative = $eventsRounds[$event->id][$round]->time_limit_cumulative; ?>
+                <nobr><?= $time_limit ? $time_limit : '' ?></nobr>
+                <nobr><?= $time_limit_cumulative ? ($time_limit_cumulative . t(' in total', ' суммарно')) : '' ?></nobr>
+
+            </td>
+            <td class="attempt">
+                <?php if ($event->rounds > $round) { ?>
+                    <?php if ($event_round->next_round_procent) { ?>
+                        <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>%
+                    <?php } else { ?>
+                        <?= t('Top', 'Лучшие'); ?> <?= $event_round->next_round_value ?>
+                    <?php } ?>   
                 <?php } ?>   
-            <?php } ?>   
-        <tbody>
+            </td>
+            <?php if ($comp->ranked) { ?>
+                <td class="attempt">
+                    <?php
+                    $record_exists = false;
+                    foreach ($records[$event->event_dict] ?? [] as $record) {
+                        if ($record->type == 'average' and $record->round == $round) {
+                            $record_exists = true;
+                            ?>
+                            <span class="td_record">
+                                <?= $record->result ?> R
+                            </span>
+                            <?php
+                        }
+                    }
+                    if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['average'] ?? false) {
+                        ?>
+                        <?= $bestAttempts[$event_code][$event_round->round]['average'] ?>
+                    <?php } ?>
+                </td>
+                <td class="attempt">
+                    <?php
+                    $record_exists = false;
+                    foreach ($records[$event->event_dict] ?? [] as $record) {
+                        if ($record->type == 'best' and $record->round == $round) {
+                            $record_exists = true;
+                            ?>
+                            <span class="td_record">
+                                <?= $record->result ?> R
+                            </span>
+                            <?php
+                        }
+                    }
+                    if (!$record_exists and $bestAttempts[$event_code][$event_round->round]['best'] ?? false) {
+                        ?>
+                        <?= $bestAttempts[$event_code][$event_round->round]['best'] ?>
+                    <?php } ?>
+                </td>
+            <?php } ?>
+            </tr>    
+        <?php } ?>   
+    <?php } ?>   
+    <tbody>
     </table>
 <?php } ?>

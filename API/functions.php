@@ -22,6 +22,9 @@ function attempt_centiseconds($attempt) {
         return 0;
     }
 
+    if (strpos($attempt, ':') != false and strpos($attempt, '.') ==false) {
+        $attempt = "$attempt.00";
+    }
     $attempt = str_replace([':', '.'], '', $attempt);
     $attempt = substr('000000' . $attempt, -6, 6);
 

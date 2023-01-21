@@ -4,14 +4,15 @@ require_once 'function.mbf.php';
 
 $competitor_round = db::escape(filter_input(INPUT_POST, 'competitor_round', FILTER_VALIDATE_INT));
 
-$number = db::escape(filter_input(INPUT_POST, 'number', FILTER_VALIDATE_INT));
-$solved = db::escape(filter_input(INPUT_POST, 'solved', FILTER_VALIDATE_INT));
-$time = db::escape(filter_input(INPUT_POST, 'time'));
+$number = $_POST['number'];
+$solved = $_POST['solved'];
+$time = $_POST['time'];
+$is_dnf = $_POST['is_dnf'] ?? false;
 
 $code = db::escape(request(3));
 $round = db::escape(request(4));
 
-if ($code and is_numeric($round) and $solved!='') {
+if ($code and is_numeric($round)) {
     $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
@@ -22,21 +23,57 @@ if ($code and is_numeric($round) and $solved!='') {
                     . " AND unofficial_events_rounds.round = $round"
                     . " AND unofficial_events_dict.code = '$code'");
     if ($competitors_round) {
-        if ($number == 0) {
+        $number_empty = true;
+        for ($n = 1; $n <= sizeof($number); $n++) {
+            if ($is_dnf[$n] ?? false) {
+                $number[$n] = 1;
+                $solved[$n] = 0;
+                $time[$n] = false;
+            }
+            if ($number[$n] ?? 0 > 0) {
+                $number_empty = false;
+            }
+        }
+        if ($number_empty == true) {
             db::exec("DELETE FROM unofficial_competitors_result WHERE competitor_round = $competitor_round");
         } else {
+            $attempts = [];
             db::exec("INSERT IGNORE INTO unofficial_competitors_result (competitor_round) VALUES ($competitor_round)");
-            $time_int = false;
-            if ($time) {
-                $time_int = MBF\time_to_int($time);
+            for ($n = 1; $n <= sizeof($number); $n++) {
+                if (is_numeric($number[$n]) and is_numeric($solved[$n]) and $number[$n] > 0) {
+                    $time_int = false;
+                    if (strpos($time[$n], ':') === false) {
+                        $t = $time[$n];
+                        $t = preg_replace("/[^,.0-9]/", '', $t);
+                        $t = substr("000000$t", strlen($t), 6);
+                        $t = substr($t, 0, 2) . ':' . substr($t, 2, 2) . ':' . substr($t, 4, 2);
+                        $time[$n] = $t;
+                    }
+                    if ($time[$n]) {
+                        $time_int = MBF\time_to_int($time[$n]);
+                    }
+                    if (!$time_int) {
+                        $time_int = min(60 * 60, $number[$n] * 10 * 60);
+                    }
+                    $wcaResult[$n] = MBF\wcaResult($number[$n], $solved[$n], $time_int);
+                    $printResult = MBF\printResult($number[$n], $solved[$n], $time_int);
+                    $attempts[] = $number[$n] . ' ' . $solved[$n] . ' ' . $time_int;
+                    db::exec("UPDATE unofficial_competitors_result "
+                            . "SET attempt$n = '$printResult'"
+                            . "WHERE competitor_round = $competitor_round");
+                }
             }
-            if (!$time_int) {
-                $time_int = min(60 * 60, $number * 10 * 60);
+            $wcan = 1;
+            $wcar = $wcaResult[1];
+            for ($n = 1; $n <= sizeof($number); $n++) {
+                if ($wcaResult[$n] ?? false and $wcar > $wcaResult[$n]) {
+                    $wcan = $n;
+                    $wcar = $wcaResult[$n];
+                }
             }
-            $wcaResult = MBF\wcaResult($number, $solved, $time_int);
-            $printResult = MBF\printResult($number, $solved, $time_int);
             db::exec("UPDATE unofficial_competitors_result "
-                    . "SET attempt1 = '$printResult',  attempts='$number $solved $time_int', best ='$printResult', `order`='$wcaResult' "
+                    . "SET attempts = '" . implode(";", $attempts) . "',"
+                    . " best = attempt$wcan, `order`='$wcar' "
                     . "WHERE competitor_round = $competitor_round");
         }
 

@@ -33,7 +33,7 @@
         <?php
         $competitions = [];
         foreach (explode(',', $competitor->competitions_secret) as $c => $secret) {
-            if (!in_array($secret, explode(",", config::get('MISC', 'competition_exclude_secret')))) {
+            if (strpos($secret, 'NRRUWCA') === FALSE) {
                 $competitions[] = "<a href='" . PageIndex() . "/competitions/$secret'>" . (explode(',', $competitor->competitions_name)[$c] ?? '???') . "</a>";
             }
         }

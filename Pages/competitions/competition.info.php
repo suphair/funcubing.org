@@ -124,7 +124,16 @@ foreach ($competition->sheets ?? [] as $sheet) {
                     }
                     if ($competition->is_ranked) {
                         ?>
-                        <tr><td colspan="2"><hr></td></tr>
+                        <tr><td colspan="2"><hr></td></tr>   
+
+                        <tr>
+                            <td><?= t('Competitors', 'Участники'); ?></td>
+                            <td>
+                                <?= $competition->competitors_count ?>
+                                <?= t('of', 'из') ?>
+                                <?= $competition->competitor_limit ?>
+                            </td>
+                        </tr>
                         <?php if ($competition->is_approved) { ?>
                             <tr>
                                 <td><?= $ranked_icon ?> <i class="message fas fa-check"></i></td>
@@ -160,7 +169,17 @@ foreach ($competition->sheets ?? [] as $sheet) {
                             </tr>
                         <?php } ?>
                     <?php } ?>
-                    <tr><td colspan="2"><hr></td></tr>     
+                    <tr><td colspan="2"><hr></td></tr>   
+                    <?php if ($competition->is_ranked) { ?>
+                        <tr>
+                            <td><i class="fas fa-spa"></i></td>  
+                            <td>
+                                <a href="<?= PageIndex() . "competitions/$competition->id/psychsheet" ?>">
+                                    Psych Sheet
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
                     <?php if ($competition->points) {
                         ?>
                         <tr>
@@ -168,9 +187,9 @@ foreach ($competition->sheets ?? [] as $sheet) {
                                 <i class="<?= $points_dict[$competition->points]->icon ?>"></i>
                             </td>
                             <td> 
-                                <a href="<?= PageIndex(). "competitions/$competition->id/points" ?>"> <?= t('Overall standings', 'Общий зачёт') ?> - <?= $points_dict[$competition->points]->name ?></a></td>
+                                <a href="<?= PageIndex() . "competitions/$competition->id/points" ?>"> <?= t('Overall standings', 'Общий зачёт') ?> - <?= $points_dict[$competition->points]->name ?></a></td>
                         </tr>
-                    <?php } ?>
+                    <?php } ?>        
                     <?php
                     $res = true;
                     foreach ($comp_data->events as $event_a) {

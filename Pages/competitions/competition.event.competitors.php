@@ -1,5 +1,5 @@
 <?php
-$round=db::escape(request(4));
+$round = db::escape(request(4));
 
 $record_attempts = [];
 foreach ($records[$event->event_dict] ?? [] as $record) {
@@ -17,16 +17,20 @@ foreach ($records[$event->event_dict] ?? [] as $record) {
                         unset($competitors_first[$competitor_id]);
                     }
                 }
-                ?>
-                <form action='?resuts_registration_add' method='POST'>        
-                    <?= t('Create new competitor', 'Создать нового участника') ?>
-                    <input name='name'>
-                    <button>
-                        <i class="fas fa-plus-square"></i>
-                        <?= t('Create', 'Создать') ?>
-                    </button>
-                </form>
-                <?php if (sizeof($competitors_first)) { ?>
+                if (!$competition->is_ranked) {
+                    ?>
+                    <form action='?resuts_registration_add' method='POST'>        
+                        <?= t('Create new competitor', 'Создать нового участника') ?>
+                        <input name='name'>
+                        <button>
+                            <i class="fas fa-plus-square"></i>
+                            <?= t('Create', 'Создать') ?>
+                        </button>
+                    </form>
+                    <?php
+                }
+                if (sizeof($competitors_first)) {
+                    ?>
 
                     <form method="POST" action="?resuts_registrations_add_first">
                         <table class="table_new">

@@ -1,8 +1,28 @@
 <?php
 
-namespace api;
+function reload_fc_best_full() {
+    db::exec("DELETE FROM fc_best");
 
-function competitors($competitor_id = false) {
+    $competitors = fork_api_competitors();
+    $fc_best = [];
+    foreach ($competitors as $competitor) {
+        if ($competitor->fc_id) {
+            foreach ($competitor->personal_records ?? [] as $event => $row) {
+                if ($event !== '333mbf') {
+                    if (isset($row->average)) {
+                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
+                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->average)");
+                    } else {
+                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single ) "
+                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single)");
+                    }
+                }
+            }
+        }
+    }
+}
+
+function fork_api_competitors() {
 
     $competitors = \db::rows("
         SELECT 
@@ -37,8 +57,8 @@ function competitors($competitor_id = false) {
                 LEFT OUTER JOIN `unofficial_events` event on event.id=r.event
                 LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict
                 LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
-        WHERE lower('$competitor_id') in (lower(coalesce(c.FCID,'XXXX')), lower(c.ID), '')
-            and coalesce(ed.special, false) = false 
+        WHERE coalesce(ed.special, false) = false
+            and comp.rankedApproved = 1
         ORDER BY c.name desc, comp.date desc, ed.order");
 
     $competitors_key = [];
@@ -85,7 +105,7 @@ function competitors($competitor_id = false) {
             }
             $prev_single_order = $single_orders[$competitor->name][$competitor->competition_id][$competitor->event] ?? false;
             if (!$prev_single_order or $prev_single_order > $competitor->single_order) {
-                $competitors_key[$competitor->name]->competitions[$competitor->competition_id]->personal_records[$competitor->event]->single = attempt_centiseconds($competitor->single);
+                $competitors_key[$competitor->name]->competitions[$competitor->competition_id]->personal_records[$competitor->event]->single = api\attempt_centiseconds($competitor->single);
                 $single_orders[$competitor->name][$competitor->competition_id][$competitor->event] = $competitor->single_order;
             }
 
@@ -94,7 +114,7 @@ function competitors($competitor_id = false) {
             }
             $prev_single_order_total = $single_orders_total[$competitor->name][$competitor->event] ?? false;
             if (!$prev_single_order_total or $prev_single_order_total > $competitor->single_order) {
-                $competitors_key[$competitor->name]->personal_records[$competitor->event]->single = attempt_centiseconds($competitor->single);
+                $competitors_key[$competitor->name]->personal_records[$competitor->event]->single = api\attempt_centiseconds($competitor->single);
                 $single_orders_total[$competitor->name][$competitor->event] = $competitor->single_order;
             }
         }
@@ -105,7 +125,7 @@ function competitors($competitor_id = false) {
             }
             $prev_average_order = $average_orders[$competitor->name][$competitor->competition_id][$competitor->event] ?? false;
             if (!$prev_average_order or $prev_average_order > $competitor->average_order) {
-                $competitors_key[$competitor->name]->competitions[$competitor->competition_id]->personal_records[$competitor->event]->average = attempt_centiseconds($competitor->average);
+                $competitors_key[$competitor->name]->competitions[$competitor->competition_id]->personal_records[$competitor->event]->average = api\attempt_centiseconds($competitor->average);
                 $average_orders[$competitor->name][$competitor->competition_id][$competitor->event] = $competitor->average_order;
             }
 
@@ -114,7 +134,7 @@ function competitors($competitor_id = false) {
             }
             $prev_average_order_total = $average_orders_total[$competitor->name][$competitor->event] ?? false;
             if (!$prev_average_order_total or $prev_average_order_total > $competitor->average_order) {
-                $competitors_key[$competitor->name]->personal_records[$competitor->event]->average = attempt_centiseconds($competitor->average);
+                $competitors_key[$competitor->name]->personal_records[$competitor->event]->average = api\attempt_centiseconds($competitor->average);
                 $average_orders_total[$competitor->name][$competitor->event] = $competitor->average_order;
             }
         }

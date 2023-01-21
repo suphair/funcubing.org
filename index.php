@@ -31,6 +31,8 @@ $request_1 = request(1);
 $request_2 = request(2);
 $request_3 = request(3);
 $request_4 = request(4);
+$request_5 = request(5);
+$request_6 = request(6);
 $request_0 = str_replace('unofficial', 'competitions', $request_0);
 if (!$request_0) {
     $request_0 = 'competitions';

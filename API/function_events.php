@@ -14,7 +14,7 @@ function events($competition_id, $event_id) {
                     rd.fullName$RU round_name,
                     er.cutoff,
                     er.time_limit,
-                    er.cumulative time_limit_cumulative,
+                    er.time_limit_cumulative time_limit_cumulative,
                     er.next_round_value,
                     er.next_round_procent is_percent,
                     fd.name format,
@@ -53,17 +53,11 @@ function events($competition_id, $event_id) {
                         'is_percent' => $event->is_percent == 1];
         }
         $event_key->cutoff = $event->cutoff ? $event->cutoff : null;
-        if ($event->time_limit) {
-            $event_key->time_limit = (object) [
-                        'value' => $event->time_limit,
-                        'is_cumulative' => $event->time_limit_cumulative == 1
-            ];
-        } else {
-            $event_key->time_limit = null;
-        }
+        $event_key->time_limit = $event->time_limit ? $event->time_limit : null;
+        $event_key->time_limit_cumulative = $event->time_limit_cumulative ? $event->time_limit_cumulative : null;
         $event_key->format = $event->cutoff ? "$event->format_cutoff / $event->format" : $event->format;
         $event_key->format_type = $event->format_type;
-        $event_key->attempts = $event->attempts;
+        $event_key->attempts = $event->attempts + 0;
         $event_key->result = $event->result;
         $event_key->result_type = $event->result_type;
 

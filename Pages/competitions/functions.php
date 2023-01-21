@@ -28,6 +28,7 @@ function getCompetition($secret, $me = FALSE) {
         unofficial_competitions.ranked,
         unofficial_competitions.rankedApproved approved,
         unofficial_competitions.rankedID,
+        unofficial_competitions.rankedCompetitors,
         coalesce(dict_competitors.name$RU,dict_competitors.name) competitor_name,
         dict_competitors.nameRU competitor_nameRU,
         dict_competitors.name competitor_nameEN,
@@ -146,7 +147,7 @@ function getEventsRounds($id) {
                     . " unofficial_events_rounds.comment, "
                     . " unofficial_events_rounds.cutoff, "
                     . " unofficial_events_rounds.time_limit, "
-                    . " unofficial_events_rounds.cumulative, "
+                    . " unofficial_events_rounds.time_limit_cumulative, "
                     . " unofficial_events_rounds.next_round_value, "
                     . " unofficial_events_rounds.next_round_procent "
                     . " FROM unofficial_events "
@@ -219,7 +220,7 @@ function getCompetitionData($id) {
                     . " unofficial_events.result_dict,"
                     . " unofficial_events.format_dict, "
                     . " unofficial_events.rounds event_rounds, "
-                    . " unofficial_events.id,"
+                    . " unofficial_events.id, "
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict, "
                     . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name "
                     . " FROM unofficial_events"
@@ -249,9 +250,10 @@ function getCompetitionData($id) {
                     . " unofficial_events_rounds.comment,"
                     . " unofficial_events_rounds.cutoff,"
                     . " unofficial_events_rounds.time_limit,"
-                    . " unofficial_events_rounds.cumulative,"
+                    . " unofficial_events_rounds.time_limit_cumulative,"
                     . " unofficial_events_rounds.next_round_procent,"
-                    . " unofficial_events_rounds.next_round_value"
+                    . " unofficial_events_rounds.next_round_value, "
+                    . " unofficial_events.update_at "
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_rounds ON unofficial_events_rounds.event = unofficial_events.id"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
@@ -422,7 +424,7 @@ function getEventByEventround($eventround) {
                     . " COALESCE(unofficial_events_rounds.comment,'') comment, "
                     . " COALESCE(unofficial_events_rounds.cutoff,'') cutoff, "
                     . " COALESCE(unofficial_events_rounds.time_limit,'') time_limit, "
-                    . " COALESCE(unofficial_events_rounds.cumulative,0) cumulative, "
+                    . " COALESCE(unofficial_events_rounds.time_limit_cumulative,'') time_limit_cumulative, "
                     . " unofficial_events_dict.image, "
                     . " unofficial_events_dict.special, "
                     . " unofficial_events_rounds.round, "

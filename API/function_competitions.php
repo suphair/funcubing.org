@@ -19,6 +19,7 @@ function competitions($competition_id = false) {
                     coalesce(c.date_to,c.date) end_date,
                     c.ranked is_ranked,
                     c.rankedApproved is_approved,
+                    c.rankedCompetitors competitor_limit,
                     c.show is_publish,
                     c.details,
                     c.logo,
@@ -49,6 +50,7 @@ function competitions($competition_id = false) {
         $competition_key = new \stdClass();
         $competition_key->id = $competition->secret;
         $competition_key->name = $competition->name;
+        $competition_key->competitor_limit = $competition->competitor_limit + 0;
         $competition_key->city = t(transliterate($competition->city), $competition->city);
         $competition_key->url = (\config::isLocalhost() ? 'http:' : 'https:') . PageIndex() . 'competitions/' . $competition->url;
         $competition_key->local_id = $competition->id;
@@ -168,8 +170,8 @@ function competitions($competition_id = false) {
             $delegate = $competition_key->my_roles->delegate ?? false;
 
             $edit_grand = ($main_organizer or $organizer or $delegate);
-            
-            $view_grand = $edit_grand; 
+
+            $view_grand = $edit_grand;
 
             $setting_grand = ($main_organizer or $delegate);
 

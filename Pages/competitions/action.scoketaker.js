@@ -74,6 +74,15 @@ $('[data-results]').submit(function () {
     for (var i = 1; i <= attempts_count; i++) {
         var attempt = $('#attempt_' + i).val();
         var centisecond = input_to_centisecond(attempt);
+        if (centisecond >= 10 * 60 * 100) {
+            centisecond = Math.round(centisecond / 100) * 100;
+            $('#attempt_' + i).val(result_format_enter(centisecond));
+        }
+    }
+    for (var i = 1; i <= attempts_count; i++) {
+        var attempt = $('#attempt_' + i).val();
+        var centisecond = input_to_centisecond(attempt);
+
         if ((centisecond < best || best == -1) && centisecond > 0) {
             best = centisecond;
             best_i = i;
@@ -155,9 +164,19 @@ $('[data-results]').submit(function () {
     }
 
     if (is_time) {
+        if (best >= 10 * 60 * 100) {
+            best = Math.round(best / 100) * 100;
+        }
+        if (average >= 10 * 60 * 100) {
+            average = Math.round(average / 100) * 100;
+        }
+        if (mean >= 10 * 60 * 100) {
+            mean = Math.round(mean / 100) * 100;
+        }
         $('[data-results-attempts-best]').val(public_result(result_format_enter(best)));
         $('[data-results-attempts-average]').val(public_result(result_format_enter(average)));
         $('[data-results-attempts-mean]').val(public_result(result_format_enter(mean)));
+
     } else {
         $('[data-results-attempts-best]').val(result_format_amount_100(best));
         $('[data-results-attempts-average]').val(result_format_amount_100(average));
@@ -221,8 +240,6 @@ function result_format_amount_100(val) {
     }
     return result_format_amount(val);
 }
-
-
 
 function input_to_centisecond(val) {
     var centisecond;
@@ -297,7 +314,13 @@ function click_competitor(el) {
     $('[data-results] button').show();
     var attempts_count = $('[data-event-attempts]').data('event-attempts');
     for (var i = 1; i <= attempts_count; i++) {
-        $('[data-results-attempt=' + i + ']').val(result_format(el.data('competitor-attempt' + i)));
+        var attempt = el.data('competitor-attempt' + i).toString();
+        console.dir(attempt);
+        if (attempt.indexOf(':') > -1
+                && attempt.indexOf('.') === -1) {
+            attempt = attempt + '.00';
+        }
+        $('[data-results-attempt=' + i + ']').val(result_format(attempt));
     }
 
     $(".chosen-search-input").val(el.data('competitor-name'));

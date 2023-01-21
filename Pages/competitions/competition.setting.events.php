@@ -26,7 +26,7 @@ if ($comp_data->competition->events) {
                         <?= t('Time limit', 'Лимит') ?>
                     </th>
                     <th>
-                        <?= t('cumulative?', 'накопительный?') ?>
+                        - <?= t('cumulative?', 'накопительный') ?>
                     </th>
                     <th style="text-align:right">
                         <?= t('Next round', 'Проходят дальше') ?>
@@ -42,7 +42,7 @@ if ($comp_data->competition->events) {
                     foreach (range(1, $event->rounds) as $round) {
                         $cutoff = $eventsRounds[$event->id][$round]->cutoff;
                         $time_limit = $eventsRounds[$event->id][$round]->time_limit;
-                        $cumulative = $eventsRounds[$event->id][$round]->cumulative;
+                        $time_limit_cumulative = $eventsRounds[$event->id][$round]->time_limit_cumulative;
                         $nextRoundValue = $eventsRounds[$event->id][$round]->next_round_value;
                         $nextRoundProcent = $eventsRounds[$event->id][$round]->next_round_procent;
                         $format_dict = $formats_dict[$event->format_dict];
@@ -71,8 +71,7 @@ if ($comp_data->competition->events) {
                                 <input style="width: 50px" pattern='[0-9]+:[0-9]{2}' title="m:ss" name="time_limit[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $time_limit ?>">
                             </td>
                             <td style="text-align:left">
-                                <input type="checkbox" <?= $cumulative ? 'checked' : '' ?> name="cumulative[<?= $event->event_dict ?>][<?= $round ?>]">
-                                </input>
+                                <input style="width: 50px" pattern='[0-9]+:[0-9]{2}' title="m:ss" name="time_limit_cumulative[<?= $event->event_dict ?>][<?= $round ?>]" value="<?= $time_limit_cumulative ?>">
                             </td>
 
                             <?php
@@ -112,9 +111,9 @@ if ($comp_data->competition->events) {
             <tr>
                 <th></th>
                 <th><?= t('Event', 'Дисциплина') ?></th>
-                <th style="border-left:1px solid lightgray; padding:0px;margin:0px;">&nbsp;<?=t('Rounds', 'Раунды') ?></th>
+                <th style="border-left:1px solid lightgray; padding:0px;margin:0px;">&nbsp;<?= t('Rounds', 'Раунды') ?></th>
                 <th style='text-align:center'>
-                     <i class="fas fa-times"></i>
+                    <i class="fas fa-times"></i>
                 </th>
                 <?php
                 unset($rounds_dict[0]);
@@ -180,8 +179,8 @@ if ($comp_data->competition->events) {
                                 <input 
                                 <?= $format == $format_dict->id ? 'checked' : '' ?> 
                                     type="radio" value="<?= $format_dict->id ?>" name="events[<?= $eventId ?>][format]"
-                                    <?= ($event_dict->code == '333mbf' and $format_dict->id != 3) ? 'hidden' : '' ?>
-                                    <?= ($event_dict->code == '333mbf' and $format_dict->id == 3)?'checked' : '' ?> 
+                                    <?= ($event_dict->code == '333mbf' and!in_array($format_dict->code, ['Bo1', 'Bo2', 'Bo3'])) ? 'hidden' : '' ?>
+                                    <?= ($event_dict->code == '333mbf' and $format_dict->code == 'Bo1') ? 'checked' : '' ?> 
                                     >
                                 <?php } ?>    
                         </td>

@@ -1,36 +1,31 @@
 <link rel="stylesheet" href="<?= PageIndex() ?>Styles/event_check.css?1" type="text/css"/>
 <?php include 'competition.setting.menu.php' ?>
-<h2> 
-    <i class="far fa-list-alt"></i>
-    <?= t('Add registrations', 'Добавить регистрации') ?>
-</h2>
-&bull; Enter competitors separated by a newline or comma:<br>
-<b>[Competitor Alfa<br>Competitor Beta] &#8658; Competitor Alfa & Competitor Beta</b><br>
-<b>[Competitor Delta, Competitor Gamma] &#8658; Competitor Delta & Competitor Gamma</b><br>
-&bull; You can enter the name in any case the first letters will become large 
-<b>[comPETitor epSiLon] &#8658; Competitor Epsilon</b><br>
-&bull; When you create a competitor, you can register it for the event by adding a tag 
-(also you can click on the event on the right)<br>
-<b>[Competitor Dseta 222 333] &#8658; Competitor Dseta (2x2x2 Cube  & 3x3x3 Cube)</b><br>
-<br>
-&bull; You can register a competitor in the events later;
-<br>
-&bull; You can add registrations in several parts;
-<?php if($comp->ranked){ ?>
-<br><br>
-<p>Для добавления участника с тем же именем добавьте "*". <br><b>[Competitor Beta {перенос}Competitor Beta *{перенос}Competitor Beta *] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
-<p>Вместо имени можно указывать FCID уже существующее в системе. <br><b>[CB01{перенос}CB02{перенос}CB03] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
-<?php } ?>
-<form method="POST" action="?competitors_add">
-    <table width='100%'>
-        <tr class="no_border">
-            <td width='50%'>    
-                <textarea  name="competitors" style="width: 400px; height: 350px; font-size:20px;"></textarea>
-            </td>
-            <td width='50%' valign="top">
-                <br>
-                <?php foreach ($comp_data->events as $event) { ?>
-                    <p class="registration_event" onclick="
+<?php
+$vacancy = $comp->rankedCompetitors - sizeof($comp_data->competitors);
+if ($comp->ranked and $vacancy <= 0) {
+    ?>
+    <h2>
+        <i class="fas fa-stop"></i>
+        Количество участников достигло предела
+    </h2>
+<?php } else { ?>
+    <h2> 
+        <i class="far fa-list-alt"></i>
+        <?= t('Add registrations', 'Добавить регистрации') ?>
+        <?php if ($comp->ranked) { ?>
+            ( свободно <?= $vacancy ?> мест )
+    <?php } ?>
+    </h2>
+    <form method="POST" action="?competitors_add">
+        <table width='100%'>
+            <tr class="no_border">
+                <td width='50%'>    
+                    <textarea  name="competitors" style="width: 400px; height: 350px; font-size:20px;"></textarea>
+                </td>
+                <td width='50%' valign="top">
+                    <br>
+                    <?php foreach ($comp_data->events as $event) { ?>
+                        <p class="registration_event" onclick="
                                 var el = $('form textarea[name=competitors]');
                                 var s = el[0].selectionStart;
                                 var val = el.val();
@@ -40,26 +35,29 @@
                                 el.val(val_s + code + val_e);
                                 el.focus();
                                 el[0].setSelectionRange(s + code.length, s + code.length);
-                       ">
-                        <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
-                        [<b><?= $events_dict[$event->event_dict]->code ?></b>]
+                           ">
+                            <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>
+                            [<b><?= $events_dict[$event->event_dict]->code ?></b>]
                         <?= $event->name ?>
-                    </p> 
-                <?php } ?>
-            </td>
-        </tr>
-    </table>
-    <button>
-        <i class="fas fa-user-plus"></i>
-        <?= t('Add', 'Добавить') ?>
-    </button>    
-</form>
-
+                        </p> 
+    <?php } ?>
+                </td>
+            </tr>
+        </table>
+        <button>
+            <i class="fas fa-user-plus"></i>
+    <?= t('Add', 'Добавить') ?>
+        </button>    
+    </form>
+<?php } ?>
 <?php if (sizeof($comp_data->competitors)) { ?>
     <hr>
     <h2>
         <i class="fas fa-users-cog"></i>
         <?= t('Registrations', 'Регистрации') ?>
+        <?php if ($comp->ranked) { ?>
+            <?= sizeof($comp_data->competitors) ?> из <?= $comp->rankedCompetitors ?>
+    <?php } ?>
     </h2>
     <form action='?competitors_edit'  method='POST'>
         <table class="table">
@@ -68,44 +66,44 @@
                     <th>#</th>
                     <?php if ($comp->ranked) { ?>
                         <th><i class="flag-icon flag-icon-ru"></i></th>
-                    <?php } ?>
+    <?php } ?>
                     <th style='color:var(--red)'>
                         <i class="fas fa-user-slash"></i>
                     </th>
                     <th>
-                        <?= t('Competitor', 'Участник') ?>
+                    <?= t('Competitor', 'Участник') ?>
                     </th>
-                    <?php foreach ($comp_data->events as $event) { ?>
+    <?php foreach ($comp_data->events as $event) { ?>
                         <th style="text-align:center">
                             <i class="<?= $events_dict[$event->event_dict]->image ?>"></i>    
                         </th>
                     <?php } ?>
                     <?php if ($comp->ranked) { ?>
                         <th>FC ID</th>
-                    <?php } ?>
+    <?php } ?>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($comp_data->competitors as $competitor) { ?>
+    <?php foreach ($comp_data->competitors as $competitor) { ?>
                     <tr data-registration>                        
                         <td data-num></td>
-                        <?php if ($comp->ranked) { ?>
+        <?php if ($comp->ranked) { ?>
                             <td>
                                 <i data-non_resident class="<?= $competitor->non_resident ? 'non_resident' : '' ?> flag-icon flag-icon-ru"></i>
                                 <input hidden name="registrations[<?= $competitor->id ?>][non_resident]" value="<?= $competitor->non_resident ? 'off' : 'on' ?>">
                             </td>
-                        <?php } ?>
+                            <?php } ?>
                         <td>
                             <?php if ($competitor->delete) { ?>
                                 <input data-competitor-delete style='background-color: red' name='registrations_delete[<?= $competitor->id ?>]' type='checkbox'>
                             <?php } else { ?>
                                 <i class="fas fa-lock"></i>
-                            <?php } ?>    
+        <?php } ?>    
                         </td>
                         <td>
                             <input style="width:220px" name='registrations[<?= $competitor->id ?>][name]' value='<?= $competitor->name_original ?>' ?>
                         </td>
-                        <?php foreach ($comp_data->events as $event) { ?>
+                            <?php foreach ($comp_data->events as $event) { ?>
                             <td style="text-align:center">
                                 <?php if ($competitor->events[$event->event_dict]->result ?? FALSE) { ?>
                                     <i class="fas fa-check"></i>
@@ -115,33 +113,33 @@
                                     ?>
                                     <i data-competitor-hide title="<?= $event->name ?>" class="event_icon <?= $checked ? 'event_checked' : 'event_unchecked' ?> <?= $events_dict[$event->event_dict]->image ?>"></i>    
                                     <input hidden name='registrations[<?= $competitor->id ?>][<?= $event->event_dict ?>]' value="<?= $checked ? 'on' : 'off' ?>">
-                                <?php } ?>
+                            <?php } ?>
                             </td>    
                         <?php } ?>
-                        <?php if ($comp->ranked) { ?>
+                            <?php if ($comp->ranked) { ?>
                             <td>
-                                <?= $competitor->FCID ? $competitor->FCID : '-' ?>
+                            <?= $competitor->FCID ? $competitor->FCID : '-' ?>
                             </td>
-                        <?php } ?>
+                    <?php } ?>
                     </tr>
-                <?php } ?>
+    <?php } ?>
             </tbody>
             <tfoot>
                 <tr class="<?= (sizeof($comp_data->competitors) % 2 == 1) ? 'gray' : '' ?>">
                     <td colspan="<?= $comp->ranked ? 3 : 2 ?>"></td>
                     <td><?= t('Total', 'Всего') ?></td>
-                    <?php foreach ($comp_data->events as $event) { ?>
+                        <?php foreach ($comp_data->events as $event) { ?>
                         <td style="text-align:center">
-                            <?= sizeof($comp_data->rounds[$event->event_dict][1]->competitors ?? []) ?>
+                        <?= sizeof($comp_data->rounds[$event->event_dict][1]->competitors ?? []) ?>
                         </td>
-                    <?php } ?>
+    <?php } ?>
                 </tr>
             </tfoot>
         </table>
         <br>
         <button name="button" value="registrations"> 
             <i class="far fa-save"></i>
-            <?= t('Save', 'Сохранить') ?>
+    <?= t('Save', 'Сохранить') ?>
         </button>
     </form>
     <?php if (!$comp->ranked) { ?>
@@ -150,7 +148,7 @@
             <div align='right'>
                 <button class="delete"> 
                     <i class="fas fa-trash"></i>
-                    <?= t(' Delete all competitors without results', 'Удалить всех участников без результатов') ?>
+        <?= t(' Delete all competitors without results', 'Удалить всех участников без результатов') ?>
                 </button>
             </div>
         </form>
@@ -178,7 +176,7 @@
         <hr>
         <h2>
             <i class="fas fa-users"></i>
-            <?= t('Competitors of your competitions', 'Участники с ваших соревнований') ?>
+        <?= t('Competitors of your competitions', 'Участники с ваших соревнований') ?>
         </h2>
         <form action="?competitors_select" method="post">
             <table class="table_new">
@@ -190,28 +188,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($competitors as $competitor) { ?>
+        <?php foreach ($competitors as $competitor) { ?>
                         <tr >
                             <td align='center'>
                                 <?php if ($competitor->this) { ?>
                                     <i class="far fa-check-square"></i>
                                 <?php } else { ?>
                                     <input name='competitors[]' value='<?= $competitor->name ?>' type='checkbox'>
-                                <?php } ?>    
+            <?php } ?>    
                             </td>
                             <td>
-                                <?= $competitor->name ?>
+            <?= $competitor->name ?>
                             </td>
                             <td align='center'>
-                                <?= $competitor->count ?>
+            <?= $competitor->count ?>
                             </td>
                         </tr>
-                    <?php } ?>
+        <?php } ?>
                 </tbody>
             </table>
             <button>
                 <i class="fas fa-user-plus"></i>
-                <?= t('Add selected competitors', 'Добавить выбранных участников') ?>
+        <?= t('Add selected competitors', 'Добавить выбранных участников') ?>
             </button>    
         </form>
     <?php } ?>
@@ -263,3 +261,23 @@
         }
     })
 </script> 
+<hr>
+<div>
+    &bull; Enter competitors separated by a newline or comma:<br>
+    <b>[Competitor Alfa<br>Competitor Beta] &#8658; Competitor Alfa & Competitor Beta</b><br>
+    <b>[Competitor Delta, Competitor Gamma] &#8658; Competitor Delta & Competitor Gamma</b><br>
+    &bull; You can enter the name in any case the first letters will become large 
+    <b>[comPETitor epSiLon] &#8658; Competitor Epsilon</b><br>
+    &bull; When you create a competitor, you can register it for the event by adding a tag 
+    (also you can click on the event on the right)<br>
+    <b>[Competitor Dseta 222 333] &#8658; Competitor Dseta (2x2x2 Cube  & 3x3x3 Cube)</b><br>
+    <br>
+    &bull; You can register a competitor in the events later;
+    <br>
+    &bull; You can add registrations in several parts;
+<?php if ($comp->ranked) { ?>
+        <br><br>
+        <p>Для добавления участника с тем же именем добавьте "*". <br><b>[Competitor Beta {перенос}Competitor Beta *{перенос}Competitor Beta *] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
+        <p>Вместо имени можно указывать FCID уже существующее в системе. <br><b>[CB01{перенос}CB02{перенос}CB03] &#8658; Competitor Beta & Competitor Beta CB02 & Competitor Beta CB03</b><br> </p>
+<?php } ?>
+</div>

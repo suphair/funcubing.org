@@ -18,6 +18,10 @@ $delegate_roles = unofficial\getDelegateRolesDict();
             <td>Идентификатор</td>
             <td><input placeholder="RamenskoeOpen2017" name="rankedID" value="<?= $comp->rankedID ?>"></td>
         </tr>
+        <tr>
+            <td>Лимит участников</td>
+            <td><input type="number" name="rankedCompetitors" value="<?= $comp->rankedCompetitors ?>"></td>
+        </tr>
         <?php
         $s = 1;
         foreach ($comp_data->delegates as $comp_delegate) {

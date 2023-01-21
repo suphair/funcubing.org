@@ -12,7 +12,7 @@ $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 if ($code and is_numeric($round)) {
-    $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code FROM unofficial_competitors_round"
+    $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code, unofficial_events.id unofficial_events_id  FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
@@ -28,6 +28,9 @@ if ($code and is_numeric($round)) {
         } else {
             db::exec("INSERT IGNORE INTO unofficial_competitors_result (competitor_round) VALUES ($competitor_round)");
             foreach ($attempt_arr as $a => $attempt) {
+                if (strlen($attempt) == 8) {
+                    $attempt = substr($attempt, 0, 5);
+                }
                 if (substr($attempt, 0, 1) == '0') {
                     $attempt = str_replace(['0:0', '0:'], '', $attempt);
                 }
@@ -86,17 +89,24 @@ if ($code and is_numeric($round)) {
                         . " ORDER BY `order`");
 
         $order_current = 0;
-        $place_current = 0;
+        $place_cash = 0;
 
         foreach ($results as $result) {
+            $place_cash++;
+            if ($result->order == $order_current and $code == 'teambld') {
+                $place_cash--;
+            }
             if ($result->order > $order_current) {
                 $order_current = $result->order;
-                $place_current++;
+                $place_current = $place_cash;
             }
             $place_query = $result->best == 'dnf' ? max($place_current, 4) : $place_current;
             db::exec("UPDATE unofficial_competitors_result "
                     . "SET `place` = '$place_query'  "
                     . "WHERE competitor_round = $result->competitor_round");
         }
+        db::exec("UPDATE unofficial_events "
+                . "SET `update_at` = current_timestamp  "
+                . "WHERE id = $competitors_round->unofficial_events_id");
     }
 }

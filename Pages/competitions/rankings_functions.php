@@ -42,7 +42,7 @@ function getRankedRatings($all_events = true) {
             'DNF') <> 'DNF'
         and (unofficial_competitors_result.average <>'' or unofficial_competitors_result.mean <>'' )
         and  coalesce(unofficial_competitors.FCID,'')<>''  
-        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_average_exclude') . ")
+        AND unofficial_competitions.id not in(" . implode(",", getCompetitionsNRWCABEST()) . ")
     order by unofficial_competitors_result.order,
         unofficial_competitions.date 
     ";
@@ -59,6 +59,7 @@ function getRankedRatings($all_events = true) {
         unofficial_competitors_result.best result,
         case 
             when best like '%/% %:%' then unofficial_competitors_result.order
+            when best like '%:__' then cast(replace(CONCAT(best,'00'),':','') as UNSIGNED)
             else cast(replace(replace(best,'.',''),':','') as UNSIGNED) 
         end as 'order',
         unofficial_competitors_round.id round_id,
@@ -81,10 +82,11 @@ function getRankedRatings($all_events = true) {
             'dnf') <> 'dnf'
         and unofficial_competitors_result.best <>''
         and coalesce(unofficial_competitors.FCID,'')<>''
-        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_best_exclude') . ")
+        AND unofficial_competitions.id not in(" . implode(",", getCompetitionsNRWCAAVG()) . ")
     order by 
         case 
         when best like '%/% %:%' then unofficial_competitors_result.order
+        when best like '%:__' then cast(replace(CONCAT(best,'00'),':','') as UNSIGNED)
         else cast(replace(replace(best,'.',''),':','') as UNSIGNED) 
         end,
         unofficial_competitions.date ";
@@ -203,7 +205,7 @@ function getRankedCompetitions($competitor_fcid = false) {
         ) competition_competitors ON competition_competitors.competition = unofficial_competitions.id    
     WHERE  unofficial_competitions.ranked = 1 
         AND unofficial_competitions.show = 1
-        AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")
+        AND unofficial_competitions.id not in(" . implode(",", getCompetitionsNRWCA()) . ")
         " . $where_fcid . "
     ORDER BY unofficial_competitions.date DESC
     ";
@@ -261,7 +263,7 @@ function getResutsByCompetitorRankings($competitor_fcid) {
                     . " JOIN unofficial_rounds_dict on unofficial_rounds_dict.id = unofficial_events_rounds.round "
                     . " WHERE unofficial_competitors.FCID = '$competitor_fcid'"
                     . " AND unofficial_competitions.ranked = 1 "
-                    . " AND unofficial_competitions.id not in(" . \config::get('MISC', 'competition_exclude') . ")"
+                    . " AND unofficial_competitions.id not in(" . implode(",", getCompetitionsNRWCA()) . ")"
                     . " ORDER BY "
                     . " unofficial_events_dict.order,"
                     . " unofficial_competitions.date desc,"
@@ -455,6 +457,31 @@ function build_contact($delegate) {
     }
     if ($delegate->email) {
         $return .= '<a target="_blank" href="mailto:' . $delegate->email . '"><i class="fas fa-envelope"></i></a> ';
+    }
+    return $return;
+}
+
+function getCompetitionsNRWCA() {
+    return getCompetitionsIdByMask("NRRUWCA%");
+}
+
+function getCompetitionsNRWCABEST() {
+    return getCompetitionsIdByMask("NRRUWCA%BEST");
+}
+
+function getCompetitionsNRWCAAVG() {
+    return getCompetitionsIdByMask("NRRUWCA%AVG");
+}
+
+function getCompetitionsIdByMask($mask) {
+    $mask = \db::escape($mask);
+    $rows = \db::rows("
+        SELECT id 
+          FROM unofficial_competitions 
+         WHERE rankedID LIKE '$mask'");
+    $return = [];
+    foreach ($rows as $row) {
+        $return[] = $row->id;
     }
     return $return;
 }

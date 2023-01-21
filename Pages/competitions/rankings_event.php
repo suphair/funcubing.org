@@ -33,7 +33,10 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($ratings[$event_select->id][$type] ?? [] as $rating) { ?>
+        <?php
+        $competitions_exclude = unofficial\getCompetitionsNRWCA();
+        foreach ($ratings[$event_select->id][$type] ?? [] as $rating) {
+            ?>
             <tr>
                 <td >
                     <?= $rating->order; ?>
@@ -51,7 +54,7 @@
                     <?= $rating->result ?>
                 </td>
                 <td>
-                    <?php if (in_array($rating->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
+                    <?php if (in_array($rating->competition_id, $competitions_exclude)) { ?>
                         <?= $rating->competition_name ?>
                     <?php } else { ?>
                         <a href="<?= PageIndex() ?>competitions/<?= $rating->competition_secret ?>">

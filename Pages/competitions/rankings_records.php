@@ -17,6 +17,7 @@
     </thead>
     <tbody>
         <?php
+        $competitions_exclude = unofficial\getCompetitionsNRWCA();
         $broken_out = [];
         $record_code_types = ['best', 'average'];
         foreach ($events_dict as $event) {
@@ -31,7 +32,7 @@
             foreach ($record_types as $type => $record) {
                 $r++;
                 if ($record) {
-                    if ($broken and in_array($record->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) {
+                    if ($broken and in_array($record->competition_id, $competitions_exclude)) {
                         continue;
                     } else {
                         $broken_out[$event->code][$record_code_types[$r]] = true;
@@ -53,7 +54,7 @@
                             <?= $record->result ?>
                         </td>
                         <td>
-                            <?php if (in_array($record->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
+                            <?php if (in_array($record->competition_id, $competitions_exclude)) { ?>
                                 <?= $record->competition_name ?>
                             <?php } else { ?>
                                 <a href="<?= PageIndex() ?>competitions/<?= $record->competition_secret ?>">
@@ -123,7 +124,7 @@
                             </a>
                         </td>
                         <td>
-                            <?php if (in_array($row->competition_id, explode(',', config::get('MISC', 'competition_exclude')))) { ?>
+                            <?php if (in_array($row->competition_id, $competitions_exclude)) { ?>
                                 <?= $row->competition_name ?>
                             <?php } else { ?>
                                 <a href="<?= PageIndex() ?>competitions/<?= $row->competition_secret ?>">

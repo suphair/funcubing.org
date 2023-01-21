@@ -38,7 +38,7 @@ $wca = unofficial\get_wca($FCID);
             select 'WCA' source, eventId, best, 'average' type from RanksAverage where lower(personId) = lower('$wca->id')") as $row) {
             if ($row->eventId == '333fm' and $row->type == 'single') {
                 $row->format = $row->best;
-            }if ($row->eventId == '333mbf') {
+            } elseif ($row->eventId == '333mbf') {
                 $row->format = multiblind_to_string($row->best);
             } else {
                 $row->format = santiceconds_to_string($row->best);
@@ -144,16 +144,17 @@ foreach ($results as $result) {
     </thead>
     <tbody>
         <?php
+        $competitions_exclude = unofficial\getCompetitionsNRWCA();
         foreach ($events_dict as $event_att) {
             if ($event_att->special) {
                 continue;
             }
-            if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
+            if (!in_array($ratings[$event_att->id]['best'][$FCID]->competition_id ?? false, $competitions_exclude)) {
                 $rating_best = $ratings[$event_att->id]['best'][$FCID] ?? false;
             } else {
                 $rating_best = false;
             }
-            if (!in_array($ratings[$event_att->id]['average'][$FCID]->competition_id ?? false, explode(',', \config::get('MISC', 'competition_exclude')))) {
+            if (!in_array($ratings[$event_att->id]['average'][$FCID]->competition_id ?? false, $competitions_exclude)) {
                 $rating_average = $ratings[$event_att->id]['average'][$FCID] ?? false;
             } else {
                 $rating_average = false;

@@ -130,11 +130,20 @@ foreach ($events as $event) {
             }
             if ($event->time_limit) {
                 $pdf->SetFont('msserif', '', 8);
-                if ($RU) {
-                    $lat = 'Лимит по времени ' . $event->time_limit . ($event->cumulative ? ' суммарно' : '');
-                } else {
-                    $lat = 'Time limit ' . $event->time_limit . ($event->cumulative ? ' in total' : '');
+
+                if ($event->time_limit or $event->time_limit_cumulative) {
+                    $lat = $RU ? 'Лимит по времени ' : 'Time limit ';
                 }
+                if ($event->time_limit) {
+                    $lat .= $event->time_limit;
+                }
+                if ($event->time_limit and $event->time_limit_cumulative) {
+                    $lat .= $RU ? ' и ' : ' & ';
+                }
+                if ($event->time_limit_cumulative) {
+                    $lat .= $event->time_limit_cumulative . ($RU ? ' суммарно' : ' in total');
+                }
+
                 $pdf->Text($point[0] + 26, $point[1] + $Ry + $k * 16 + 1.4, iconv('utf-8', 'windows-1251', $lat));
             }
             $pdf->SetFont('Arial', '', 14);

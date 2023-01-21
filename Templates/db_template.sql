@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Thu, 15 Dec 2022 04:35:06 +0000
+-- Date: Sat, 21 Jan 2023 07:00:23 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -135,6 +135,21 @@ CREATE TABLE `dict_countries` (
   `code` varchar(255) DEFAULT NULL,
   UNIQUE KEY `ISO2` (`iso2`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `fc_best`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `fc_best` (
+  `fc_id` varchar(4) DEFAULT NULL,
+  `wca_id` varchar(10) DEFAULT NULL,
+  `event` varchar(32) DEFAULT NULL,
+  `single` int(11) DEFAULT NULL,
+  `average` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -479,6 +494,7 @@ CREATE TABLE `unofficial_competitions` (
   `points` int(11) DEFAULT NULL,
   `adapter` varchar(255) DEFAULT NULL,
   `adapter_url` varchar(255) DEFAULT NULL,
+  `rankedCompetitors` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `secret` (`secret`),
   UNIQUE KEY `rankedID` (`rankedID`)
@@ -500,7 +516,7 @@ CREATE TABLE `unofficial_competitors` (
   `card` int(11) DEFAULT NULL,
   `non_resident` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `competition_name` (`competition`,`name`) USING BTREE,
+  UNIQUE KEY `competition_name` (`competition`,`name`),
   KEY `competition` (`competition`),
   CONSTRAINT `unofficial_competitors_ibfk_1` FOREIGN KEY (`competition`) REFERENCES `unofficial_competitions` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
@@ -601,6 +617,7 @@ CREATE TABLE `unofficial_events` (
   `rounds` int(11) DEFAULT NULL,
   `result_dict` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
+  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `competition_event` (`competition`,`event_dict`) USING BTREE,
   KEY `competition` (`competition`),
@@ -649,7 +666,7 @@ CREATE TABLE `unofficial_events_rounds` (
   `comment` varchar(255) DEFAULT NULL,
   `cutoff` varchar(255) DEFAULT NULL,
   `time_limit` varchar(255) DEFAULT '10:00',
-  `cumulative` bit(1) DEFAULT NULL,
+  `time_limit_cumulative` varchar(255) DEFAULT NULL,
   `next_round_value` int(11) DEFAULT '75',
   `next_round_procent` bit(1) DEFAULT b'1',
   PRIMARY KEY (`id`),
@@ -743,7 +760,7 @@ CREATE TABLE `unofficial_points_dict` (
   `description` text,
   `descriptionRU` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -864,6 +881,20 @@ CREATE TABLE `wca_api_logs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `wca_best`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wca_best` (
+  `wca_id` varchar(10) DEFAULT NULL,
+  `event` varchar(32) DEFAULT NULL,
+  `single` int(11) DEFAULT NULL,
+  `average` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `wca_oauth_logs`
 --
 
@@ -890,4 +921,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Thu, 15 Dec 2022 04:35:07 +0000
+-- Dump completed on: Sat, 21 Jan 2023 07:00:23 +0000

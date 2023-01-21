@@ -109,12 +109,12 @@ $competitors = unofficial\getCompetitorsByEventround($event_round->id, $event);
                 <?php } ?>
                 <?php if ($event->format == 'average') { ?>
                     <td class='table_new_bold'>
-                        <?= $competitor->average ?? 0 ?>
+                        <?= $competitor->average ?? false ?>
                     </td>
                 <?php } ?>
                 <?php if ($event->format == 'mean') { ?>
                     <td class=' table_new_bold'>
-                        <?= $competitor->mean ?? 0 ?>
+                        <?= $competitor->mean ?? false ?>
                     </td>
                 <?php } ?>
                 <td class=' <?= $event->format == 'best' ? 'table_new_bold' : '' ?>'>
