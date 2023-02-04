@@ -27,10 +27,13 @@ function competitions($competition_id = false) {
                     coalesce(dc.name$RU, dc.name) dc_name,
                     competitor.wcaid is not null my_roles_competitor,
                     competitors.count competitors_count,
-                    p.code points
+                    p.code points,
+                    case when wrong_attempts.competition is not null then 1 else 0 end wrong_attempts
                 FROM unofficial_competitions c 
                 left outer join unofficial_points_dict p on p.id = c.points
                 left outer JOIN dict_competitors dc on dc.wid=c.competitor 
+                left outer JOIN (select distinct `competition` from `wrong_attempts`) wrong_attempts
+                    ON wrong_attempts.competition = coalesce(c.rankedID,c.secret)
                 left outer JOIN ( 
                     select distinct wca.wcaid,cr.competition
                         from `unofficial_competitors` cr 
@@ -71,6 +74,7 @@ function competitions($competition_id = false) {
         ]];
         $competition_key->my_roles = null;
         $competition_key->competitors_count = $competition->competitors_count;
+        $competition_key->wrong_attempts = $competition->wrong_attempts;
 
         if ($wca_id) {
             $competition_key->my_roles = (object) [

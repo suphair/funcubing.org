@@ -129,7 +129,8 @@ $('[data-results]').submit(function () {
     if (wrong >= 2 && empty == 0) {
         average = -1;
     }
-    if (complete < 3) {
+    
+    if (wrong > 0 && empty==0) {
         mean = -1;
     }
 

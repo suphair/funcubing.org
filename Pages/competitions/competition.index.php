@@ -69,7 +69,16 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 </a>
             <?php } ?>
             <hr>
-            <?php
+            <?php if ($grand->edit ?? false and $competition->wrong_attempts) { ?>
+                <span style="background-color:orange">
+                    <a 
+                        class="<?= $section == 'wrongresults' ? 'select' : '' ?>"
+                        href="<?= PageIndex() . "competitions/$secret/wrongresults" ?>">
+                        <i title="Wrong Results" class="fas fa-bug"></i>
+                    </a>
+                </span>
+                <?php
+            }
             $ee = true;
             foreach ($comp_data->events as $event_a) {
 
@@ -101,6 +110,8 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                 include 'competition.records.php';
             } elseif ($section == 'psychsheet' and $competition->is_ranked) {
                 include 'competition.event.psychsheet.php';
+            } elseif ($section == 'wrongresults') {
+                include 'competition.wrongresults.php';
             } else {
                 if (($comp->my or $comp->organizer) and $section == 'result') {
                     include 'competition.event.index.php';

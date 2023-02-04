@@ -101,6 +101,7 @@ if ($secret == 'competitor') {
                 $section = 'info';
             case 'competitors':
             case 'psychsheet':
+            case 'wrongresults':
             case 'records':
             case 'events':
             case 'points':

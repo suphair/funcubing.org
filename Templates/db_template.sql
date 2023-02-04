@@ -3,7 +3,7 @@
 -- Host: localhost	Database: suphair_funcubing
 -- ------------------------------------------------------
 -- Server version 	5.7.26
--- Date: Sat, 21 Jan 2023 07:00:23 +0000
+-- Date: Sat, 04 Feb 2023 04:58:26 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -149,7 +149,7 @@ CREATE TABLE `fc_best` (
   `event` varchar(32) DEFAULT NULL,
   `single` int(11) DEFAULT NULL,
   `average` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `mosaic_schemas` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `step_schema` (`step_id`,`schema`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -393,7 +393,7 @@ CREATE TABLE `mosaic_steps` (
   UNIQUE KEY `image_step` (`image_id`,`step`),
   KEY `image` (`image_id`),
   CONSTRAINT `mosaic_steps_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `mosaic_images` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -490,11 +490,11 @@ CREATE TABLE `unofficial_competitions` (
   `ranked` bit(1) DEFAULT NULL,
   `rankedApproved` bit(1) DEFAULT NULL,
   `rankedID` varchar(255) DEFAULT NULL,
+  `rankedCompetitors` int(11) DEFAULT NULL,
   `logo` varchar(256) DEFAULT NULL,
   `points` int(11) DEFAULT NULL,
   `adapter` varchar(255) DEFAULT NULL,
   `adapter_url` varchar(255) DEFAULT NULL,
-  `rankedCompetitors` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `secret` (`secret`),
   UNIQUE KEY `rankedID` (`rankedID`)
@@ -617,7 +617,7 @@ CREATE TABLE `unofficial_events` (
   `rounds` int(11) DEFAULT NULL,
   `result_dict` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `competition_event` (`competition`,`event_dict`) USING BTREE,
   KEY `competition` (`competition`),
@@ -891,7 +891,7 @@ CREATE TABLE `wca_best` (
   `event` varchar(32) DEFAULT NULL,
   `single` int(11) DEFAULT NULL,
   `average` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -912,6 +912,38 @@ CREATE TABLE `wca_oauth_logs` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `wrong_attempts`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wrong_attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `competition` varchar(255) DEFAULT NULL,
+  `event` varchar(255) DEFAULT NULL,
+  `round` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `fc_id` varchar(4) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `attempt1` int(11) DEFAULT NULL,
+  `attempt2` int(11) DEFAULT NULL,
+  `attempt3` int(11) DEFAULT NULL,
+  `attempt4` int(11) DEFAULT NULL,
+  `attempt5` int(11) DEFAULT NULL,
+  `attempts_sum` int(11) DEFAULT NULL,
+  `cutoff_attempts` int(11) DEFAULT NULL,
+  `is_wrong1` bit(1) DEFAULT NULL,
+  `is_wrong2` bit(1) DEFAULT NULL,
+  `is_wrong3` bit(1) DEFAULT NULL,
+  `is_wrong4` bit(1) DEFAULT NULL,
+  `is_wrong5` bit(1) DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
+  `is_ranked` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -921,4 +953,4 @@ CREATE TABLE `wca_oauth_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Sat, 21 Jan 2023 07:00:23 +0000
+-- Dump completed on: Sat, 04 Feb 2023 04:58:26 +0000

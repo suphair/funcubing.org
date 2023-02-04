@@ -485,3 +485,12 @@ function getCompetitionsIdByMask($mask) {
     }
     return $return;
 }
+
+function getWrongResults($comp_id) {
+    $rows = \db::rows("SELECT competition, event, round, name, fc_id, type,value,
+                attempt1,attempt2,attempt3,attempt4,attempt5,
+                attempts_sum,cutoff_attempts,
+                is_wrong1,is_wrong2,is_wrong3,is_wrong4,is_wrong5 FROM wrong_attempts
+                WHERE competition='$comp_id'");
+    return $rows;
+}

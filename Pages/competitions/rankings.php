@@ -51,7 +51,7 @@ foreach (['average', 'best'] as $type_att) {
     }
 
     foreach ($history as $event_att => $a) {
-        $best = 999999;
+        $best = 99999999999999;
         foreach ($a[$type_att] ?? [] as $i => $row) {
             if (strpos($row->result, ' ') !== -1) {
                 $result_int = $row->order;

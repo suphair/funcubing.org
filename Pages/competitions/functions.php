@@ -856,7 +856,7 @@ function getText($code) {
     return $text;
 }
 
-function getCompetitionPointsTop10($competition_id) {
+function getCompetitionPointsTop12($competition_id) {
     $RU = t('', 'RU');
     $rows = \db::rows("
         select 
@@ -967,7 +967,7 @@ function getCompetitionPointsAll($competition_id) {
         join `unofficial_competitions` c on c.id=e.competition
         group by e.event_dict,e.competition) counts on counts.id=c.id and counts.event_dict=e.event_dict
         join `unofficial_events_dict` ed on ed.id=e.event_dict
-        where c.id='$competition_id'
+        where c.id='$competition_id' and ed.special = 0
         order by ed.order");
 
     $results = (object) ['head' => [], 'competitors' => []];
@@ -1064,4 +1064,13 @@ function getCompetitorWcaName($wcaid, $fcid) {
         $name = transliterate($nameRU);
     }
     return $name;
+}
+
+function getEvent($events_dict, $event_id) {
+    foreach ($events_dict as $event) {
+        if ($event->id === $event_id or $event->code === $event_id) {
+            return $event;
+        }
+    }
+    return null;
 }

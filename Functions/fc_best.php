@@ -12,6 +12,9 @@ function reload_fc_best_full() {
                     if (isset($row->average)) {
                         db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
                                 . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->average)");
+                    } elseif (isset($row->mean)) {
+                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
+                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->mean)");
                     } else {
                         db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single ) "
                                 . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single)");
@@ -42,10 +45,10 @@ function fork_api_competitors() {
                 else replace(replace(best,'.',''),':','') + 0 
             end single_order,
             case 
-                when best like '%:__' then replace(concat(average,'00'),':','') 
-                else replace(replace(average,'.',''),':','') + 0 
+                when best like '%:__' then replace(concat(coalesce(average,mean),'00'),':','') 
+                else replace(replace(coalesce(average,mean),'.',''),':','') + 0 
             end average_order,
-            result.average,
+            coalesce(average,mean) as average,
             ed.code event,
             wca.wcaid,
             wca.nonwca
@@ -57,7 +60,7 @@ function fork_api_competitors() {
                 LEFT OUTER JOIN `unofficial_events` event on event.id=r.event
                 LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict
                 LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
-        WHERE coalesce(ed.special, false) = false
+        WHERE ed.special = 0
             and comp.rankedApproved = 1
         ORDER BY c.name desc, comp.date desc, ed.order");
 

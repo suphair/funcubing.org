@@ -82,6 +82,13 @@ foreach ($competitions as $c => $competition) {
                     <?php if (!$competition->is_publish) { ?>
                         <i title="<?= t('Hidden', 'Спрятано') ?>" class="far fa-eye-slash"></i>
                     <?php } ?>
+                    <?php if ($federation or $admin) { ?>
+                        <?php if ($competition->wrong_attempts) { ?>
+                            <a href="<?= PageIndex() ?>competitions/<?= $competition->id ?>/wrongresults">
+                                <i style='color:var(--red)' title="Wrong Results" class="fas fa-bug"></i>
+                            </a>
+                        <?php } ?>
+                    <?php } ?>
                 </td>
                 <td>
                     <?= dateRange($competition->start_date, $competition->end_date) ?>
@@ -106,8 +113,14 @@ foreach ($competitions as $c => $competition) {
         </nobr>  
     </td>
     <td>
-        <?= $competition->competitors_count ?>
-    </td>
+        <?= $competition->competitors_count ?> 
+        <?php
+        if ($ranked and $competition->competitors_count
+                and strtotime($competition->start_date) > strtotime(date('Y-m-d'))) {
+            ?>
+            / <?= $competition->competitor_limit ?>
+        <?php } ?>
+    </td> 
     </tr>
 <?php } ?>
 </tbody>

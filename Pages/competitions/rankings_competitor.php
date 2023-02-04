@@ -297,9 +297,10 @@ foreach ($events_dict as $event_dict) {
                     $results_events[$event_dict->id][$r]->pb_single = true;
                     $prev_single = $current_single;
                 }
+
                 if (!$prev_average or ($current_average and $current_average < $prev_average)) {
                     $results_events[$event_dict->id][$r]->pb_average = true;
-                    $prev_average = $result->average . $result->mean;
+                    $prev_average = str_replace(['.', ':'], '', $result->average . $result->mean);
                 }
             }
 

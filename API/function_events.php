@@ -22,7 +22,9 @@ function events($competition_id, $event_id) {
                     fd.format format_type,
                     fd.cutoff_name format_cutoff,
                     resd.name result,
-                    resd.code result_type
+                    resd.code result_type,
+                    fd.attempts attempts,
+                    fd.cutoff_attempts cutoff_attempts
                     from `unofficial_events_rounds` er
             join `unofficial_events` e on e.`id`= er.`event`
             join `unofficial_competitions` c on c.`id`= e.`competition`
@@ -58,6 +60,9 @@ function events($competition_id, $event_id) {
         $event_key->format = $event->cutoff ? "$event->format_cutoff / $event->format" : $event->format;
         $event_key->format_type = $event->format_type;
         $event_key->attempts = $event->attempts + 0;
+        if ($event->cutoff_attempts) {
+            $event_key->cutoff_attempts = $event->cutoff_attempts + 0;
+        }
         $event_key->result = $event->result;
         $event_key->result_type = $event->result_type;
 

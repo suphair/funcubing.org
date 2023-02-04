@@ -17,12 +17,12 @@ function competitors($competitor_id = false) {
             coalesce(comp.rankedID,comp.secret) competition_id,
             result.best single,
             case 
-                when best like '%:__' then replace(concat(best,'00'),':','') 
+                when best like '%:__' then replace(concat(best,'00'),':','') + 0 
                 when best like '%/% % ' then result.`order` 
                 else replace(replace(best,'.',''),':','') + 0 
             end single_order,
             case 
-                when best like '%:__' then replace(concat(average,'00'),':','') 
+                when best like '%:__' then replace(concat(average,'00'),':','') + 0
                 else replace(replace(average,'.',''),':','') + 0 
             end average_order,
             result.average,
@@ -38,7 +38,7 @@ function competitors($competitor_id = false) {
                 LEFT OUTER JOIN `unofficial_events_dict` ed on ed.id=event.event_dict
                 LEFT OUTER JOIN unofficial_fc_wca wca on wca.FCID = c.FCID
         WHERE lower('$competitor_id') in (lower(coalesce(c.FCID,'XXXX')), lower(c.ID), '')
-            and coalesce(ed.special, false) = false 
+            and coalesce(ed.special, false) = false AND ed.code='333'
         ORDER BY c.name desc, comp.date desc, ed.order");
 
     $competitors_key = [];
@@ -62,11 +62,6 @@ function competitors($competitor_id = false) {
             } else {
                 $competitors_key[$competitor->name]->wca_id = $competitor->wcaid;
             }
-        }
-        if ($competitor->wcaid
-                and!isset($competitors_key[$competitor->name]->competitions['BEST_FROM_WCA'])
-                and isset($wca_best[$competitor->wcaid])) {
-            $competitors_key[$competitor->name]->competitions['BEST_FROM_WCA'] = $wca_best[$competitor->wcaid];
         }
 
         if (!isset($competitors_key[$competitor->name]->competitions[$competitor->competition_id])) {

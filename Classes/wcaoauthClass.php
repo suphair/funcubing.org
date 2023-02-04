@@ -91,6 +91,7 @@ class wcaoauth {
             curl_close($ch);
 
             if (isset(json_decode($result)->error)) {
+                die($result);
                 trigger_error("wcaoauth.getToken: $result <br>" . print_r($postdata, true), E_USER_ERROR);
             }
 

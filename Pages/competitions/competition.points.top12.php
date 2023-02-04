@@ -1,5 +1,5 @@
 <?php
-$points_data = unofficial\getCompetitionPointsTop10($comp->id);
+$points_data = unofficial\getCompetitionPointsTop12($comp->id);
 ?>
 <div>
     <?= $points->description ?>

@@ -28,7 +28,7 @@ foreach ($competitors as $competitor) {
         $name = str_replace('ë', 'ё', $name);
         
         /*PATCH*/
-        db::exec("UPDATE unofficial_competitors SET name = replace(name,'ë', 'ё')");
+        db::exec("UPDATE unofficial_competitors SET name = trim(replace(name,'ë', 'ё'))");
         
         if (strlen($name) == 4) {
             $FCID = $name;
