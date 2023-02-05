@@ -2,11 +2,6 @@
 /Images/
 /Sessions/
 /Config/
-/Classes/fpdf182/
-/Classes/errors/
-/Styles/fontawesome-free-5.13.0-web/
-/Styles/flag-icon-css/
-/Scripts/
-/Classes/mysqldumpClass.php
-/.well-known/
-/vendor
+
+/Classes/errors/.htpasswd
+/Classes/errors/logs/

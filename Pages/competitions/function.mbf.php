@@ -38,7 +38,7 @@ function time_to_int($time) {
 function wcaResult($number, $solved, $time) {
     $missed = max($number - $solved, 0);
     $difference = $solved - $missed;
-    if ($difference <= 0) {
+    if ($difference < 0 or $solved == 1) {
         return "0999999900";
     }
     return sprintf("0%02d%05d%02d", 99 - $difference, $time, $missed);
@@ -47,9 +47,10 @@ function wcaResult($number, $solved, $time) {
 function printResult($number, $solved, $time) {
     $missed = $number - $solved;
     $difference = $solved - $missed;
-    if ($difference <= 0) {
+    if ($difference < 0 or $solved == 1) {
         return 'DNF';
     }
     return sprintf("%d/%d %s", $solved, $number, time_to_str($time));
 }
+
 ?>
