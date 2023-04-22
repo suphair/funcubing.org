@@ -382,7 +382,7 @@ foreach ($events_dict as $event_dict) {
             <th>
                 <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
             </th>
-            <th></th>
+            <!--<th></th>-->
         </tr>    
     </thead>
     <tbody>
@@ -405,14 +405,14 @@ foreach ($events_dict as $event_dict) {
                 <td>
                     <?php unofficial\getFavicon($competition->website, true) ?>
                 </td>
-                <td>
+                <!--<td>
                     <?php if ($competitor_ids[$competition->id] ?? false) { ?>
                         <a target="_blank" href="<?= PageIndex() . "competitions/competitor/" . $competitor_ids[$competition->id] . "?action=certificate" ?>">
                             <i class="fas fa-certificate"></i>
                             <?= t('certificate', 'сертификат') ?>
                         </a>
                     <?php } ?>
-                </td>     
+                </td> -->    
             </tr>
         <?php } ?>
     </tbody>

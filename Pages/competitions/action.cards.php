@@ -128,12 +128,10 @@ foreach ($events as $event) {
                     $pdf->Line($point[0], $point[1] + $Ry + 0.8 + $k * 16, $point[0] + 25, $point[1] + $Ry + 0.8 + $k * 16);
                 }
             }
-            if ($event->time_limit) {
+            if ($event->time_limit or $event->time_limit_cumulative) {
                 $pdf->SetFont('msserif', '', 8);
+                $lat = $RU ? 'Лимит по времени ' : 'Time limit ';
 
-                if ($event->time_limit or $event->time_limit_cumulative) {
-                    $lat = $RU ? 'Лимит по времени ' : 'Time limit ';
-                }
                 if ($event->time_limit) {
                     $lat .= $event->time_limit;
                 }

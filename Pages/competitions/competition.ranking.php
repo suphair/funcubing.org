@@ -5,13 +5,13 @@ $delegate_roles = unofficial\getDelegateRolesDict();
 
 <h2>
     <i class="fas fa-cog"></i>
-    Настройки для представителя Федерации Спидкубинга
+    <?= t('Official settings', 'Официальные настройки') ?>
 </h2>
 <form method="POST" action="?rankings_settings">
     <input hidden name='return_refer' value="<?= PageIndex() . "competitions/" . $comp->secret_base . "/ranking" ?>">
     <table class="table_info">
         <tr>
-            <td>Включить в рейтинг Федерации Спидкубинга</td>
+            <td>Это официальное соревнование</td>
             <td><input name="ranked" type="checkbox" <?= $comp->ranked ? 'checked' : '' ?>></td>
         </tr>
         <tr>
@@ -95,7 +95,7 @@ $delegate_roles = unofficial\getDelegateRolesDict();
     </table> 
 </form>
 <i class="fas fa-user-cog"></i>
-<a href="<?= PageIndex() ?>competitions/rankings/delegates">Управление делегатами Федерации Спидкубинга</a>
+<a href="<?= PageIndex() ?>competitions/rankings/delegates">Управление делегатами</a>
 <hr>
 <h2>
     <i class='fas fa-user-tie'></i> 
@@ -146,5 +146,19 @@ $delegate_roles = unofficial\getDelegateRolesDict();
 
 </tbody>
 </table>
+<hr>
+<h2>
+    <i class="fas fa-random"></i>
+    <?= t('Scrambles', 'Скрамблы') ?>
+</h2>
+Interchange/*.json
+<form method='POST' action='?scrambles'>
+    <textarea name='json'><?= $json_scrambles->json ?? false ?></textarea>
+    <input hidden name='competition' value='<?= $competition->local_id ?>'>
+    <button>Сохранить</button>
+</form>
+<?php if ($json_scrambles ?? false) { ?>
+    <a target="_blank" href="<?= PageIndex() ?>competitions/<?= $competition->id ?>/scrambles">Открыть вкладку Скрамблы</a>
+<?php } ?>
 
 

@@ -1,10 +1,5 @@
 
 <?= trim(explode('(', $me->name)[0]) ?>
-<?php if (!$me->wca_id) { ?>
-    <sup style="color:green">
-        <?= $me->id ?>
-    </sup>
-<?php } ?>
 
 <a href="<?= PageIndex() ?>competitor/?action=logout">
     <i class="fas fa-sign-out-alt"></i>
@@ -14,9 +9,8 @@
 <?php if (\api\get_me()->is_admin) { ?>
     <i class="fas fa-user-tag"></i> Admin
 <?php } elseif (\api\get_me()->is_federation) { ?>
-    <i class="fas fa-user-tag"></i> Federation
-<?php } ?>
-<?php if ($comp->my ?? false) { ?>
+    <i class="fas fa-user-tag"></i> Senior Delegate
+<?php } elseif ($comp->my ?? false) { ?>
     <i class="fas fa-user-tag"></i> Main Organizer
 <?php } elseif ($comp->organizer ?? false) { ?>
     <i class="fas fa-user-tag"></i> Organizer

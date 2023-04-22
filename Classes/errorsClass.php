@@ -107,7 +107,7 @@ class errors {
                 or $errno == E_USER_ERROR
                 or $errno == E_CORE_ERROR
                 or $errno == E_COMPILE_ERROR) {
-            exit("<script>alert('Error: #$number')</script><p>Error: #$number</p>");
+            exit("<script>alert('Error($errno): #$number')</script><p>Error: #$number</p>");
         } else {
             return false;
         }

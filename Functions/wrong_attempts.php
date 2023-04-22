@@ -20,6 +20,7 @@ function wrong_attempts() {
                 ];
             }
         }
+
         foreach ($results as $result) {
             $result_limits[$result->event_id][$result->id] = (object) [
                         'name' => $result->name,
@@ -131,10 +132,50 @@ function wrong_attempts() {
                                 $wrong_cutoff->wrong_attempts[$a] = 1;
                             }
                         }
-                        if (sizeof($wrong_cutoff->wrong_attempts)) {
-                            $wrong_attempts[] = $wrong_cutoff;
+                    }
+
+                    if (sizeof($wrong_cutoff->wrong_attempts)) {
+                        $wrong_attempts[] = $wrong_cutoff;
+                    }
+                }
+
+                $attempts = $event_limits[$event]->attempts ?? 0;
+                $wrong_empty = (object) [
+                            'competition' => $competition->id,
+                            'event' => explode('_', $event)[0],
+                            'round' => explode('_', $event)[1],
+                            'attempt1' => $competitor->attempts[0] ?? 0,
+                            'attempt2' => $competitor->attempts[1] ?? 0,
+                            'attempt3' => $competitor->attempts[2] ?? 0,
+                            'attempt4' => $competitor->attempts[3] ?? 0,
+                            'attempt5' => $competitor->attempts[4] ?? 0,
+                            'wrong_attempts' => [],
+                            'value' => $attempts,
+                            'type' => 'empty_attempt',
+                            'name' => $competitor->name,
+                            'fc_id' => $competitor->fc_id,
+                            'attempts_sum' => 0,
+                            'is_ranked' => $competition->is_ranked + 0,
+                            'cutoff_attempts' => 0
+                ];
+                if ($cutoff and!$break_cutoff) {
+                    for ($a = 1; $a < $cutoff_attempts; $a++) {
+                        if ($competitor->attempts[$a] == 0) {
+                            $wrong_empty->wrong_attempts[$a] = 1;
                         }
                     }
+                }
+
+                if (!$cutoff or ($cutoff and $break_cutoff)) {
+                    for ($a = 1; $a < $attempts; $a++) {
+                        if ($competitor->attempts[$a] == 0) {
+                            $wrong_empty->wrong_attempts[$a] = 1;
+                        }
+                    }
+                }
+
+                if (sizeof($wrong_empty->wrong_attempts)) {
+                    $wrong_attempts[] = $wrong_empty;
                 }
             }
         }

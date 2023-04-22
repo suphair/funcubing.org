@@ -45,12 +45,12 @@ $organizers = db::rows("SELECT "
                     <td>
                     </td>
                     <td>
-                        <input type="hidden" name="wcaid" value="<?= $organizer->wca_id ?>">
+                        <input type="hidden" name="wcaid" value="<?= $organizer->wca_id ? $organizer->wca_id : $organizer->wid ?>">
                         <button class="delete">
                             <i class="fas fa-user-minus"></i>
                             <?= t('Remove', 'Исключить') ?>
                         </button>
-                        <?= $organizer->name ?> - <?= $organizer->wca_id ?>
+                        <?= $organizer->name ?> - <?= $organizer->wca_id ? $organizer->wca_id : $organizer->wid ?>
                     </td>
                 </tr>
             </form>
@@ -61,13 +61,25 @@ $organizers = db::rows("SELECT "
 
             </td>
             <td>
-                WCA ID <input name="wcaid" required="" value="">
+                WCA ID (<?= t('or User ID', 'или User ID') ?>) <input name="wcaid" required="" value="">
                 <button>
                     <i class="fas fa-user-plus"></i>
                     <?= t('Add', 'Добавить') ?>
                 </button>
             </td>
         </tr>
+        <?php if (t(false, true)) { ?>
+            <tr>
+                <td></td>
+                <td>
+                    Как добавить организатора без WCA ID:<br>
+                    1) Организатор регистрируется на сайте WCA<br>
+                    2) Организатор авторизуется на FunСubing через WCA<br>
+                    3) User ID отображается в подвале справа зелёным цветом<br>
+                    3) Организатор передаёт User ID Главному Организатору
+                </td>
+            </tr>
+        <?php } ?>
     </form>
     <form method="POST" action="?setting">
         <tr>

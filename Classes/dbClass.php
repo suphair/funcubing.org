@@ -11,6 +11,7 @@ class db {
     protected static $password;
     protected static $schema;
     protected static $port;
+    protected static $count = 0;
 
     private function __construct() {
         
@@ -92,6 +93,9 @@ class db {
             $error = "Query:<br>$sql<br>Error:<br>" . mysqli_error(self::$connection) . "<br>";
             trigger_error($error, E_USER_ERROR);
         }
+        self::$count++;
+        #echo "<hr>".self::$count."<pre>$sql</pre>";
+        
         return $result;
     }
 
@@ -136,6 +140,10 @@ class db {
         } else {
             trigger_error("$class not found", E_USER_ERROR);
         }
+    }
+
+    static function get_count() {
+        return self::$count;
     }
 
 }

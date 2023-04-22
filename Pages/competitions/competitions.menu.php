@@ -12,11 +12,11 @@ $url_base = PageIndex() . "competitions";
 ?>
 <div class="menu">
     <a href="<?= $url_base ?>?show=ranked" class="<?= $ranked ? 'select' : '' ?>">
-        <?= t("Speedcubing Federation", 'Федерация Спидкубинга') ?>
+        <?= t("Official", 'Официальные') ?>
     </a>
     <?php if ($me) { ?>
         <a href="<?= $url_base ?>?show=mine" class="<?= $mine ? 'select' : '' ?>">
-            <?= t('My competition', 'Мои соревнования') ?>
+            <?= t('My competitions', 'Мои соревнования') ?>
         </a>
     <?php } ?>
     <a href="<?= $url_base ?>?show=all" class="<?= $all ? 'select' : '' ?>">

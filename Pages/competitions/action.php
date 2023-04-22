@@ -4,7 +4,7 @@ $me = wcaoauth::me();
 $secret = db::escape(request(1));
 $action = filter_input(INPUT_GET, 'action');
 $rounds_dict = unofficial\getRoundsDict();
-$notAuthorized = in_array($action, ['result', 'projector', 'mobile', 'certificates','competitor']);
+$notAuthorized = in_array($action, ['result', 'projector', 'mobile', /* 'certificates', */ 'competitor', 'scrambles']);
 
 if (!$secret) {
     include 'action.wrong.php';
@@ -55,12 +55,15 @@ if (!$secret) {
                 include 'action.export.php';
                 break;
             case 'scoketaker':
-                $event_code=db::escape(request(3));
-                if($event_code=='333mbf'){
+                $event_code = db::escape(request(3));
+                if ($event_code == '333mbf') {
                     include 'action.scoketaker.333mbf.php';
-                }else{
+                } else {
                     include 'action.scoketaker.php';
                 }
+                break;
+            case 'scrambles':
+                include 'action.scrambles.php';
                 break;
             default:
                 include 'action.wrong.php';

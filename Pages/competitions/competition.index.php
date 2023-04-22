@@ -1,7 +1,6 @@
 <?php
 $code = request(3);
 $round = request(4);
-
 if ($event_round_this) {
     $event_dict = $comp_data->event_dict->by_code[$code]->id ?? FALSE;
     if (!$round) {
@@ -23,6 +22,9 @@ if ($event_round_this) {
             }
         }
         $formats = array_unique([$event->format, 'best']);
+        if ($event->attempts == 3 and $event->format == 'best') {
+            $formats[] = 'mean';
+        }
     }
 }
 $records = unofficial\getRankedRecordbyCompetition($comp->id);
@@ -50,11 +52,18 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
                     href="<?= PageIndex() . "competitions/$secret/points" ?>"
                     ><i title='<?= t('Overall standings', 'Общий зачёт'); ?>' class="<?= $points_dict[$competition->points]->icon ?>"></i></a>
                 <?php } ?>
-                <?php if ($competition->is_ranked) { ?>
+                <?php if ($competition->is_ranked and!$competition->is_approved) { ?>
                 <a 
                     class="<?= $section == 'psychsheet' ? 'select' : '' ?>"
                     href="<?= PageIndex() . "competitions/$secret/psychsheet" ?>">
                     <i title="Psych Sheet" class="fas fa-spa"></i> 
+                </a>
+            <?php } ?>
+            <?php if ($competition->is_approved and $json_scrambles) { ?>
+                <a 
+                    class="<?= $section == 'scrambles' ? 'select' : '' ?>"
+                    href="<?= PageIndex() . "competitions/$secret/scrambles" ?>">
+                    <i title="Scrambles" class="fas fa-random"></i> 
                 </a>
             <?php } ?>
             <?php if (sizeof($records)) { ?>
@@ -96,6 +105,8 @@ $records = unofficial\getRankedRecordbyCompetition($comp->id);
             <?php
             if ($section == 'info') {
                 include 'competition.info.php';
+            } elseif ($section == 'scrambles') {
+                include 'competition.scrambles.php';
             } elseif ($section == 'events') {
                 include 'competition.events.php';
             } elseif ($section == 'setting') {

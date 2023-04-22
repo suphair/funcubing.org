@@ -222,23 +222,28 @@ function getCompetitionData($id) {
                     . " unofficial_events.rounds event_rounds, "
                     . " unofficial_events.id, "
                     . " COALESCE(unofficial_events.result_dict, unofficial_events_dict.result_dict) result_dict, "
-                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name "
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name, "
+                    . " unofficial_events_rounds.round rounds_round, "
+                    . " unofficial_events_rounds.id  rounds_id "
                     . " FROM unofficial_events"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
+                    . " LEFT OUTER JOIN unofficial_events_rounds ON unofficial_events_rounds.event = unofficial_events.id"
                     . " WHERE unofficial_events.competition = $id"
                     . " ORDER BY unofficial_events_dict.`order` ");
     $data->events = [];
     foreach ($events as $event) {
         $event->extraevents = (strpos($event->image, 'ee-') !== false);
-        $data->events[$event->event_dict] = $event;
-        $data->events[$event->event_dict]->rounds = [];
-        foreach (\db::rows("SELECT round, id "
-                . " FROM unofficial_events_rounds"
-                . " WHERE event = $event->id") as $round) {
+        $round = (object) ['round' => $event->rounds_round, 'id' => $event->rounds_id];
+        unset($event->rounds_round);
+        unset($event->rounds_id);
+        if (!isset($data->events[$event->event_dict])) {
+            $data->events[$event->event_dict] = $event;
+            $data->events[$event->event_dict]->rounds = [];
+        }
+        if (isset($round->round)) {
             $data->events[$event->event_dict]->rounds[$round->round] = $round;
         }
     }
-
 
     $rounds = \db::rows("SELECT "
                     . " unofficial_events_dict.id event_dict,"
@@ -265,19 +270,24 @@ function getCompetitionData($id) {
         $data->event_rounds[$round->id] = $round;
         $data->rounds[$round->event_dict][$round->round] = new \stdClass();
         $data->rounds[$round->event_dict][$round->round]->round = $round;
-        foreach (\db::rows("SELECT "
-                . " unofficial_competitors_round.competitor id, "
-                . " unofficial_competitors_result.attempts, "
-                . " unofficial_competitors_result.place "
-                . " FROM unofficial_competitors_round"
-                . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor"
-                . " LEFT OUTER JOIN unofficial_competitors_result on unofficial_competitors_result.competitor_round = unofficial_competitors_round.id "
-                . " JOIN unofficial_events_rounds ON unofficial_competitors_round.round = unofficial_events_rounds.id"
-                . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID"
-                . " WHERE unofficial_events_rounds.event = $round->event "
-                . "AND unofficial_events_rounds.round = $round->round "
-                . "ORDER BY case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end") as $competitor) {
-            $data->rounds[$round->event_dict][$round->round]->competitors[$competitor->id] = $competitor;
+        $data->rounds[$round->event_dict][$round->round]->competitors = [];
+    }
+    foreach (\db::rows("SELECT "
+            . " unofficial_competitors_round.competitor id, "
+            . " unofficial_competitors_result.attempts, "
+            . " unofficial_competitors_result.place, "
+            . " unofficial_events.event_dict  as event_dict, "
+            . " unofficial_events_rounds.round as round "
+            . " FROM unofficial_competitors_round"
+            . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor"
+            . " LEFT OUTER JOIN unofficial_competitors_result on unofficial_competitors_result.competitor_round = unofficial_competitors_round.id "
+            . " JOIN unofficial_events_rounds ON unofficial_competitors_round.round = unofficial_events_rounds.id"
+            . " JOIN unofficial_events ON unofficial_events_rounds.event = unofficial_events.id"
+            . " LEFT OUTER JOIN unofficial_fc_wca on unofficial_fc_wca.FCID = unofficial_competitors.FCID"
+            . " WHERE unofficial_events.competition = $id"
+            . " ORDER BY case when 'RU'='$RU' then unofficial_competitors.name else coalesce(unofficial_fc_wca.wca_name,unofficial_competitors.name) end") as $competitor) {
+        if (isset($data->rounds[$competitor->event_dict][$competitor->round])) {
+            $data->rounds[$competitor->event_dict][$competitor->round]->competitors[$competitor->id] = $competitor;
         }
     }
 
@@ -305,36 +315,38 @@ function getCompetitionData($id) {
     $data->competitors = [];
     foreach ($competitors as $competitor) {
         $data->competitors[$competitor->id] = $competitor;
-        $competitor_events = \db::rows("SELECT "
-                        . " DISTINCT unofficial_events.event_dict, "
-                        . " MAX(CASE WHEN unofficial_competitors_result.competitor_round IS NOT NULL THEN true ELSE false END) result "
-                        . " FROM unofficial_competitors_round "
-                        . " LEFT OUTER JOIN unofficial_competitors_result ON unofficial_competitors_result.competitor_round = unofficial_competitors_round.id "
-                        . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor "
-                        . " JOIN unofficial_events_rounds ON unofficial_events_rounds.id = unofficial_competitors_round.round "
-                        . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event "
-                        . " WHERE unofficial_competitors.id = $competitor->id"
-                        . " GROUP BY unofficial_events.event_dict");
+        $data->competitors[$competitor->id]->delete = 1;
         $data->competitors[$competitor->id]->events = [];
+    }
 
-        foreach ($competitor_events as $competitor_event) {
-            $data->competitors[$competitor->id]->events[$competitor_event->event_dict] = $competitor_event;
+
+    $competitors_events = \db::rows("SELECT "
+                    . " DISTINCT unofficial_events.event_dict, "
+                    . " MAX(CASE WHEN unofficial_competitors_result.competitor_round IS NOT NULL THEN true ELSE false END) result,"
+                    . " unofficial_competitors.id as competitor_id"
+                    . " FROM unofficial_competitors_round "
+                    . " LEFT OUTER JOIN unofficial_competitors_result ON unofficial_competitors_result.competitor_round = unofficial_competitors_round.id "
+                    . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor "
+                    . " JOIN unofficial_events_rounds ON unofficial_events_rounds.id = unofficial_competitors_round.round "
+                    . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event "
+                    . " GROUP BY competitor_id, unofficial_events.event_dict");
+
+    foreach ($competitors_events as $row) {
+        if (isset($data->competitors[$row->competitor_id])) {
+            $data->competitors[$row->competitor_id]->events[$row->event_dict] = $row;
         }
+    }
 
-        $data->competitors[$competitor->id]->delete = !sizeof(\db::rows("SELECT id "
-                                . " FROM unofficial_competitors_result "
-                                . " JOIN unofficial_competitors_round on unofficial_competitors_round.id = unofficial_competitors_result.competitor_round"
-                                . " WHERE unofficial_competitors_round.competitor = $competitor->id"));
 
-        $FCID_candidates = [];
-        $name = \db::escape($competitor->name);
-        foreach (\db::rows("select FCID "
-                . "from `unofficial_competitors` "
-                . "where upper(trim(name)) = upper(trim('$name')) "
-                . "and FCID is not null and FCID<>'' and FCID<>'$competitor->FCID'") as $FCID_candidate) {
-            $FCID_candidates[] = $FCID_candidate->FCID;
+    foreach (\db::rows("SELECT unofficial_competitors_round.competitor id "
+            . " FROM unofficial_competitors_result "
+            . " JOIN unofficial_competitors_round on unofficial_competitors_round.id = unofficial_competitors_result.competitor_round"
+            . " JOIN unofficial_competitors on unofficial_competitors.id = unofficial_competitors_round.competitor"
+            . " WHERE unofficial_competitors.competition = $id") as $c_id) {
+
+        if (isset($data->competitors[$c_id->id])) {
+            $data->competitors[$c_id->id]->delete = 0;
         }
-        $data->competitors[$competitor->id]->FCID_candidates = $FCID_candidates;
     }
 
     $data->event_dict = new \stdClass();
@@ -416,6 +428,43 @@ function getCompetitorsSession($id, $session) {
                     . " FROM unofficial_competitors "
                     . " WHERE session = '$session'"
                     . " AND competition = $id");
+}
+
+function getEventsByCompetition($competition_id) {
+     $RU = t('', 'RU');
+    $rows= \db::rows("SELECT"
+                    . " COALESCE(unofficial_events_rounds.comment,'') comment, "
+                    . " COALESCE(unofficial_events_rounds.cutoff,'') cutoff, "
+                    . " COALESCE(unofficial_events_rounds.time_limit,'') time_limit, "
+                    . " COALESCE(unofficial_events_rounds.time_limit_cumulative,'') time_limit_cumulative, "
+                    . " unofficial_events_dict.image, "
+                    . " unofficial_events_dict.special, "
+            . " unofficial_events_rounds.id eventround_id, "
+                    . " unofficial_events_rounds.round, "
+                    . " unofficial_events_rounds.next_round_procent, "
+                    . " unofficial_events_rounds.next_round_value, "
+                    . " unofficial_events.rounds, "
+                    . " unofficial_formats_dict.attempts, "
+                    . " unofficial_formats_dict.format, "
+                    . " unofficial_formats_dict.cutoff_attempts, "
+                    . " unofficial_events_dict.code, "
+                    . " CASE WHEN unofficial_events_rounds.round = unofficial_events.rounds THEN 1 ELSE 0 END final, "
+                    . " COALESCE(unofficial_events.name,unofficial_events_dict.name$RU) name,"
+                    . " unofficial_events_dict.id event_dict,"
+                    . " unofficial_results_dict.name result_name,  "
+                    . " coalesce(event_unofficial_results_dict.code, unofficial_results_dict.code) result_code  "
+                    . " FROM unofficial_events_rounds "
+                    . " JOIN unofficial_events ON unofficial_events.id = unofficial_events_rounds.event"
+                    . " JOIN unofficial_events_dict on unofficial_events_dict.id = unofficial_events.event_dict"
+                    . " JOIN unofficial_results_dict on (unofficial_results_dict.id = unofficial_events.result_dict OR unofficial_results_dict.id = unofficial_events_dict.result_dict)"
+                    . " JOIN unofficial_formats_dict on unofficial_formats_dict.id = unofficial_events.format_dict "
+                    . " LEFT OUTER JOIN unofficial_results_dict event_unofficial_results_dict on event_unofficial_results_dict.id = unofficial_events.result_dict"
+                    . " WHERE unofficial_events.competition = $competition_id");
+    $results=[];
+    foreach($rows as $row){
+        $results[$row->eventround_id]=$row;
+    }
+    return $results;
 }
 
 function getEventByEventround($eventround) {
@@ -942,7 +991,7 @@ function getCompetitionPointsAll($competition_id) {
         coalesce(cre4.place,cre3.place,cre2.place,cre1.place) as place,
 	com.id competitor_id,
 	com.name competitor_name,
-	com.name competitor_FCID
+	com.FCID competitor_FCID
         from unofficial_competitions c 
         join `unofficial_events` e on e.competition=c.ID
         left outer join `unofficial_events_rounds` er1 on er1.event=e.id and er1.round=1
@@ -967,7 +1016,7 @@ function getCompetitionPointsAll($competition_id) {
         join `unofficial_competitions` c on c.id=e.competition
         group by e.event_dict,e.competition) counts on counts.id=c.id and counts.event_dict=e.event_dict
         join `unofficial_events_dict` ed on ed.id=e.event_dict
-        where c.id='$competition_id' and ed.special = 0
+        where c.id='$competition_id' and ed.special = 0 
         order by ed.order");
 
     $results = (object) ['head' => [], 'competitors' => []];

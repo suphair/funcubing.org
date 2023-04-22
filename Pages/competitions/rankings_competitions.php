@@ -55,7 +55,7 @@ foreach ($events_dict as $event) {
             <tr>   
                 <td>
                     <?php if ($competition->approved) { ?>
-                        <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
+                        <i title="<?= t('The results are confirmed','Результаты подтверждены') ?>" class="message fas fa-check"></i>
                     <?php } ?>
                 </td>
                 <td>                    
@@ -74,6 +74,7 @@ foreach ($events_dict as $event) {
                 </td>
                 <td>
                     <?php
+                    $getCompetitionsEvents = unofficial\getCompetitionsEvents();
                     foreach ($events_dict as $event) {
                         if (!$event->special) {
                             if (isset($comp_histoty_record[$competition->id]['best'][$event->id]) or
@@ -83,7 +84,7 @@ foreach ($events_dict as $event) {
                                 <i title=' <?= $event->name ?> - <?= t('Record', 'Рекорд') ?>'class="td_record <?= $event->image ?>"></i>
                                 <?php
                             } else {
-                                if (unofficial\existsCompetitionEvent($competition->id, $event->id)) {
+                                if (in_array($event->id, $getCompetitionsEvents[$competition->id])) {
                                     ?>
                                     <i title='<?= $event->name ?>' class="<?= $events_dict[$event->id]->image ?>"></i>    
                                 <?php } else { ?>
@@ -98,7 +99,7 @@ foreach ($events_dict as $event) {
                 </td>
                 <td align="center">
                     <?= $competition->competitors_res + 0 ?>
-                    <?= $competition->competitors_nres?(' +'.($competition->competitors_nres + 0)." <i title = '".t('Non-resident', 'Нерезидент')."' class='fas fa-globe'></i>"):'' ?>
+                    <?= $competition->competitors_nres ? (' +' . ($competition->competitors_nres + 0) . " <i title = '" . t('Non-resident', 'Нерезидент') . "' class='fas fa-globe'></i>") : '' ?>
                 </td>      
             </tr>
         <?php } ?>

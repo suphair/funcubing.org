@@ -353,6 +353,16 @@ function getDelegateRolesDict() {
     return $roles_dict;
 }
 
+function getCompetitionsEvents() {
+    $return = [];
+    foreach (\db::rows("SELECT competition,event_dict "
+            . " FROM unofficial_events") as $row) {
+        $return[$row->competition] ??= [];
+        $return[$row->competition][] = $row->event_dict;
+    }
+    return $return;
+}
+
 function existsCompetitionEvent($competition_id, $event_id) {
     return \db::rows("SELECT 1 "
                     . " FROM unofficial_events"
@@ -446,16 +456,16 @@ function get_rename() {
 
 function build_contact($delegate) {
     $return = "";
-    if ($delegate->vk) {
+    if ($delegate->vk ?? false) {
         $return .= '<a target="_blank" href="https://vk.com/' . $delegate->vk . '"><i class="fab fa-vk"></i></a> ';
     }
-    if ($delegate->telegram) {
+    if ($delegate->telegram ?? false) {
         $return .= '<a target="_blank" href="https://t.me/' . $delegate->telegram . '"><i class="fab fa-telegram-plane"></i></a> ';
     }
-    if ($delegate->phone) {
+    if ($delegate->phone ?? false) {
         $return .= '<a target="_blank" href="tel:' . $delegate->phone . '"><i class="fas fa-phone"></i></a> ';
     }
-    if ($delegate->email) {
+    if ($delegate->email ?? false) {
         $return .= '<a target="_blank" href="mailto:' . $delegate->email . '"><i class="fas fa-envelope"></i></a> ';
     }
     return $return;

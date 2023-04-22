@@ -34,7 +34,6 @@ if ($secret) {
         }
     }
 }
-
 if ($me->wid ?? FALSE) {
     if (filter_input(INPUT_GET, 'create') !== NULL) {
         include 'post.competition.create.php';
@@ -48,6 +47,10 @@ if ($me->wid ?? FALSE) {
         $grand = $competition->grand;
         if (filter_input(INPUT_GET, 'rankings_settings') !== NULL and $grand->federation ?? false) {
             include 'post.competition.rankings_settings.php';
+        }
+
+        if (filter_input(INPUT_GET, 'scrambles') !== NULL and $grand->federation ?? false) {
+            include 'post.competition.scrambles.php';
         }
 
         if (filter_input(INPUT_GET, 'organizer_rename') !== NULL and $grand->federation ?? false) {

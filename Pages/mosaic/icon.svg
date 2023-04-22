@@ -1,0 +1,25 @@
+<svg
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    x="0px"
+    y="0px"
+    width="420"
+    height="420"
+    viewBox="0 0 420 420"
+    enable-background="new 0 0 420 420"
+    xml:space="preserve">
+   
+  <path d="M50,50 h320 v320 h-320 z" stroke-linejoin="round" fill="white" stroke="rgb(17,31,135)" stroke-width="75"/>
+  <path d="M210,110 l100,100 l-100,100 l-100,-100 z" stroke-linejoin="round" fill="rgb(162,0,0)" stroke="rgb(17,31,135)" stroke-width="5"/>
+  
+<path d="M210,0 v90 z" stroke-linejoin="round" fill="white" stroke="white" stroke-width="35"/>
+  <path d="M210,420 v-90 z" stroke-linejoin="round" fill="white" stroke="white" stroke-width="35"/>
+  <path d="M0,210 h90 z" stroke-linejoin="round" fill="white" stroke="white" stroke-width="35"/>
+  <path d="M420,210 h-90 z" stroke-linejoin="round" fill="white" stroke="white" stroke-width="35"/>
+  <circle cx="210" cy="210" r="35" fill="white" stroke="rgb(17,31,135)" stroke-width="5"/>
+</svg>

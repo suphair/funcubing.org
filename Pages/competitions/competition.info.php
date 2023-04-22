@@ -44,7 +44,7 @@ foreach ($competition->sheets ?? [] as $sheet) {
                         <tr>
                             <td><?= $ranked_icon ?></td>
                             <td>
-                                <a href="<?= PageIndex() . "competitions/$competition->id/ranking" ?>"><?= t('Setting SF', 'Настройки ФС') ?></a>
+                                <a href="<?= PageIndex() . "competitions/$competition->id/ranking" ?>"><?= t('Official settings', 'Официальные настройки') ?></a>
                             </td>
                         </tr>
                     <?php } ?>
@@ -125,13 +125,14 @@ foreach ($competition->sheets ?? [] as $sheet) {
                     if ($competition->is_ranked) {
                         ?>
                         <tr><td colspan="2"><hr></td></tr>   
-
                         <tr>
                             <td><?= t('Competitors', 'Участники'); ?></td>
                             <td>
-                                <?= $competition->competitors_count ?>
-                                <?= t('of', 'из') ?>
-                                <?= $competition->competitor_limit ?>
+                                <?= $competition->competitors_count + 0 ?>
+                                <?php if (!$competition->is_approved and $competition->competitor_limit) { ?>
+                                    <?= t('of', 'из') ?>
+                                    <?= $competition->competitor_limit ?>
+                                <?php } ?>
                             </td>
                         </tr>
                         <?php if ($competition->is_approved) { ?>
@@ -139,7 +140,7 @@ foreach ($competition->sheets ?? [] as $sheet) {
                                 <td><?= $ranked_icon ?> <i class="message fas fa-check"></i></td>
                                 <td>
                                     <a href="<?= PageIndex() . "competitions/rankings" ?>">
-                                        <?= t('Confirmed by the Speedcubing&nbsp;Federation', 'Подтверждено Федерацией&nbsp;Спидкубинга') ?>
+                                        <?= t('The results are confirmed', 'Результаты подтверждены') ?>
                                     </a>
                                 </td>
                             </tr>
@@ -148,16 +149,9 @@ foreach ($competition->sheets ?? [] as $sheet) {
                                 <td><?= $ranked_icon ?></td>
                                 <td>
                                     <a href="<?= PageIndex() . "competitions/rankings" ?>">
-                                        <?= t('Conducted by the Speedcubing&nbsp;Federation', 'Проводится Федерацией&nbsp;Спидкубинга') ?>
+                                        <?= t('Official competition', 'Официальное соревнование') ?>
                                     </a>
                                 </td>
-                            </tr>
-                        <?php } ?>
-                        <?php foreach ($competition->delegates ?? [] as $delegate) { ?>
-                            <tr>
-                                <td><?= $delegate->role ?></td>  
-                                <td><i class="fas fa-signature"></i> <?= $delegate->name ?> 
-                                    <?= unofficial\build_contact($delegate) ?></td>
                             </tr>
                         <?php } ?>
                         <?php if ($grand->edit or $grand->federation) { ?>
@@ -169,13 +163,30 @@ foreach ($competition->sheets ?? [] as $sheet) {
                             </tr>
                         <?php } ?>
                     <?php } ?>
+                    <?php foreach ($competition->delegates ?? [] as $delegate) { ?>
+                        <tr>
+                            <td><?= $delegate->role ?></td>  
+                            <td><i class="fas fa-signature"></i> <?= $delegate->name ?> 
+                                <?= unofficial\build_contact($delegate) ?></td>
+                        </tr>
+                    <?php } ?>
                     <tr><td colspan="2"><hr></td></tr>   
-                    <?php if ($competition->is_ranked) { ?>
+                    <?php if ($competition->is_ranked and!$competition->is_approved) { ?>
                         <tr>
                             <td><i class="fas fa-spa"></i></td>  
                             <td>
                                 <a href="<?= PageIndex() . "competitions/$competition->id/psychsheet" ?>">
                                     Psych Sheet
+                                </a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($competition->is_approved and $json_scrambles) { ?>
+                        <tr>
+                            <td><i class="fas fa-random"></i></td>  
+                            <td>
+                                <a href="<?= PageIndex() . "competitions/$competition->id/scrambles" ?>">
+                                    <?= t('Scrambles', 'Скрамблы') ?>
                                 </a>
                             </td>
                         </tr>

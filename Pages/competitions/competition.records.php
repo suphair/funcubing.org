@@ -1,6 +1,6 @@
 <h2>
     <i class="fas fa-trophy"></i> 
-    <?= t('Updated records of Speedcubing Federation', 'Обновлённые рекорды Федерации Спидкубинга') ?></h2>
+    <?= t('Updated Russian records', 'Обновлённые рекорды России') ?></h2>
 <table class="table">
     <thead>
         <tr>
@@ -33,9 +33,9 @@
                             $link = $record->FCID ? "rankings/competitor/$record->FCID" : false;
                             if ($link) {
                                 ?>
-                                <a href="<?= PageIndex() . "competitions/$link" ?>"><?= $record->competitor_name ?></a>
+                                <a href="<?= PageIndex() . "competitions/$link" ?>"><?= str_replace($record->FCID, '', $record->competitor_name) ?></a>
                             <?php } else { ?>
-                                <?= $record->competitor_name ?>
+                                <?= $record->competitor_name; ?>
                             <?php } ?>
                         </td>
                         <?php

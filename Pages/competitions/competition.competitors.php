@@ -69,13 +69,19 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
     <tbody>
         <?php
         $c = 0;
+        $getCompetitorsByEventround = [];
+        $getEventsByCompetition = unofficial\getEventsByCompetition($competition->local_id);
+        #$getEventByEventround = [];
         foreach ($comp_data->competitors as $competitor_id => $competitor) {
 
             if ($only_podium) {
                 $show = false;
                 foreach ($comp_data->event_rounds as $event_round_id => $event_round) {
-                    $event = unofficial\getEventByEventround($event_round_id);
-                    $result = unofficial\getCompetitorsByEventround($event_round_id, $event)[$competitor_id] ?? FALSE;
+                    $event = $getEventsByCompetition[$event_round_id];
+                    if (!isset($getCompetitorsByEventround[$event_round_id])) {
+                        $getCompetitorsByEventround[$event_round_id] = unofficial\getCompetitorsByEventround($event_round_id, $event);
+                    }
+                    $result = $getCompetitorsByEventround[$event_round_id][$competitor_id] ?? FALSE;
                     if ($result->podium ?? false) {
                         $show = true;
                     }
@@ -123,8 +129,12 @@ foreach ($comp_data->competitors as $competitor_id => $competitor) {
             if ($only_podium and $event_round->round != $rounds) {
                 continue;
             }
-            $event = unofficial\getEventByEventround($event_round_id);
-            $result = unofficial\getCompetitorsByEventround($event_round_id, $event)[$competitor_id] ?? FALSE;
+            $event = $getEventsByCompetition[$event_round_id];
+
+            if (!isset($getCompetitorsByEventround[$event_round_id])) {
+                $getCompetitorsByEventround[$event_round_id] = unofficial\getCompetitorsByEventround($event_round_id, $event);
+            }
+            $result = $getCompetitorsByEventround[$event_round_id][$competitor_id] ?? FALSE;
             ?>
             <td class="
                 center 

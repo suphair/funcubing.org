@@ -1,6 +1,7 @@
 <Files *>
 AuthType Basic
 AuthName "suphair.error"
-AuthUserFile /home/suphair/funcubing.org/docs/Classes/errors/.htpasswd 
+#AuthUserFile /home/suphair/funcubing.org/docs/Classes/errors/.htpasswd 
+AuthUserFile /Applications/MAMP/htdocs/funcubing.org/Classes/errors/.htpasswd
 Require valid-user
 </Files>

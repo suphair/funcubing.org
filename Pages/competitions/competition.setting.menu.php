@@ -1,7 +1,7 @@
 <?php $setting_select = request(2); ?>
 <h2>
     <i class="fas fa-cog"></i>
-    <?php if ($comp->my) { ?>
+    <?php if ($grand->setting) { ?>
         <a href='<?= $competition->url ?>/setting' class='<?= $setting_select == 'setting' ? 'select' : '' ?>'
            ><?= t('Setting', 'Настройки') ?></a>
         |

@@ -12,9 +12,14 @@ $round = db::escape(request(4));
 $attempt_arr = filter_input(INPUT_POST, 'attempt', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
 if ($code and is_numeric($round)) {
-    $competitors_round = db::row("SELECT coalesce(results_dict_2.code,results_dict_1.code) code, unofficial_events.id unofficial_events_id  FROM unofficial_competitors_round"
+    $competitors_round = db::row("SELECT"
+                    . " attempts, format,"
+                    . " coalesce(results_dict_2.code,results_dict_1.code) code,"
+                    . " unofficial_events.id unofficial_events_id"
+                    . " FROM unofficial_competitors_round"
                     . " JOIN unofficial_events_rounds on unofficial_events_rounds.id = unofficial_competitors_round.round"
                     . " JOIN unofficial_events on unofficial_events.id = unofficial_events_rounds.event"
+                    . " JOIN unofficial_formats_dict on unofficial_events.format_dict = unofficial_formats_dict.id"
                     . " JOIN unofficial_events_dict ON unofficial_events_dict.id = unofficial_events.event_dict"
                     . " JOIN unofficial_results_dict results_dict_1  on results_dict_1.id = unofficial_events_dict.result_dict"
                     . " LEFT OUTER JOIN unofficial_results_dict results_dict_2  on results_dict_2.id = unofficial_events.result_dict"
@@ -64,6 +69,9 @@ if ($code and is_numeric($round)) {
                 $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['average'] ?? 0));
                 $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['mean'] ?? 0));
                 $order += unofficial\attempt_to_int_fm($attempt_arr['best'] ?? 0);
+            } elseif ($competitors_round->attempts == 3 or $competitors_round->format == 'best') {
+                $order = 10000000 * unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
+                $order += unofficial\attempt_to_int($attempt_arr['mean'] ?? 0);
             } else {
                 $order += (10000000 * unofficial\attempt_to_int($attempt_arr['average'] ?? 0));
                 $order += (10000000 * unofficial\attempt_to_int($attempt_arr['mean'] ?? 0));

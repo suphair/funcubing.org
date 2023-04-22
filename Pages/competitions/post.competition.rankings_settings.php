@@ -31,7 +31,7 @@ foreach ($delegates as $j => $delegate) {
 
 if (!$ranked or!$rankedID) {
     db::exec("UPDATE unofficial_competitions SET rankedID = null, rankedApproved=0, ranked = 0, rankedCompetitors = null WHERE id = $id ");
-    db::exec("DELETE from unofficial_competition_delegates WHERE competition_id = $id ");
+    /*db::exec("DELETE from unofficial_competition_delegates WHERE competition_id = $id ");*/
 }
 
 if (!\config::isLocalhost()) {

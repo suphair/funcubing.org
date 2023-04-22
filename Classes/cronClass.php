@@ -7,6 +7,7 @@ class cron {
 
     protected $connection;
     protected $id;
+    protected $count;
 
     function __construct($connection) {
         $this->connection = $connection;
@@ -66,12 +67,15 @@ class cron {
         $query = " INSERT INTO cron_logs (`name`) VALUES ('$name')";
 
         mysqli_query($this->connection, $query);
+        $this->db_count = db::get_count();
         return mysqli_insert_id($this->connection);
     }
 
     private function logEnd($id, $details) {
         $details_escape = mysqli_real_escape_string($this->connection, $details);
-        $query = " UPDATE cron_logs SET details = '$details_escape' WHERE id = $id";
+        $db_count = db::get_count() - $this->db_count;
+        $this->db_count = db::get_count();
+        $query = " UPDATE cron_logs SET details = '$details_escape', db_count = $db_count WHERE id = $id";
         mysqli_query($this->connection, $query);
     }
 

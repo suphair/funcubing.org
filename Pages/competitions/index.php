@@ -4,7 +4,7 @@ $me = wcaoauth::me() ?? FALSE;
 $secret = db::escape(request(1));
 $admin = \api\get_me()->is_admin ?? false;
 $federation = \api\get_me()->is_federation ?? false;
-$ranked_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/FC.png?1" title="' . t('Speedcubing Federation', 'Федерация Спидкубинга') . '"></img>';
+$ranked_icon = '<span style="padding:0px" class="flag-icon flag-icon-ru"></span>';
 $wca_icon = '<img width="16px" align="top" src="' . PageIndex() . 'Pages/competitions/WCA.png"></img>';
 if ($secret == 'competitor') {
     $competitor_id = request(2);
@@ -23,6 +23,7 @@ if ($secret == 'competitor') {
     $competition = api\get_competition($secret);
     $comp = unofficial\getCompetition($secret, $me);
     if ($comp->id ?? FALSE) {
+        $json_scrambles = \db::row("select json from scrambles where competition = $competition->local_id") ?? null;
         change_title($competition->name);
         $secret = $competition->id;
         $comp_data = unofficial\getCompetitionData($competition->local_id);
@@ -105,6 +106,7 @@ if ($secret == 'competitor') {
             case 'records':
             case 'events':
             case 'points':
+            case 'scrambles':
                 $event_round_this = false;
                 $include = 'competition.index.php';
                 break;

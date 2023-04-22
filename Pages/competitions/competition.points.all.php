@@ -57,26 +57,26 @@ $points_data = unofficial\getCompetitionPointsAll($comp->id);
                     <?= $competitor->points ?>
                 </td>                    
                 <?php foreach (array_keys($points_data->head) as $event_id) { ?>
-                    <td class="center" >
-                        <?php
-                        if ($competitor->events[$event_id] ?? false) {
-                            $result = $competitor->events[$event_id];
-                            ?>
-                            <?php for ($i = 1; $i < $result->round; $i++) { ?>
-                                .
-                            <?php } ?>
-                            <?= $result->place ?>
-                            <sup style="color:green">
-                                <?= $result->point ? $result->point : 'x' ?>
-                            </sup>
-                        <?php } ?>
-                    </td>
+                    <td class="center">
+                <?php
+                if ($competitor->events[$event_id] ?? false) {
+                    $result = $competitor->events[$event_id];
+                    ?>
+                    <?php for ($i = 1; $i < $result->round; $i++) { ?>
+                        .
+                    <?php } ?>
+                    <?= $result->place ?>
+                    <sup style="color:green">
+                        <?= $result->point ? $result->point : 'x' ?>
+                    </sup>
                 <?php } ?>
-            </tr>
-            <?php
-        }
-        ?>
-    </tbody>
+        </td>
+    <?php } ?>
+    </tr>
+    <?php
+}
+?>
+</tbody>
 </table>
 
 <?php if (!sizeof($points_data->competitors)) { ?>

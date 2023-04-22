@@ -23,31 +23,36 @@ function reload_wca_best_part() {
 
 function reload_wca_best($where_ext) {
     db_set_wca();
+    ini_set('memory_limit', '1024M');
 
-    foreach (db::rows("SELECT wcaid FROM unofficial_fc_wca WHERE wcaid<>'' $where_ext") as $row) {
-        $single_wca = db2::rows("select eventId, best from `RanksSingle` WHERE personId='$row->wcaid'");
-        $average_wca = db2::rows("select eventId, best from `RanksAverage` WHERE personId='$row->wcaid'");
 
+    foreach (db2::rows("select id from Events WHERE id!='333mbf'") as $event) {
         $wca_best_list = [];
-        foreach ($single_wca as $srow) {
-            $event = $srow->eventId;
-            $wca_best_list[$event]['single'] = $srow->best;
-        }
-        foreach ($average_wca as $arow) {
-            $event = $arow->eventId;
-            $wca_best_list[$event]['average'] = $arow->best;
+
+        foreach (db2::rows("select best,personId from `RanksSingle` where eventId='$event->id'") as $row) {
+            $wca_best_list[$row->personId]['single'] = $row->best;
         }
 
-        foreach ($wca_best_list as $event_id => $event_best) {
-            if ($event_id !== '333mbf') {
+        foreach (db2::rows("select best,personId from `RanksAverage`  where eventId='$event->id'") as $row) {
+            $wca_best_list[$row->personId]['average'] = $row->best;
+        }
+
+        $values = [];
+        foreach (db::rows("SELECT wcaid FROM unofficial_fc_wca WHERE wcaid<>'' $where_ext") as $row) {
+
+            $event_best = $wca_best_list[$row->wcaid] ?? FALSE;
+            if ($event_best) {
                 if (isset($event_best['average'])) {
-                    db::exec("INSERT INTO wca_best (wca_id, event, single, average ) "
-                            . "VALUES ('$row->wcaid','$event_id',{$event_best['single']},{$event_best['average']})");
+                    $values[] = "('$row->wcaid','$event->id',{$event_best['single']},{$event_best['average']})";
                 } else {
-                    db::exec("INSERT INTO wca_best (wca_id, event, single) "
-                            . "VALUES ('$row->wcaid','$event_id',{$event_best['single']})");
+                    $values[] = "('$row->wcaid','$event->id',{$event_best['single']},null)";
                 }
             }
+        }
+
+        if (sizeof($values)) {
+            db::exec("INSERT INTO wca_best (wca_id, event, single, average ) "
+                    . "VALUES " . implode(",", $values));
         }
     }
 }

@@ -1,5 +1,6 @@
 <?php
 session_start();
+$start_time = microtime(true);
 ob_start();
 
 foreach (['Classes', 'Functions', 'API'] as $dir) {
@@ -9,6 +10,30 @@ foreach (['Classes', 'Functions', 'API'] as $dir) {
         }
     }
 }
+
+
+$client = $_SERVER['HTTP_CLIENT_IP'] ?? null;
+$forward = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+$remote = $_SERVER['REMOTE_ADDR'] ?? null;
+$agent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+$request_uri = $_SERVER['REQUEST_URI'] ?? null;
+
+if (filter_var($client, FILTER_VALIDATE_IP))
+    $ip = $client;
+elseif (filter_var($forward, FILTER_VALIDATE_IP))
+    $ip = $forward;
+else
+    $ip = $remote;
+
+/*
+  if (!in_array($ip, [
+  '31.10.109.171',
+  '91.193.179.228',
+  '176.59.56.122'
+  ]))
+  die('DELEGATE, the website has crashed!!!');
+ */
+
 $mobile = (check_mobile_device() or $_SESSION['mobile'] ?? false);
 include_once 'vendor/autoload.php';
 config::init('Config');
@@ -177,7 +202,7 @@ $title = [
                         GitHub</a>
                     <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
                         <i class="fas fa-laptop-code"></i> 
-                        Konstantin Solovev (Константин Соловьёв)</a>
+                        Konstantin Solovev</a>
                     <i class="fas fa-user-circle"></i>
                     <?= get_count_visitors_day(); ?> visitors today 
 
@@ -216,9 +241,27 @@ $title = [
                     <?php if (sizeof($roles)) { ?>
                         {<?= implode($roles) ?>}
                     <?php } ?>                    
+                    <i class="fas fa-database"></i> <?= \db::get_count() ?>
+                    <i class="fas fa-stopwatch-20"></i> <?= round((microtime(true) - $start_time) * 1000) ?>
+
+                    <?php if ($me ?? null) { ?>
+                        <i class="fas fa-user-tie"></i>
+                    <?php } ?>
+                    <?php if ($me->wca_id ?? false) { ?>
+                        <?= $me->wca_id ?>
+                    <?php } ?>
+                    <?php if ($me->id ?? false) { ?>
+                        <span class='message'> <?= $me->id ?></span>
+                    <?php } ?>
                 </p>
             </div>
         </div>
     </body>
 </html>
 <?php count_visitors(); ?>
+<?php
+$db_count = \db::get_count();
+if ($db_count > 60) {
+    echo ${"db_count_$db_count"};
+}
+?>

@@ -9,12 +9,12 @@ http_response_code(404);
 if ($method == 'get' and $request_1 == 'competitions') {
     $competition_id = $request_2;
     $sub_query = $request_3;
-    if($competition_id){
+    if ($competition_id) {
         $json = api\get_competition($competition_id);
-    }else{
+    } else {
         $json = api\get_competitions();
     }
-    if ($competition_id and !$json) {
+    if ($competition_id and!$json) {
         $json = ['error' => "Competition with id $competition_id not found"];
     } else {
         if ($sub_query) {
@@ -30,7 +30,13 @@ if ($method == 'get' and $request_1 == 'competitions') {
             $json = api\get_results($competition_id);
         }
         if ($sub_query == 'projector') {
-            $json = api\get_projector($competition_id,$request_4,$request_5);
+            $json = api\get_projector($competition_id, $request_4, $request_5);
+        }
+        if ($sub_query == 'scrambles') {
+            $json = api\scrambles($competition_id);
+        }
+        if ($sub_query == 'psychsheet') {
+            $json = api\get_psychsheet($competition_id, $request_4);
         }
     }
 }
@@ -74,6 +80,18 @@ if ($method == 'get' and!$request_1) {
         ],
         [
             'url' => 'api/competitions/$id/results',
+            'method' => 'get'
+        ],
+        [
+            'url' => 'api/competitions/$id/projector/$event/$round',
+            'method' => 'get'
+        ],
+        [
+            'url' => 'api/competitions/$id/scrambles',
+            'method' => 'get'
+        ],
+        [
+            'url' => 'api/competitions/$id/psychsheet/$event',
             'method' => 'get'
         ],
         [

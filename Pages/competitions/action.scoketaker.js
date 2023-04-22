@@ -62,7 +62,7 @@ $('[data-results]').submit(function () {
 
     var best = -1;
     var average = 0;
-    var mean = 0;
+    var mean = -1;
     var complete = 0;
     var wrong = 0;
     var worst = 0;

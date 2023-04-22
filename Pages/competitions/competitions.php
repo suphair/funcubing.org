@@ -58,7 +58,7 @@ foreach ($competitions as $c => $competition) {
                         <?= $ranked_icon ?>
                     <?php } ?>
                     <?php if ($competition->is_approved) { ?>
-                        <i title="Подтверждено Федерацией Спидкубинга" class="message fas fa-check"></i>
+                        <i title="Результаты подтверждены" class="message fas fa-check"></i>
                     <?php } ?>
                     <?php if ($competition->my_roles->delegate ?? false) { ?>
                         <i title="<?= t('Delegate', 'Делегат') ?>" class="fas fa-signature"></i>
@@ -102,34 +102,31 @@ foreach ($competitions as $c => $competition) {
                 </td>
                 <td title="<?= $competition->website ?>">
                     <?php if (!$ranked) { ?>
-            <nobr>
-                <a target="_blank" href="https://www.worldcubeassociation.org/persons/<?= $competition->main_organizer->wca_id ?>">
-                    <?= $competition->main_organizer->name ?></a>
-            </nobr>  
-            &bull; 
+                        <a target="_blank" href="https://www.worldcubeassociation.org/persons/<?= $competition->main_organizer->wca_id ?>">
+                            <?= $competition->main_organizer->name ?>
+                        </a>
+                        &bull; 
+                    <?php } ?>
+                    <?php unofficial\getLink($competition->website) ?>
+                </td>
+                <td>
+                    <?= $competition->competitors_count ?> 
+                    <?php
+                    if ($ranked and $competition->competitors_count
+                            and strtotime($competition->start_date) > strtotime(date('Y-m-d'))) {
+                        ?>
+                        / <?= $competition->competitor_limit ?>
+                    <?php } ?>
+                </td>
+            </tr>
         <?php } ?>
-        <nobr>
-            <?php unofficial\getLink($competition->website) ?>
-        </nobr>  
-    </td>
-    <td>
-        <?= $competition->competitors_count ?> 
-        <?php
-        if ($ranked and $competition->competitors_count
-                and strtotime($competition->start_date) > strtotime(date('Y-m-d'))) {
-            ?>
-            / <?= $competition->competitor_limit ?>
-        <?php } ?>
-    </td> 
-    </tr>
-<?php } ?>
-</tbody>
+    </tbody>
 </table>  
 <div class="details_footer">
     <span><i class="fas fa-signature"></i> - <?= t('Delegate', 'Делегат') ?></span>
     <span><i class="fas fa-user-tie"></i> - <?= t('Organizer', 'Организатор') ?></span>
     <span><i class="fas fa-user"></i> - <?= t('Competitor', 'Участник') ?></span>
-    <span><?= $ranked_icon ?>  - <?= t('Speedcubing Federation', 'Федерация Спидкубинга') ?></span>
-    <span><i class="message fas fa-check"></i>  - <?= t('Confirmed by the Speedcubing Federation', 'Подтверждено Федерацией Спидкубинга') ?></span>
+    <span><?= $ranked_icon ?>  - <?= t('Official competition', 'Официальные соревнования') ?></span>
+    <span><i class="message fas fa-check"></i>  - <?= t('The results are confirmed', 'Результаты подтверждены') ?></span>
     <span><i class="far fa-eye-slash"></i> - <?= t('Hidden', 'Спрятано') ?></span>
 </div>

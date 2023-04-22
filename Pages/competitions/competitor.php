@@ -24,7 +24,7 @@ if (sizeof($FCIDlist)) {
     ?>
     <div>
         <?= $ranked_icon ?>
-        <?= t('View in Federation Rankings', 'Посмотреть в рейтинге Федерации') ?>: 
+        <?= t('View in rankings', 'Посмотреть в рейтинге') ?>: 
         <?php foreach ($FCIDlist as $FCID) { ?>
             <a href="<?= PageIndex() . "competitions/rankings/competitor/$FCID" ?>"><?= $FCID ?></a>
         <?php } ?>
@@ -76,7 +76,7 @@ if (sizeof($FCIDlist)) {
             <th>
                 <?= t('Web site', 'Сайт') ?> <i class="fas fa-external-link-alt"></i>
             </th>
-            <th></th>
+            <!--<th></th>-->
         </tr>    
     </thead>
     <tbody>    
@@ -108,12 +108,12 @@ if (sizeof($FCIDlist)) {
                 <td>
                     <?php unofficial\getFavicon($competition->website, true) ?>
                 </td>
-                <td>
+                <!--<td>
                     <a target="_blank" href="<?= PageIndex() . "competitions/competitor/$competition->competitor_id?action=certificate" ?>">
                         <i class="fas fa-certificate"></i>
                         <?= t('certificate', 'сертификат') ?> 
                     </a>
-                </td>       
+                </td> -->    
             </tr>
         <?php } ?>
     <tbody> 

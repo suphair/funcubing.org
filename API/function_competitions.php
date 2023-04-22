@@ -182,16 +182,22 @@ function competitions($competition_id = false) {
             $federation_grand = $federation;
 
             $admin_grand = false;
+            
+            if ($delegate) {
+                $edit_grand = true;
+                $setting_grand = true;
+            }
+            
             if ($competition_key->is_approved) {
                 $edit_grand = false;
                 $setting_grand = false;
             }
 
-            if ($federation and $competition_key->is_ranked) {
+            if ($federation) {
                 $edit_grand = true;
                 $setting_grand = true;
             }
-
+            
             if ($admin) {
                 $edit_grand = true;
                 $view_grand = true;

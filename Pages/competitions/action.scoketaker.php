@@ -12,6 +12,9 @@ $events = $comp_data->event_rounds;
 $event = unofficial\getEventByEventround($round_id);
 $round = $rounds_dict[$round_number];
 $formats = array_unique([$event->format, 'best']);
+if ($event->format == 'best' and $event->attempts == 3) {
+    $formats[] = 'mean';
+}
 ?>
 <head>
     <title><?= $event->name ?> / <?= $round_number ?></title>

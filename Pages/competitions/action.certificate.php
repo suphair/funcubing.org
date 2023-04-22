@@ -36,7 +36,7 @@ $mpdf = new \Mpdf\Mpdf();
 
 $stylesheet = '
                body {
-                    background-image:url(' . PageIndex() . 'Pages/competitions/certificate' . ($comp->ranked ? 'FC' : '') . '.png); 
+                    background-image:url(' . PageIndex() . 'Pages/competitions/certificate.png); 
                     background-image-resize:4;
                     font-family: "Dejavu Sans"; 
                }
@@ -85,10 +85,10 @@ foreach ($competitors as $competitor_name => $results) {
         if (sizeof($delegates)) {
             if ($RU) {
                 $html .= '<b>' . implode(" и ", $delegates) . '</b>'
-                        . ', от имени <span class="nobr"><b>Федерации&nbsp;Спидкубинга</b></span>';
+                        . ', от имени <span class="nobr"><b>Делегатов России</b></span>';
             } else {
                 $html .= '<b>' . implode(" and ", $delegates) . '</b>'
-                        . ', on behalf of the <span class="nobr"><b>Speedcubing&nbsp;Federation</b></span>';
+                        . ', on behalf of the <span class="nobr"><b>Delegates of Russia</b></span>';
             }
         }
         if (sizeof($organisers) and sizeof($delegates)) {

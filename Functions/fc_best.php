@@ -5,24 +5,29 @@ function reload_fc_best_full() {
 
     $competitors = fork_api_competitors();
     $fc_best = [];
+
     foreach ($competitors as $competitor) {
         if ($competitor->fc_id) {
             foreach ($competitor->personal_records ?? [] as $event => $row) {
                 if ($event !== '333mbf') {
                     if (isset($row->average)) {
-                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
-                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->average)");
+                        $fc_best[] = "('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->average)";
+                        #db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
+                        #        . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->average)");
                     } elseif (isset($row->mean)) {
-                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
-                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->mean)");
+                        $fc_best[] = "('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->mean)";
+                        #db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
+                        #        . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,$row->mean)");
                     } else {
-                        db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single ) "
-                                . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single)");
+                        $fc_best[] = "('$competitor->wca_id','$competitor->fc_id','$event',$row->single,null)";
+                        #db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) "
+                        #        . "VALUES ('$competitor->wca_id','$competitor->fc_id','$event',$row->single,null)");
                     }
                 }
             }
         }
     }
+    db::exec("INSERT INTO fc_best (wca_id, fc_id, event, single, average ) VALUES " . implode(",", $fc_best));
 }
 
 function fork_api_competitors() {
