@@ -169,6 +169,7 @@ function competitions($competition_id = false) {
 
             $admin = $me->is_admin ?? false;
             $federation = $me->is_federation ?? false;
+            $federation_ext = $me->is_federation_ext ?? false;
             $main_organizer = $competition_key->my_roles->main_organizer ?? false;
             $organizer = $competition_key->my_roles->organizer ?? false;
             $delegate = $competition_key->my_roles->delegate ?? false;
@@ -177,32 +178,35 @@ function competitions($competition_id = false) {
 
             $view_grand = $edit_grand;
 
-            $setting_grand = ($main_organizer or $delegate);
+            $setting_grand = $main_organizer or $delegate;
 
             $federation_grand = $federation;
 
+            $federation_grand_ext = $federation_ext or $federation;
+
             $admin_grand = false;
-            
-            if ($delegate) {
+
+            if ($delegate or $federation) {
                 $edit_grand = true;
                 $setting_grand = true;
             }
-            
+
             if ($competition_key->is_approved) {
                 $edit_grand = false;
                 $setting_grand = false;
             }
 
-            if ($federation) {
+            if ($federation_ext) {
                 $edit_grand = true;
                 $setting_grand = true;
             }
-            
+
             if ($admin) {
                 $edit_grand = true;
                 $view_grand = true;
                 $setting_grand = true;
                 $federation_grand = true;
+                $federation_grand_ext = true;
                 $admin_grand = true;
             }
 
@@ -211,6 +215,7 @@ function competitions($competition_id = false) {
                         'view' => $view_grand,
                         'setting' => $setting_grand,
                         'federation' => $federation_grand,
+                        'federation_ext' => $federation_grand_ext,
                         'admin' => $admin_grand
             ];
         }
