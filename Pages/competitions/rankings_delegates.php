@@ -54,7 +54,7 @@
         <?php } ?>
     </tbody>
 </table> 
-<?php if (api\get_me()->is_federation ?? false or \api\get_me()->is_admin ?? false) { ?>
+<?php if (api\get_me()->is_federation_ext ?? false or \api\get_me()->is_admin ?? false) { ?>
     <?php $delegates = unofficial\getRankedDelegates(); ?>
     <h2>
         <i class="fas fa-user-cog"></i>

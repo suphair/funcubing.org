@@ -3,6 +3,7 @@
 $me = api\get_me();
 $secret = db::escape(request(1));
 $grand = ($me->is_admin ?? FALSE or $me->is_federation ?? FALSE);
+$grand_ext = ($me->is_admin ?? FALSE or $me->is_federation_ext ?? FALSE);
 if ($secret) {
     $competition = api\get_competition($secret);
     $comp = unofficial\getCompetition($secret);
@@ -20,10 +21,10 @@ if ($secret) {
         if (filter_input(INPUT_GET, 'ranking_competitor') !== NULL and $grand) {
             include 'post.ranking_competitor.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_delegate') !== NULL and $grand) {
+        if (filter_input(INPUT_GET, 'ranking_delegate') !== NULL and $grand_ext) {
             include 'post.ranking_delegate.php';
         }
-        if (filter_input(INPUT_GET, 'ranking_delegate_add') !== NULL and $grand) {
+        if (filter_input(INPUT_GET, 'ranking_delegate_add') !== NULL and $grand_ext) {
             include 'post.ranking_delegate_add.php';
         }
         if (filter_input(INPUT_GET, 'ranking_rename_delete') !== NULL and $grand) {
