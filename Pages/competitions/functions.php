@@ -431,15 +431,15 @@ function getCompetitorsSession($id, $session) {
 }
 
 function getEventsByCompetition($competition_id) {
-     $RU = t('', 'RU');
-    $rows= \db::rows("SELECT"
+    $RU = t('', 'RU');
+    $rows = \db::rows("SELECT"
                     . " COALESCE(unofficial_events_rounds.comment,'') comment, "
                     . " COALESCE(unofficial_events_rounds.cutoff,'') cutoff, "
                     . " COALESCE(unofficial_events_rounds.time_limit,'') time_limit, "
                     . " COALESCE(unofficial_events_rounds.time_limit_cumulative,'') time_limit_cumulative, "
                     . " unofficial_events_dict.image, "
                     . " unofficial_events_dict.special, "
-            . " unofficial_events_rounds.id eventround_id, "
+                    . " unofficial_events_rounds.id eventround_id, "
                     . " unofficial_events_rounds.round, "
                     . " unofficial_events_rounds.next_round_procent, "
                     . " unofficial_events_rounds.next_round_value, "
@@ -460,9 +460,9 @@ function getEventsByCompetition($competition_id) {
                     . " JOIN unofficial_formats_dict on unofficial_formats_dict.id = unofficial_events.format_dict "
                     . " LEFT OUTER JOIN unofficial_results_dict event_unofficial_results_dict on event_unofficial_results_dict.id = unofficial_events.result_dict"
                     . " WHERE unofficial_events.competition = $competition_id");
-    $results=[];
-    foreach($rows as $row){
-        $results[$row->eventround_id]=$row;
+    $results = [];
+    foreach ($rows as $row) {
+        $results[$row->eventround_id] = $row;
     }
     return $results;
 }
@@ -1101,6 +1101,15 @@ function getCompetitorWcaName($wcaid, $fcid) {
         $name = transliterate($nameRU);
         return $name;
     }
+
+    $get = function($instance = false) {
+        $keys = ['host', 'username', 'password', 'schema', 'port'];
+        foreach ($keys as $key) {
+            $values[$key] = \config::get('DB' . $instance, $key);
+        }
+        return $values;
+    };
+    \db2::set($get(2));
 
     $name = \db2::row("select name from Persons where id='$wcaid' order by subid desc")->name ?? false;
     $name = trim(explode('(', $name)[0]);

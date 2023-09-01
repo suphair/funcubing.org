@@ -62,7 +62,7 @@ function resolve($value, $input, $filter) {
         if ($compare == 'earlier' and strtotime($value) <= strtotime($input)) {
             return true;
         }
-        if ($compare == 'later' and strtotime($element->$key) >= strtotime($input)) {
+        if ($compare == 'later' and strtotime($value) >= strtotime($input)) {
             return true;
         }
     }

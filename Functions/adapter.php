@@ -2,6 +2,34 @@
 
 namespace adapter;
 
+function common($input) {
+    //{
+    //  "name": string,
+    //  "surname": string,
+    //  "wca_id":  string,
+    //  "non_wca":  bool,
+    //  "events": [string]
+    //}    
+
+    $registrations = [];
+    foreach ($input as $row) {
+        $row = (object) $row;
+        $registration = (object) [
+                    'name' => trim($row->name),
+                    'wca_id' => strtoupper($row->wca_id),
+                    'non_wca' => $row->non_wca ? 1 : 0,
+                    'events' => []
+        ];
+        $events = [];
+        foreach ($row->events as $event) {
+            $events[$event] = 1;
+        }
+        $registration->events = $events;
+        $registrations[$registration->name] = $registration;
+    }
+    return $registrations;
+}
+
 function speedcubes($input) {
     //{
     //  "name": string,

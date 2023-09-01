@@ -54,7 +54,7 @@ class db {
     }
 
     static function escape($str) {
-        return mysqli_escape_string(self::$connection, $str);
+        return htmlspecialchars(mysqli_escape_string(self::$connection, $str), ENT_QUOTES, 'UTF-8');
     }
 
     static function close() {
@@ -84,6 +84,7 @@ class db {
     }
 
     static function exec($sql, $statements = []) {
+        $start_time = time();
         foreach ($statements as $key => $value) {
             $value_escape = mysqli_escape_string(self::$connection, $value);
             $sql = str_replace(":$key", "'$value_escape'", $sql);
@@ -94,8 +95,12 @@ class db {
             trigger_error($error, E_USER_ERROR);
         }
         self::$count++;
-        #echo "<hr>".self::$count."<pre>$sql</pre>";
-        
+        $end_time = time();
+        if ($end_time - $start_time > 2 and!in_array($_SERVER['REDIRECT_URL'], ['/api/competitions', '/cron'])) {
+            mysqli_query(self::$connection, "INSERT INTO db_log (query, duration) "
+                    . " values('" . self::escape($sql) . "', $end_time- $start_time)");
+            trigger_error("long time query", E_USER_WARNING);
+        }
         return $result;
     }
 

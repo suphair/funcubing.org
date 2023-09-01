@@ -29,10 +29,10 @@ function load_registrations() {
             $data = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($status != 200) {
-                sendMail(
-                        config::get('Support', 'email'), "FunCubing: $competition->name (load_registrations)"
-                        , "$competition->name $url: status=$status"
-                );
+                #sendMail(
+                #        config::get('Support', 'email'), "FunCubing: $competition->name (load_registrations)"
+                #        , "$competition->name $url: status=$status"
+                #);
                 continue;
             }
             $dataJson = json_decode($data, JSON_UNESCAPED_UNICODE);
@@ -98,12 +98,12 @@ function load_registrations() {
                 'delete' => sizeof($delete)
             ];
 
-            if (sizeof($new) or sizeof($delete)) {
-                sendMail(
-                        config::get('Admin', 'email'), "FunCubing: $competition->name (load_registrations)"
-                        , 'new:' . print_r($new, true) . '<br>delete:' . print_r($delete, true)
-                );
-            }
+//            if (sizeof($new) or sizeof($delete)) {
+//                sendMail(
+//                        config::get('Admin', 'email'), "FunCubing: $competition->name (load_registrations)"
+//                        , 'new:' . print_r($new, true) . '<br>delete:' . print_r($delete, true)
+//                );
+//            }
         } else {
             user_error("$adapter not exists");
         }

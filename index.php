@@ -203,9 +203,9 @@ $title = [
                     <a  target="_blank" href="https://www.worldcubeassociation.org/persons/2015SOLO01">
                         <i class="fas fa-laptop-code"></i> 
                         Konstantin Solovev</a>
-                    <i class="fas fa-user-circle"></i>
-                    <?= get_count_visitors_day(); ?> visitors today 
-
+                    <!-- <i class="fas fa-user-circle"></i>
+                    <?php #echo get_count_visitors_day(); ?> visitors today 
+                    -->        
                     <a target="_blank" href="<?= PageIndex() ?>api" title="Api Information"> 
                         <i class="fas fa-wrench"></i>
                         Api Information
@@ -258,10 +258,10 @@ $title = [
         </div>
     </body>
 </html>
-<?php count_visitors(); ?>
+<?php #count_visitors(); ?>
 <?php
 $db_count = \db::get_count();
-if ($db_count > 60) {
+if ($db_count > 100) {
     echo ${"db_count_$db_count"};
 }
 ?>

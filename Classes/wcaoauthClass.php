@@ -96,7 +96,7 @@ class wcaoauth {
             }
 
             if ($status != 200) {
-                trigger_error("wcaoauth.getToken: $status<br>$url", E_USER_ERROR);
+                trigger_error("wcaoauth.getToken: $status<br>$url<br>", E_USER_ERROR);
             }
 
             $accessToken = json_decode($result)->access_token;

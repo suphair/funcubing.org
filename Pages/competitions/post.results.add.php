@@ -60,6 +60,7 @@ if ($code and is_numeric($round)) {
                     . "SET attempts = '$attempts'"
                     . "WHERE competitor_round = $competitor_round");
             $order = 0;
+
             if ($competitors_round->code == 'amount_desc') {
                 $order += 10000000 * 999999;
                 $order += (10000000 * (999999 - unofficial\attempt_to_int($attempt_arr['average'] ?? 0)));
@@ -69,7 +70,7 @@ if ($code and is_numeric($round)) {
                 $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['average'] ?? 0));
                 $order += (10000000 * unofficial\attempt_to_int_fm($attempt_arr['mean'] ?? 0));
                 $order += unofficial\attempt_to_int_fm($attempt_arr['best'] ?? 0);
-            } elseif ($competitors_round->attempts == 3 or $competitors_round->format == 'best') {
+            } elseif (($competitors_round->attempts == 3 and $competitors_round->format != 'mean') or $competitors_round->format == 'best') {
                 $order = 10000000 * unofficial\attempt_to_int($attempt_arr['best'] ?? 0);
                 $order += unofficial\attempt_to_int($attempt_arr['mean'] ?? 0);
             } else {

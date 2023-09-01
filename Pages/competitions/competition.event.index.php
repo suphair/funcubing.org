@@ -23,6 +23,18 @@
         </a>
     </h2>
 <?php } ?>
+
+<?php if ($competition->is_live_cubingrf ?? false) { ?>
+    <h2>
+        <i class=" error fas fa-exclamation-triangle"></i>
+        Результаты ведутся на 
+        <a href="https://live.cubingrf.org/competitions/IQberMoscowLaunchTime2023/results/<?= $event->code ?>/<?= $event->round ?>"
+           target="_blank">
+            <img style="vertical-align: middle" width="30px "src="<?= PageIndex() ?>Pages/competitions/WCA.png">
+            live.cubingrf.org
+        </a>
+    </h2>
+<?php } ?>
 <p>
     <?= $event->comment ? ('&nbsp;<i class="fas fa-comment-dots"></i> ' . $event->comment ) : '' ?>
     <?= $event->cutoff ? ('&nbsp;<i class="fas fa-cut"></i> ' . t('Cutoff', 'Катофф') . ' ' . $event->cutoff ) : '' ?>

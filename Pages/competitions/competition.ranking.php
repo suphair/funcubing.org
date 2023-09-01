@@ -108,13 +108,9 @@ $delegate_roles = unofficial\getDelegateRolesDict();
             <td>
             </td>
             <td>
-                <?php if ($grand->federation_ext or!$comp->approved) { ?>
-                    <button>
-                        Сохранить
-                    </button>
-                <?php } else { ?>
-                    Теперь править может только Главный Судья
-                <?php } ?>
+                <button>
+                    Сохранить
+                </button>
             </td>
         </tr>
     </table> 

@@ -23,6 +23,7 @@ function competitions($competition_id = false) {
                     c.show is_publish,
                     c.details,
                     c.logo,
+                    c.is_live_cubingrf,
                     dc.wcaid dc_wcaid,
                     coalesce(dc.name$RU, dc.name) dc_name,
                     competitor.wcaid is not null my_roles_competitor,
@@ -75,6 +76,7 @@ function competitions($competition_id = false) {
         $competition_key->my_roles = null;
         $competition_key->competitors_count = $competition->competitors_count;
         $competition_key->wrong_attempts = $competition->wrong_attempts;
+        $competition_key->is_live_cubingrf = $competition->is_live_cubingrf;
 
         if ($wca_id) {
             $competition_key->my_roles = (object) [
@@ -186,7 +188,7 @@ function competitions($competition_id = false) {
 
             $admin_grand = false;
 
-            if ($delegate or $federation) {
+            if ($delegate) {
                 $edit_grand = true;
                 $setting_grand = true;
             }
@@ -196,7 +198,7 @@ function competitions($competition_id = false) {
                 $setting_grand = false;
             }
 
-            if ($federation_ext) {
+            if ($federation) {
                 $edit_grand = true;
                 $setting_grand = true;
             }

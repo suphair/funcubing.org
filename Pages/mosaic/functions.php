@@ -46,7 +46,7 @@ function deleteDir($dir) {
     foreach (getFiles($dir) as $file) {
         is_dir("$dir/$file") ?
                         deleteDir("$dir/$file") :
-                        unlink("$dir/$file");
+                        @unlink("$dir/$file");
     }
     return rmdir($dir);
 }
